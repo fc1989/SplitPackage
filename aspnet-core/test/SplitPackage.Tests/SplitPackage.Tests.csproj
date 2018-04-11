@@ -1,0 +1,105 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <VersionPrefix>1.0.0.0</VersionPrefix>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+    <AssemblyName>SplitPackage.Tests</AssemblyName>
+    <PackageId>SplitPackage.Tests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="SplitPackageRules\Product.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_ArkExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueMilk.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueZhhuan.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueZhyou.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AuodExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_BlueSkyExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_changjiangExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_CLLExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Economic.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Standard.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_FSExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_KingFreight.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_PCAExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_TransrushExpress.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_yunda.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SplitPackageRules\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_ArkExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_AueMilk.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_AueZhhuan.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_AueZhyou.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_AuodExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_BlueSkyExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_changjiangExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_CLLExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Economic.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Standard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_FSExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_KingFreight.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_PCAExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_TransrushExpress.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SplitPackageRules\Rules\Rule_yunda.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SplitPackage.Application\SplitPackage.Application.csproj" />
+    <ProjectReference Include="..\..\src\SplitPackage.EntityFrameworkCore\SplitPackage.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.AspNetCore.TestBase" Version="3.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="Shouldly" Version="3.0.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="Abp.TestBase" Version="3.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.2" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+</Project>
