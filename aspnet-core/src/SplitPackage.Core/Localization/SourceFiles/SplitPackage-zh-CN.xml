@@ -9,17 +9,56 @@
     <text name="TenantNameCanNotBeEmpty" value="租户名不能为空" />
 
     <text name="InvalidUserNameOrPassword" value="用户名或密码无效" />
-    <text name="ThereIsNoTenantDefinedWithName{0}" value="租户 {0}不存在" />
-    <text name="TenantIsNotActive" value="租户 {0} 未激活." />
+    <text name="ThereIsNoTenantDefinedWithName{0}" value="组织 {0}不存在" />
+    <text name="TenantIsNotActive" value="组织 {0} 未激活." />
     <text name="UserIsNotActiveAndCanNotLogin" value="用户 {0} 未激活，不能登录." />
     <text name="PleaseEnterLoginInformation" value="请输入登录信息" />
-    <text name="TenancyName" value="租户名称" />
+    <text name="TenancyName" value="组织名称" />
     <text name="UserNameOrEmail" value="用户名或邮箱地址" />
     <text name="Password" value="密码" />
     <text name="RememberMe" value="记住我" />
     <text name="LogIn" value="登录" />
 
     <text name="LoginFailed" value="登录失败!" />
-    
+
+    <text name="CreateNewRole" value="创建角色!" />
+    <text name="save" value="保存" />
+    <text name="cancel" value="取消" />
+    <text name="Save" value="保存" />
+    <text name="Cancel" value="取消" />
+    <text name="RoleName" value="角色名" />
+    <text name="DisplayName" value="显示名称" />
+    <text name="RoleDescription" value="角色描述" />
+    <text name="Permissions" value="权限" />
+    <text name="EditRole" value="修改角色" />
+    <text name="CreateNewTenant" value="创建组织" />
+    <text name="Name" value="名称" />
+    <text name="DatabaseConnectionString" value="数据库链接" />
+    <text name="AdminEmailAddress" value="管理员邮箱" />
+    <text name="EditTenant" value="修改组织" />
+    <text name="CreateNewUser" value="创建用户" />
+    <text name="UserDetails" value="用户详情" />
+    <text name="UserName" value="用户名" />
+    <text name="Surname" value="姓" />
+    <text name="EmailAddress" value="邮箱" />
+    <text name="ConfirmPassword" value="确认密码" />
+    <text name="UserRoles" value="用户角色" />
+    <text name="EditUser" value="修改用户" />
+    <text name="Actions" value="操作" />
+    <text name="Edit" value="编辑" />
+    <text name="Delete" value="删除" />
+    <text name="Delete role" value="删除角色" />
+    <text name="Yes" value="是" />
+    <text name="No" value="否" />
+    <text name="IsActive" value="是否有效" />
+    <text name="Delete tenant" value="删除组织" />
+    <text name="FullName" value="全称" />
+    <text name="Delete user" value="删除用户" />
+    <text name="ThisFieldIsRequired" value="必填" />
+    <text name="ThereIsNoTenantDefinedWithName" value="未知的组织名" />
+    <text name="PleaseWait" value="请等待" />
+    <text name="Refresh" value="刷新" />
+    <text name="Create" value="创建" />
+    <text name="DefaultPasswordIs" value="默认密码是 {0}" />
   </texts>
 </localizationDictionary>
