@@ -60,5 +60,14 @@
     <text name="Refresh" value="刷新" />
     <text name="Create" value="创建" />
     <text name="DefaultPasswordIs" value="默认密码是 {0}" />
+    <text name="LabelOptions" value="标签选项" />
+    <text name="ClearAll" value="全部清除" />
+    <text name="ClearOthers" value="清除其他" />
+    <text name="Return to Home page" value="返回首页" />
+    <text name="Back to last page" value="返回上一界面" />
+    <text name="Page does not exist" value="页面不存在" />
+    <text name="Unlock" value="开锁" />
+    <text name="Logout" value="退出" />
+    <text name="Administration" value="系统管理" />
   </texts>
 </localizationDictionary>
