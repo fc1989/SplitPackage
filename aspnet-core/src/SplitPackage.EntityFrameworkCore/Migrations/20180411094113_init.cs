@@ -123,26 +123,26 @@ namespace SplitPackage.Migrations
                     table.PrimaryKey("PK_Languages", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "LanguageTexts",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    CreatorUserId = table.Column<long>(nullable: true),
-                    Key = table.Column<string>(maxLength: 256, nullable: false),
-                    LanguageName = table.Column<string>(maxLength: 10, nullable: false),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
-                    Source = table.Column<string>(maxLength: 128, nullable: false),
-                    TenantId = table.Column<int>(nullable: true),
-                    Value = table.Column<string>(maxLength: 67108864, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LanguageTexts", x => x.Id);
-                });
+            //migrationBuilder.CreateTable(
+            //    name: "LanguageTexts",
+            //    columns: table => new
+            //    {
+            //        Id = table.Column<long>(nullable: false)
+            //            .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            //        CreationTime = table.Column<DateTime>(nullable: false),
+            //        CreatorUserId = table.Column<long>(nullable: true),
+            //        Key = table.Column<string>(maxLength: 256, nullable: false),
+            //        LanguageName = table.Column<string>(maxLength: 10, nullable: false),
+            //        LastModificationTime = table.Column<DateTime>(nullable: true),
+            //        LastModifierUserId = table.Column<long>(nullable: true),
+            //        Source = table.Column<string>(maxLength: 128, nullable: false),
+            //        TenantId = table.Column<int>(nullable: true),
+            //        Value = table.Column<string>(maxLength: 67108864, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_LanguageTexts", x => x.Id);
+            //    });
 
             migrationBuilder.CreateTable(
                 name: "Notifications",
@@ -813,8 +813,8 @@ namespace SplitPackage.Migrations
             migrationBuilder.DropTable(
                 name: "Languages");
 
-            migrationBuilder.DropTable(
-                name: "LanguageTexts");
+            //migrationBuilder.DropTable(
+            //    name: "LanguageTexts");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

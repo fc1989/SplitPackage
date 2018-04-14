@@ -29,14 +29,11 @@ using Abp.Dependency;
 
 namespace SplitPackage.Tests
 {
-    [Collection("SplitPackage collection")]
-    public abstract class SplitPackageTestBase
+    //[Collection("SplitPackage collection")]
+    public abstract class SplitPackageTestBase : AbpAspNetCoreIntegratedTestBase<Startup>
     {
-        protected TestContext context;
-
-        public SplitPackageTestBase(TestContext testContext)
+        public SplitPackageTestBase()
         {
-            context = testContext;
             void NormalizeDbContext(SplitPackageDbContext context)
             {
                 context.EntityChangeEventHelper = NullEntityChangeEventHelper.Instance;
@@ -45,7 +42,7 @@ namespace SplitPackage.Tests
             }
 
             // Seed initial data for host
-            this.context.TestSession.TenantId = null;
+            AbpSession.TenantId = null;
             UsingDbContext(context =>
             {
                 NormalizeDbContext(context);
@@ -54,11 +51,31 @@ namespace SplitPackage.Tests
             });
 
             // Seed initial data for default tenant
-            this.context.TestSession.TenantId = 1;
+            AbpSession.TenantId = 1;
             UsingDbContext(context =>
             {
                 NormalizeDbContext(context);
                 new TenantRoleAndUserBuilder(context, 1).Create();
+            });
+
+            // Seed initial data for default Product
+            AbpSession.TenantId = 1;
+            UsingDbContext(context =>
+            {
+                NormalizeDbContext(context);
+                if (context.Products.Count() == 0)
+                {
+                    context.Products.Add(new SplitPackage.Business.Product() {
+                        ProductName = "测试商品",
+                        AbbreName = "测试1",
+                        ProductNo = "test",
+                        Sku = "0000000001",
+                        TaxNo = "123456789",
+                        Brand = "测试品牌",
+                        Weight = 10
+                    });
+                    context.SaveChanges();
+                }
             });
 
             LoginAsDefaultTenantAdmin();
@@ -68,36 +85,36 @@ namespace SplitPackage.Tests
 
         protected IDisposable UsingTenantId(int? tenantId)
         {
-            var previousTenantId = this.context.TestSession.TenantId;
-            this.context.TestSession.TenantId = tenantId;
-            return new DisposeAction(() => this.context.TestSession.TenantId = previousTenantId);
+            var previousTenantId = AbpSession.TenantId;
+            AbpSession.TenantId = tenantId;
+            return new DisposeAction(() => AbpSession.TenantId = previousTenantId);
         }
 
         protected void UsingDbContext(Action<SplitPackageDbContext> action)
         {
-            UsingDbContext(this.context.TestSession.TenantId, action);
+            UsingDbContext(AbpSession.TenantId, action);
         }
 
         protected Task UsingDbContextAsync(Func<SplitPackageDbContext, Task> action)
         {
-            return UsingDbContextAsync(this.context.TestSession.TenantId, action);
+            return UsingDbContextAsync(AbpSession.TenantId, action);
         }
 
         protected T UsingDbContext<T>(Func<SplitPackageDbContext, T> func)
         {
-            return UsingDbContext(this.context.TestSession.TenantId, func);
+            return UsingDbContext(AbpSession.TenantId, func);
         }
 
         protected Task<T> UsingDbContextAsync<T>(Func<SplitPackageDbContext, Task<T>> func)
         {
-            return UsingDbContextAsync(this.context.TestSession.TenantId, func);
+            return UsingDbContextAsync(AbpSession.TenantId, func);
         }
 
         protected void UsingDbContext(int? tenantId, Action<SplitPackageDbContext> action)
         {
             using (UsingTenantId(tenantId))
             {
-                using (var context = this.context.TestIocManager.Resolve<SplitPackageDbContext>())
+                using (var context = IocManager.Resolve<SplitPackageDbContext>())
                 {
                     action(context);
                     context.SaveChanges();
@@ -109,7 +126,7 @@ namespace SplitPackage.Tests
         {
             using (UsingTenantId(tenantId))
             {
-                using (var context = this.context.TestIocManager.Resolve<SplitPackageDbContext>())
+                using (var context = IocManager.Resolve<SplitPackageDbContext>())
                 {
                     await action(context);
                     await context.SaveChangesAsync();
@@ -123,7 +140,7 @@ namespace SplitPackage.Tests
 
             using (UsingTenantId(tenantId))
             {
-                using (var context = this.context.TestIocManager.Resolve<SplitPackageDbContext>())
+                using (var context = IocManager.Resolve<SplitPackageDbContext>())
                 {
                     result = func(context);
                     context.SaveChanges();
@@ -139,7 +156,7 @@ namespace SplitPackage.Tests
 
             using (UsingTenantId(tenantId))
             {
-                using (var context = this.context.TestIocManager.Resolve<SplitPackageDbContext>())
+                using (var context = IocManager.Resolve<SplitPackageDbContext>())
                 {
                     result = await func(context);
                     await context.SaveChangesAsync();
@@ -165,18 +182,18 @@ namespace SplitPackage.Tests
 
         protected void LoginAsHost(string userName)
         {
-            this.context.TestSession.TenantId = null;
+            AbpSession.TenantId = null;
 
             var user =
                 UsingDbContext(
                     context =>
-                        context.Users.FirstOrDefault(u => u.TenantId == this.context.TestSession.TenantId && u.UserName == userName));
+                        context.Users.FirstOrDefault(u => u.TenantId == AbpSession.TenantId && u.UserName == userName));
             if (user == null)
             {
                 throw new Exception("There is no user: " + userName + " for host.");
             }
 
-            this.context.TestSession.UserId = user.Id;
+            AbpSession.UserId = user.Id;
         }
 
         protected void LoginAsTenant(string tenancyName, string userName)
@@ -187,18 +204,18 @@ namespace SplitPackage.Tests
                 throw new Exception("There is no tenant: " + tenancyName);
             }
 
-            this.context.TestSession.TenantId = tenant.Id;
+            AbpSession.TenantId = tenant.Id;
 
             var user =
                 UsingDbContext(
                     context =>
-                        context.Users.FirstOrDefault(u => u.TenantId == this.context.TestSession.TenantId && u.UserName == userName));
+                        context.Users.FirstOrDefault(u => u.TenantId == AbpSession.TenantId && u.UserName == userName));
             if (user == null)
             {
                 throw new Exception("There is no user: " + userName + " for tenant: " + tenancyName);
             }
 
-            this.context.TestSession.UserId = user.Id;
+            AbpSession.UserId = user.Id;
         }
 
         #endregion
@@ -209,7 +226,7 @@ namespace SplitPackage.Tests
         /// </summary>
         protected async Task<User> GetCurrentUserAsync()
         {
-            var userId = this.context.TestSession.GetUserId();
+            var userId = AbpSession.GetUserId();
             return await UsingDbContext(context => context.Users.SingleAsync(u => u.Id == userId));
         }
 
@@ -219,67 +236,35 @@ namespace SplitPackage.Tests
         /// </summary>
         protected async Task<Tenant> GetCurrentTenantAsync()
         {
-            var tenantId = this.context.TestSession.GetTenantId();
+            var tenantId = AbpSession.GetTenantId();
             return await UsingDbContext(context => context.Tenants.SingleAsync(t => t.Id == tenantId));
         }
-
-        protected T Resolve<T>()
-        {
-            return this.context.TestIocManager.Resolve<T>();
-        }
     }
 
-    public class TestContext : AbpAspNetCoreIntegratedTestBase<TestContext.Startup>, IDisposable
+    public class Startup
     {
-        public TestContext()
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
-        }
-
-        public void Dispose()
-        {
-
-        }
-
-        public TestAbpSession TestSession { get { return this.AbpSession; } }
-
-        public TestServer TestServer { get { return this.Server; } }
-
-        public IServiceProvider TestServiceProvider { get { return this.ServiceProvider; } }
-
-        public IIocManager TestIocManager { get { return this.IocManager; } }
-
-        public class Startup
-        {
-            public IServiceProvider ConfigureServices(IServiceCollection services)
+            return services.AddAbp<SplitPackageTestModule>(options =>
             {
-                return services.AddAbp<SplitPackageTestModule>(options =>
-                {
-                    options.SetupTest();
-                });
-            }
-
-            public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-            {
-                app.UseAbp();
-
-                app.UseUnitOfWork();
-
-                app.Use(async (context, func) =>
-                {
-                    await context.Response.WriteAsync(
-                        context.RequestServices.GetRequiredService<IUnitOfWorkManager>().Current == null
-                            ? "null"
-                            : "not-null"
-                    );
-                });
-            }
+                options.SetupTest();
+            });
         }
-    }
 
-    [CollectionDefinition("SplitPackage collection")]
-    public class SplitPackageCollection : ICollectionFixture<TestContext>
-    {
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseAbp();
 
+            app.UseUnitOfWork();
+
+            app.Use(async (context, func) =>
+            {
+                await context.Response.WriteAsync(
+                    context.RequestServices.GetRequiredService<IUnitOfWorkManager>().Current == null
+                        ? "null"
+                        : "not-null"
+                );
+            });
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace SplitPackage.Tests.Sessions
     {
         private readonly ISessionAppService _sessionAppService;
 
-        public SessionAppService_Tests(TestContext testContext) : base(testContext)
+        public SessionAppService_Tests()
         {
             _sessionAppService = Resolve<ISessionAppService>();
         }

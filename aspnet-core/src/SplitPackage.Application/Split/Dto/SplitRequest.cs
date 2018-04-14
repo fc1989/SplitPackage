@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace SplitPackage.Models
+namespace SplitPackage.Split.Dto
 {
-    public class SplitWithExpRequest : BaseRequest
+    public class SplitRequest: BaseRequest
     {
         /// <summary>
-        /// 物流公司名称
+        /// 拆单方式
         /// </summary>
-        public string LogisticsName { get; set; }
-        /// <summary>
-        /// 选定的物流级别（经济型/标准型）
-        /// </summary>
-        public string GradeName { get; set; }
+        public int Type { get; set; }
 
         public override string ToString()
         {
@@ -20,8 +16,7 @@ namespace SplitPackage.Models
                 ", OrderId=" + this.OrderId +
                 ", ProList=(Count=" + this.ProList.Count + ")[" + string.Join(", ", this.ProList) + "]" +
                 ", TotalQuantity=" + this.TotalQuantity +
-                ", LogisticsName=" + this.LogisticsName +
-                ", GradeName=" + this.GradeName +
+                ", Type=" + this.Type +
                 "}";
         }
     }

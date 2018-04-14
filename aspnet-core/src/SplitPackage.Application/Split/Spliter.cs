@@ -17,56 +17,58 @@ namespace SplitPackage.Split
         /// <summary>
         /// 拆单规则配置集合
         /// </summary>
-        private static List<SplitPackageConfig> ruleConfigs = null;
+        private List<SplitPackageConfig> ruleConfigs = null;
         /// <summary>
         /// 商品配置集合
         /// </summary>
-        private static ProductConfig productConfig = null;
+        private ProductConfig productConfig = null;
 
         /// <summary>
         /// 物流公司实例集合，含拆单方法
         /// Key：物流ID + GradeName
         /// Value：物流实例
         /// </summary>
-        private static Dictionary<string, Logistic> logisticcDic = null;
+        private Dictionary<string, Logistic> logisticcDic = null;
 
         /// <summary>
         /// 物流公司子业务集合
         /// Key：RuleID
         /// Value：RuleSequence对象
         /// </summary>
-        private static Dictionary<string, RuleEntity> ruleSequenceDic = null;
-        private static List<RuleEntity> ruleEntityList = null;
+        private Dictionary<string, RuleEntity> ruleSequenceDic = null;
+        private List<RuleEntity> ruleEntityList = null;
 
         /// <summary>
         /// 物流列表（不包括海关），查询物流清单接口用
         /// </summary>
-        private static List<LogisticsModel> logisticsList = null;
+        private List<LogisticsModel> logisticsList = null;
 
-        public static Dictionary<int, SubLevel> SubLevelDic { get; private set; }
+        public static Dictionary<int, SubLevel> TheSubLevelDic { get; set; }
 
-        private static SplitConfig splitConfig = new SplitConfig();
+        public Dictionary<int, SubLevel> SubLevelDic { get; private set; }
 
-        private static BcRuleEntity bcRuleEntity = new BcRuleEntity();
+        private SplitConfig splitConfig = new SplitConfig();
 
-        public static List<SplitPackageConfig> GetRuleConfigs()
+        private BcRuleEntity bcRuleEntity = new BcRuleEntity();
+
+        public List<SplitPackageConfig> GetRuleConfigs()
         {
             return ruleConfigs;
         }
-        public static ProductConfig GetProductConfig()
+        public ProductConfig GetProductConfig()
         {
             return productConfig;
         }
 
         // Key:产品SKU NO
-        private static Dictionary<string, ProductEntity> prodDic = new Dictionary<string, ProductEntity>();
+        private Dictionary<string, ProductEntity> prodDic = new Dictionary<string, ProductEntity>();
 
         #region 初始化
         /// <summary>
         /// 初始化（加载配置文件）
         /// </summary>
         /// <param name="folderPath">配置文件所在路径</param>
-        public static void Initialize(string folderPath)
+        public void Initialize(string folderPath)
         {
             try
             {
@@ -76,7 +78,7 @@ namespace SplitPackage.Split
                 logisticsList = new List<LogisticsModel>();
 
                 // 加载产品配置文件，并初始化
-                productConfig = Spliter.LoadProductConfig(Path.Combine(folderPath, "Product.xml"));
+                productConfig = this.LoadProductConfig(Path.Combine(folderPath, "Product.xml"));
                 if ((productConfig == null) || (productConfig.Products == null) || (productConfig.Products.Count <= 0))
                 {
                     throw new ArgumentException("配置文件Product.xml有误。");
@@ -85,15 +87,15 @@ namespace SplitPackage.Split
                 foreach (var p in productConfig.Products)
                 {
                     ProductEntity pe = new ProductEntity(p);
-                    if (Spliter.prodDic.ContainsKey(p.SKUNo.Trim().ToLower()))
+                    if (this.prodDic.ContainsKey(p.SKUNo.Trim().ToLower()))
                     {
                         throw new ArgumentException(string.Format("SKUNO[{0}]重复配置", pe.SKUNo));
                     }
-                    Spliter.prodDic.Add(p.SKUNo.Trim().ToLower(), pe);
+                    this.prodDic.Add(p.SKUNo.Trim().ToLower(), pe);
                 }
 
                 // 加载规则配置文件，并初始化
-                ruleConfigs = Spliter.LoadRules(Path.Combine(folderPath, "Rules"));
+                ruleConfigs = this.LoadRules(Path.Combine(folderPath, "Rules"));
                 foreach (SplitPackageConfig config in ruleConfigs)
                 {
                     var organizations = config.SubOrganizations;
@@ -173,7 +175,7 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="folder">拆包规则文件存放路径</param>
         /// <returns></returns>
-        public static List<SplitPackageConfig> LoadRules(string folder)
+        public List<SplitPackageConfig> LoadRules(string folder)
         {
             LogHelper.Logger.Info(String.Format("Loading RulesFolder @[{0}]", folder));
             List<SplitPackageConfig> rules = new List<SplitPackageConfig>();
@@ -209,7 +211,7 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="fileName">商品配置文件路径</param>
         /// <returns></returns>
-        public static ProductConfig LoadProductConfig(string fileName)
+        public ProductConfig LoadProductConfig(string fileName)
         {
             LogHelper.Logger.Info(String.Format("Loading ProductConfig @[{0}]", fileName));
             if (!File.Exists(fileName))
@@ -235,7 +237,7 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="productList">待拆单商品列表</param>
         /// <param name="splitType">拆单方法</param>
-        public static SplitedOrder Split(string orderId, List<Product> productList, int totalQuantity, int splitType)
+        public SplitedOrder Split(string orderId, List<Product> productList, int totalQuantity, int splitType)
         {
             try
             {
@@ -251,7 +253,7 @@ namespace SplitPackage.Split
             }
         }
 
-        public static SplitedOrder SplitWithOrganization1(string orderId, List<Product> productList, int totalQuantity, List<RuleEntity> relst)
+        public SplitedOrder SplitWithOrganization1(string orderId, List<Product> productList, int totalQuantity, List<RuleEntity> relst)
         {
             try
             {
@@ -279,22 +281,22 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="productNoList">待拆单货号列表</param>
         /// <param name="OrganizationId">物流ID</param>
-        public static SplitedOrder SplitWithOrganization(string orderId, List<Product> productList, int totalQuantity, string logisticsName, string gradeName)
+        public SplitedOrder SplitWithOrganization(string orderId, List<Product> productList, int totalQuantity, string logisticsName, string gradeName)
         {
             try
             {
                 string key = Logistic.GetLogisticName(logisticsName, gradeName);
-                if (!Spliter.logisticcDic.ContainsKey(key))
+                if (!this.logisticcDic.ContainsKey(key))
                 {
                     LogHelper.Logger.Error(string.Format("指定物流(logisticsName[{0}], gradeName[{1}])不存在：", logisticsName, gradeName));
-                    return Spliter.Split(orderId, productList, totalQuantity, (int)SplitPrinciple.PriceFirst);
+                    return this.Split(orderId, productList, totalQuantity, (int)SplitPrinciple.PriceFirst);
                 }
 
-                var logistics = Spliter.logisticcDic[key];
+                var logistics = this.logisticcDic[key];
                 if (logistics.RuleSequenceDic == null)
                 {
                     LogHelper.Logger.Error(string.Format("物流(logisticsName[{0}], gradeName[{1}])的规则配置为NULL。", logistics.LogisticName, gradeName));
-                    return Spliter.Split(orderId, productList, totalQuantity, (int)SplitPrinciple.PriceFirst);
+                    return this.Split(orderId, productList, totalQuantity, (int)SplitPrinciple.PriceFirst);
                 }
 
                 // 读取该指定物流的规则清单
@@ -319,7 +321,7 @@ namespace SplitPackage.Split
             }
         }
 
-        private static SplitedOrder SplitOrder(string orderId, List<ProductEntity> productList, List<Product> badProductList, int totalQuantity, SplitPrinciple splitPrinciple)
+        private SplitedOrder SplitOrder(string orderId, List<ProductEntity> productList, List<Product> badProductList, int totalQuantity, SplitPrinciple splitPrinciple)
         {
             Debug.Assert(splitPrinciple != SplitPrinciple.LogisticsFirst);
 
@@ -387,7 +389,7 @@ namespace SplitPackage.Split
             return result;
         }
 
-        private static Tuple<SplitedOrder, bool, List<ProductEntity>> SplitOnce(List<ProductEntity> productList, List<RuleEntity> rules, SplitPrinciple splitPrinciple)
+        private Tuple<SplitedOrder, bool, List<ProductEntity>> SplitOnce(List<ProductEntity> productList, List<RuleEntity> rules, SplitPrinciple splitPrinciple)
         {
             var splitedOrder = new SplitedOrder();
 
@@ -429,7 +431,7 @@ namespace SplitPackage.Split
             return Tuple.Create(splitedOrder, isTax, restProductList);
         }
 
-        private static Tuple<SplitedOrder, List<ProductEntity>> SplitOrderWithOrganization(string orderId, List<ProductEntity> productList, int totalQuantity, List<RuleEntity> ruleList)
+        private Tuple<SplitedOrder, List<ProductEntity>> SplitOrderWithOrganization(string orderId, List<ProductEntity> productList, int totalQuantity, List<RuleEntity> ruleList)
         {
             // 指定物流时，此处传入的RuleEntity清单仅为该物流规则
             Debug.Assert(ruleList != null);
@@ -445,7 +447,7 @@ namespace SplitPackage.Split
             return Tuple.Create(result, restProductList);
         }
 
-        private static Tuple<SplitedOrder, List<ProductEntity>> SplitOnceWithOrganization(List<ProductEntity> productList, List<RuleEntity> rules, SplitPrinciple splitPrinciple)
+        private Tuple<SplitedOrder, List<ProductEntity>> SplitOnceWithOrganization(List<ProductEntity> productList, List<RuleEntity> rules, SplitPrinciple splitPrinciple)
         {
             var splitedOrder = new SplitedOrder();
 
@@ -460,7 +462,7 @@ namespace SplitPackage.Split
             return Tuple.Create(splitedOrder, restProductList);
         }
 
-        private static Tuple<List<ProductEntity>, List<Product>> ConvertToProductEntity(List<Product> productList, bool getPTId = true)
+        private Tuple<List<ProductEntity>, List<Product>> ConvertToProductEntity(List<Product> productList, bool getPTId = true)
         {
             var ped = new Dictionary<string, ProductEntity>();
             List<Product> restProductList = new List<Product>();
@@ -512,7 +514,7 @@ namespace SplitPackage.Split
             return Tuple.Create(ped.Values.ToList(), restProductList);
         }
 
-        private static void CheckLevelConfig()
+        private void CheckLevelConfig()
         {
             var subLevelDic = SubLevelDic;
             var dupSingleRulePTIdList = new List<Tuple<string, string, string, int>>();
@@ -554,7 +556,7 @@ namespace SplitPackage.Split
             }
         }
 
-        //private static SplitedOrder SplitOrder(string orderId, List<Product> productList, int totalQuantity, RuleEntity rs)
+        //private SplitedOrder SplitOrder(string orderId, List<Product> productList, int totalQuantity, RuleEntity rs)
         //{
         //    if (rs == null)
         //    {
@@ -628,12 +630,12 @@ namespace SplitPackage.Split
         /// 获取所有物流公司信息清单
         /// </summary>
         /// <returns>物流公司清单</returns>
-        public static List<LogisticsModel> GetLogisticsList()
+        public List<LogisticsModel> GetLogisticsList()
         {
             return logisticsList;
         }
 
-        public static Dictionary<string, Logistic> GetLogisticcDic()
+        public Dictionary<string, Logistic> GetLogisticcDic()
         {
             return logisticcDic;
         }

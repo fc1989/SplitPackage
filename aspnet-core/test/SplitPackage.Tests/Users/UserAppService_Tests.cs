@@ -12,7 +12,7 @@ namespace SplitPackage.Tests.Users
     {
         private readonly IUserAppService _userAppService;
 
-        public UserAppService_Tests(TestContext testContext) : base(testContext)
+        public UserAppService_Tests()
         {
             _userAppService = Resolve<IUserAppService>();
         }

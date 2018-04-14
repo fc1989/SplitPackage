@@ -73,7 +73,7 @@ namespace SplitPackage.Split
         public void CalculateTax(SubOrder subOrder)
         {
             subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold)
-                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.SubLevelDic[p.PTId.Value].PostTaxRate)
+                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId.Value].PostTaxRate)
                 : 0;
 
             //return price <= this.TaxThreshold ? 0 : price * this.TaxRate / 100;
@@ -225,7 +225,7 @@ namespace SplitPackage.Split
                 return Tuple.Create(key, value);
             }
 
-            var level = Spliter.SubLevelDic[product.PTId.Value].SubLevelItems.FirstOrDefault(l => product.ProPrice >= (decimal)l.BaselineFloor && product.ProPrice <= (decimal)l.BaselineUpper);
+            var level = Spliter.TheSubLevelDic[product.PTId.Value].SubLevelItems.FirstOrDefault(l => product.ProPrice >= (decimal)l.BaselineFloor && product.ProPrice <= (decimal)l.BaselineUpper);
             if (level != null)
             {
                 key = Tuple.Create(product.PTId.Value, level.Name);

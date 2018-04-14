@@ -35,7 +35,7 @@ namespace SplitPackage
                 cfg => cfg.AddProfiles(thisAssembly)
             );
 
-            IocManager.Resolve<ISplitAppService>().Initialize(System.IO.Path.Combine(this._env.ContentRootPath, "SplitPackageRules"));
+            IocManager.Resolve<ISplitService>().Initialize(System.IO.Path.Combine(this._env.ContentRootPath, "SplitPackageRules"));
         }
     }
 }

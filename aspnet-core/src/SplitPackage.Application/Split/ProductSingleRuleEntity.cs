@@ -172,7 +172,7 @@ namespace SplitPackage.Split
         public void CalculateTax(SubOrder subOrder)
         {
             subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold)
-                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.SubLevelDic[p.PTId.Value].PostTaxRate)
+                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId.Value].PostTaxRate)
                 : 0;
             //price <= this.TaxThreshold ? 0 : price * this.TaxRate / 100;
         }

@@ -556,41 +556,41 @@ namespace SplitPackage.Migrations
                     b.ToTable("Languages");
                 });
 
-            modelBuilder.Entity("Abp.Localization.ApplicationLanguageText", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+            //modelBuilder.Entity("Abp.Localization.ApplicationLanguageText", b =>
+            //    {
+            //        b.Property<long>("Id")
+            //            .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreationTime");
+            //        b.Property<DateTime>("CreationTime");
 
-                    b.Property<long?>("CreatorUserId");
+            //        b.Property<long?>("CreatorUserId");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(256);
+            //        b.Property<string>("Key")
+            //            .IsRequired()
+            //            .HasMaxLength(256);
 
-                    b.Property<string>("LanguageName")
-                        .IsRequired()
-                        .HasMaxLength(10);
+            //        b.Property<string>("LanguageName")
+            //            .IsRequired()
+            //            .HasMaxLength(10);
 
-                    b.Property<DateTime?>("LastModificationTime");
+            //        b.Property<DateTime?>("LastModificationTime");
 
-                    b.Property<long?>("LastModifierUserId");
+            //        b.Property<long?>("LastModifierUserId");
 
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(128);
+            //        b.Property<string>("Source")
+            //            .IsRequired()
+            //            .HasMaxLength(128);
 
-                    b.Property<int?>("TenantId");
+            //        b.Property<int?>("TenantId");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(67108864);
+            //        b.Property<string>("Value")
+            //            .IsRequired()
+            //            .HasMaxLength(67108864);
 
-                    b.HasKey("Id");
+            //        b.HasKey("Id");
 
-                    b.ToTable("LanguageTexts");
-                });
+            //        b.ToTable("LanguageTexts");
+            //    });
 
             modelBuilder.Entity("Abp.Notifications.NotificationInfo", b =>
                 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace SplitPackage.Models
+namespace SplitPackage.Split.Dto
 {
     /// <summary>
     /// 返回类型

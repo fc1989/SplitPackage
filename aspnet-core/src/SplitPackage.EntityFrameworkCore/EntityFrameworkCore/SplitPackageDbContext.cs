@@ -5,12 +5,14 @@ using SplitPackage.Authorization.Users;
 using SplitPackage.MultiTenancy;
 using Abp.Application.Editions;
 using Abp.EntityHistory;
+using SplitPackage.Business;
 
 namespace SplitPackage.EntityFrameworkCore
 {
     public class SplitPackageDbContext : AbpZeroDbContext<Tenant, Role, User, SplitPackageDbContext>
     {
         /* Define a DbSet for each entity of the application */
+        public virtual DbSet<Product> Products { get; set; }
 
         public SplitPackageDbContext(DbContextOptions<SplitPackageDbContext> options)
             : base(options)

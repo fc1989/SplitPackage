@@ -47,7 +47,7 @@ namespace SplitPackage.Tests
 
             //全局筛选器,并发请求异常
             //替换成串行测试方式,不会导致该异常
-            //AppContext.SetSwitch("Microsoft.EntityFrameworkCore.Issue9825", true);
+            AppContext.SetSwitch("Microsoft.EntityFrameworkCore.Issue9825", true);
         }
 
         public override void Initialize()

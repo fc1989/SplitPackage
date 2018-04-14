@@ -49,7 +49,8 @@ namespace SplitPackage
             );
 
             // Use database for language management
-            Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
+            //Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
+            IocManager.Register<Abp.Localization.ILanguageProvider, Abp.Localization.ApplicationLanguageProvider>(Abp.Dependency.DependencyLifeStyle.Transient);
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
