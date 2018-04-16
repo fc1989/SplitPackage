@@ -287,7 +287,7 @@ namespace SplitPackage.Split
             {
                 ruleEntities.OrderByDescending(pmre => pmre.LimitedQuantity).Cast<IProductRuleEntity>().ToList(),         // 按件数，件数多的优先
                 ruleEntities.OrderByDescending(pmre => pmre.LimitedWeight).Cast<IProductRuleEntity>().ToList(),           // 按重量，重量大的优先
-                ruleEntities.OrderByDescending(pmre => pmre.RuleItems.Count).Cast<IProductRuleEntity>().ToList(),         // 按混装种类，种类多的优先
+                ruleEntities.OrderByDescending(pmre => pmre.RuleItems.Where(o=>allPTIds.Contains(o.PTId)).Count()).Cast<IProductRuleEntity>().ToList(),// 按混装匹配都接近的优先
                 //ruleEntities.OrderByDescending(pmre => pmre.RuleItems.Where(mrie => allPTIds.Contains(mrie.PTId)).Count()).Cast<IProductRuleEntity>().ToList(), // 按混装种类，当前商品种类装得多的优先，一种混装就能把所有商品全装完的最优先
             }.Where(l => l.Count > 0).Distinct(new ListComparer<IProductRuleEntity>()).ToList();
         }

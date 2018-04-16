@@ -6,6 +6,7 @@ using SplitPackage.MultiTenancy;
 using Abp.Application.Editions;
 using Abp.EntityHistory;
 using SplitPackage.Business;
+using Abp.Runtime.Session;
 
 namespace SplitPackage.EntityFrameworkCore
 {
@@ -17,6 +18,7 @@ namespace SplitPackage.EntityFrameworkCore
         public SplitPackageDbContext(DbContextOptions<SplitPackageDbContext> options)
             : base(options)
         {
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

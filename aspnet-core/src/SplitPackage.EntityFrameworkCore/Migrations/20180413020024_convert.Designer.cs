@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
+using SplitPackage.Business;
 using SplitPackage.EntityFrameworkCore;
 using System;
 
@@ -49,28 +50,28 @@ namespace SplitPackage.Migrations
 
                 b.Property<string>("ProductName")
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(Product.MaxProductNameLength);
 
                 b.Property<string>("AbbreName")
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(Product.MaxAbbreNameLength);
 
                 b.Property<string>("ProductNo")
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(Product.MaxProductNoLength);
 
                 b.Property<string>("Sku")
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(Product.MaxSkuLength);
 
                 b.Property<string>("TaxNo")
-                    .HasMaxLength(20);
+                    .HasMaxLength(Product.MaxTaxNoLength);
 
                 b.Property<string>("Brand")
-                   .HasMaxLength(50);
+                   .HasMaxLength(Product.MaxBrandLength);
 
                 b.Property<double>("Weight")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(Product.DefaultWeightValue);
 
                 b.HasKey("Id");
 

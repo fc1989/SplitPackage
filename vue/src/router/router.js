@@ -69,7 +69,17 @@ export const appRouter = [
             { path: 'users', title: 'Users', name: 'users',permission:'Pages.Users', component: () => import('@/views/admin/users/users.vue') },
             { path: 'roles', title: 'Roles', name: 'roles',permission:'Pages.Roles', component: () => import('@/views/admin/roles/roles.vue') }
         ]
-    }
+    },
+    {
+        path: '/business',
+        icon: 'briefcase',
+        title: 'Business',
+        name: 'business',
+        component: Main,
+        children: [
+            { path: 'products', title: 'products', name: 'products',permission:'Pages.Products', component: () => import('@/views/business/products/products.vue') }
+        ]
+    },
 ];
 
 // All the routes defined above should be written in the routers below

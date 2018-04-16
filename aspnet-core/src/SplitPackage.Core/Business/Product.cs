@@ -10,6 +10,14 @@ namespace SplitPackage.Business
     [Table("Products")]
     public class Product : FullAuditedEntity<long>, IPassivable , IMustHaveTenant
     {
+        public const int MaxProductNameLength = 200;
+        public const int MaxAbbreNameLength = 100;
+        public const int MaxProductNoLength = 50;
+        public const int MaxSkuLength = 50;
+        public const int MaxTaxNoLength = 20;
+        public const int MaxBrandLength = 50;
+        public const double DefaultWeightValue = 0;
+
         public bool IsActive { get; set; }
 
         public int TenantId { get; set; }

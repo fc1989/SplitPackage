@@ -29,7 +29,6 @@ using Abp.Dependency;
 
 namespace SplitPackage.Tests
 {
-    //[Collection("SplitPackage collection")]
     public abstract class SplitPackageTestBase : AbpAspNetCoreIntegratedTestBase<Startup>
     {
         public SplitPackageTestBase()

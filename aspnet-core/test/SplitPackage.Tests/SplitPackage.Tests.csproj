@@ -12,69 +12,65 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="SplitPackageRules\Product.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_ArkExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueMilk.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueZhhuan.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueZhyou.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AuodExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_BlueSkyExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_changjiangExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_CLLExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Economic.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Standard.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_FSExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_KingFreight.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_PCAExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_TransrushExpress.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_yunda.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AolExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_ArkExpress new.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueMilknew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueZhhuannew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AueZhyounew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_AuodExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_BlueSkyExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_changjiangExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Economic new.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Standard new.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_FSExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_PCAExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_TransrushExpressnew.xml" />
+    <None Remove="SplitPackageRules\Rules\Rule_yundaExpressnew.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SplitPackageRules\Product.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_ArkExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_AolExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueMilk.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_ArkExpress new.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueZhhuan.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_AueMilknew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueZhyou.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_AueZhhuannew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AuodExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_AueZhyounew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_BlueSkyExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_AuodExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_changjiangExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_BlueSkyExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_CLLExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_changjiangExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Economic.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Economic new.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Standard.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Standard new.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_FSExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_FSExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_KingFreight.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_PCAExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_PCAExpress.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_TransrushExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_TransrushExpress.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_yunda.xml">
+    <Content Include="SplitPackageRules\Rules\Rule_yundaExpressnew.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

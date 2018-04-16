@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using SplitPackage.Business;
 using System;
 using System.Collections.Generic;
 
@@ -15,22 +16,22 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductName = table.Column<string>(nullable: false, maxLength : 200),
-                    AbbreName = table.Column<string>(nullable: false, maxLength: 100),
-                    ProductNo = table.Column<string>(nullable: false, maxLength: 50),
-                    Sku = table.Column<string>(nullable: false, maxLength: 50),
-                    TaxNo = table.Column<string>(maxLength: 20),
-                    Brand = table.Column<string>(maxLength: 50),
-                    Weight = table.Column<double>(defaultValue:0d),
+                    ProductName = table.Column<string>(nullable: false, maxLength : Product.MaxProductNameLength),
+                    AbbreName = table.Column<string>(nullable: true, maxLength: Product.MaxAbbreNameLength),
+                    ProductNo = table.Column<string>(nullable: false, maxLength: Product.MaxProductNoLength),
+                    Sku = table.Column<string>(nullable: false, maxLength: Product.MaxSkuLength),
+                    TaxNo = table.Column<string>(nullable:true, maxLength: Product.MaxTaxNoLength),
+                    Brand = table.Column<string>(nullable:true, maxLength: Product.MaxBrandLength),
+                    Weight = table.Column<double>(defaultValue: Product.DefaultWeightValue),
                     TenantId = table.Column<int>(),
-                    CreationTime = table.Column<DateTime>(),
-                    CreatorUserId = table.Column<long>(),
-                    DeleterUserId = table.Column<long>(),
-                    DeletionTime = table.Column<DateTime>(),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
-                    LastModificationTime = table.Column<DateTime>(),
-                    LastModifierUserId = table.Column<long>()
+                    IsActive = table.Column<bool>(defaultValue: true)
                 },
                 constraints: table =>
                 {

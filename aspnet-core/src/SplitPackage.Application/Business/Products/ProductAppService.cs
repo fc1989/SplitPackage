@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SplitPackage.Business.Products
 {
-    public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, PagedResultRequestDto, CreateProductDto, ProductDto>, IProductAppService
+    public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, PagedResultRequestDto, CreateProductDto, CreateProductDto>, IProductAppService
     {
         public ProductAppService(IRepository<Product, long> repository) : base(repository)
         {

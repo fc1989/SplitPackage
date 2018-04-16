@@ -98,6 +98,21 @@ namespace SplitPackage.Split
                 ruleEntities.OrderByDescending(re => re.MixRuleDic.Count > 0 ? re.MixRuleDic.Max(kv => MaxLimitedWeight(kv.Value, ptids)) : -1).ToList(),
                 ruleEntities.OrderByDescending(re => re.MixRuleDic.Count > 0 ? re.MixRuleDic.Max(kv => MaxTaxThreshold(kv.Value, ptids)) : -1).ToList(),
                 ptids.Count == 1 ? ruleEntities.OrderByDescending(re => CompareMixRuleMinMaxQuantity(re, ptids[0], totalCount)).ToList() : new List<RuleEntity>(),
+                ruleEntities.OrderByDescending(re =>{
+                    var contain1 = re.MixRuleDic.Keys.Where(o=>ptids.Contains(o)).Count();
+                    var maxcontain = 0;
+                    foreach (var item in re.MixRuleDic)
+                    {
+                        item.Value.ForEach(pm=>{
+                            var i = pm.RuleItems.Where(o=> ptids.Contains(o.PTId)).Count();
+                            if(i > maxcontain)
+                            {
+                                maxcontain = i;
+                            }
+                        });
+	                }
+                    return contain1 * maxcontain;
+                }).ToList()
                 //ruleEntities.OrderByDescending(re => re.MixRuleDic.Count > 0 ? re.MixRuleDic.)
 
                 //ruleEntities.OrderByDescending(re => re.MixRuleDic.Count > 0 ? re.MixRuleDic.Max(kv => kv.Value.Count > 0 ? kv.Value.Max(pmre => pmre.LimitedMaxPrice) : -1) : -1).ToList(),

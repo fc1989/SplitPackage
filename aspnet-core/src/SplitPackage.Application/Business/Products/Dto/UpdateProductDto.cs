@@ -1,12 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Abp.Domain.Entities;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace SplitPackage.Business.Products.Dto
 {
     [AutoMap(typeof(Product))]
-    public class CreateProductDto: EntityDto<long>, IPassivable
+    public class UpdateProductDto: EntityDto<long>, IPassivable
     {
         [Required]
         [StringLength(Product.MaxProductNameLength)]

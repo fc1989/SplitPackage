@@ -1,4 +1,5 @@
 ﻿using Abp.Logging;
+using Abp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ using System.Text;
 
 namespace SplitPackage.Controllers
 {
+    [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
     [Route("api/[controller]")]
     public class SplitPackageController : SplitPackageControllerBase
     {
