@@ -27,83 +27,177 @@ namespace SplitPackage.Migrations
                 .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
-            modelBuilder.Entity("SplitPackage.MultiTenancy.Product", b =>
+            modelBuilder.Entity<Logistic>(b =>
             {
-                b.Property<long>("Id")
-                    .ValueGeneratedOnAdd();
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p=>p.CorporationName).IsRequired().HasMaxLength(Logistic.MaxCorporationNameLength);
+                b.Property(p => p.CorporationUrl).HasMaxLength(Logistic.MaxCorporationUrlLength);
+                b.Property(p => p.LogisticFlag).IsRequired().HasMaxLength(Logistic.MaxLogisticFlagLength);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.HasIndex(o=> o.LogisticFlag).IsUnique();
+                b.ToTable("Logistics");
+            });
 
-                b.Property<DateTime>("CreationTime");
+            modelBuilder.Entity<LogisticLine>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.LineName).IsRequired().HasMaxLength(LogisticLine.MaxLineNameLength);
+                b.Property(p => p.LineCode).IsRequired().HasMaxLength(LogisticLine.MaxLineCodeLength);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.LogisticId).IsRequired();
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.HasIndex(o => new { o.LogisticId ,o.LineCode }).IsUnique();
+                b.ToTable("LogisticLines");
+                b.HasOne(p => p.LogisticBy).WithMany(p=>p.LogisticLines).HasForeignKey(p=>p.LogisticId);
+            });
 
-                b.Property<long?>("CreatorUserId");
+            modelBuilder.Entity<NumFreight>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.LogisticLineId).IsRequired();
+                b.Property(p => p.ProductNum);
+                b.Property(p => p.PackagePrice);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.ToTable("NumFreights");
+                b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.NumFreights).HasForeignKey(p=>p.LogisticLineId);
+            });
 
-                b.Property<long?>("DeleterUserId");
-
-                b.Property<DateTime?>("DeletionTime");
-
-                b.Property<bool>("IsActive");
-
-                b.Property<bool>("IsDeleted");
-
-                b.Property<DateTime?>("LastModificationTime");
-
-                b.Property<long?>("LastModifierUserId");
-
-                b.Property<string>("ProductName")
-                    .IsRequired()
-                    .HasMaxLength(Product.MaxProductNameLength);
-
-                b.Property<string>("AbbreName")
-                    .IsRequired()
-                    .HasMaxLength(Product.MaxAbbreNameLength);
-
-                b.Property<string>("ProductNo")
-                    .IsRequired()
-                    .HasMaxLength(Product.MaxProductNoLength);
-
-                b.Property<string>("Sku")
-                    .IsRequired()
-                    .HasMaxLength(Product.MaxSkuLength);
-
-                b.Property<string>("TaxNo")
-                    .HasMaxLength(Product.MaxTaxNoLength);
-
-                b.Property<string>("Brand")
-                   .HasMaxLength(Product.MaxBrandLength);
-
-                b.Property<double>("Weight")
-                    .HasDefaultValue(Product.DefaultWeightValue);
-
-                b.HasKey("Id");
-
-                b.HasIndex("CreatorUserId")
-                    .IsUnique();
-
-                b.HasIndex("DeleterUserId")
-                    .IsUnique();
-
-                b.HasIndex("LastModifierUserId")
-                    .IsUnique();
-
+            modelBuilder.Entity<Product>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.CreationTime);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.Property(p => p.TenantId);
+                b.Property(p => p.ProductName).IsRequired().HasMaxLength(Product.MaxProductNameLength);
+                b.Property(p => p.AbbreName).IsRequired().HasMaxLength(Product.MaxAbbreNameLength);
+                b.Property(p => p.ProductNo).IsRequired().HasMaxLength(Product.MaxProductNoLength);
+                b.Property(p => p.Sku).IsRequired().HasMaxLength(Product.MaxSkuLength);
+                b.Property(p => p.TaxNo).HasMaxLength(Product.MaxTaxNoLength);
+                b.Property(p => p.Brand).HasMaxLength(Product.MaxBrandLength);
+                b.Property(p => p.Weight).HasDefaultValue(Product.DefaultWeightValue);
+                b.HasKey(p=>p.Id);
+                b.HasIndex(p=>new { p.TenantId,p.Sku}).IsUnique();
                 b.ToTable("Products");
             });
 
-            modelBuilder.Entity("SplitPackage.Business.Product", b =>
+            modelBuilder.Entity<ProductClass>(b =>
             {
-                b.HasOne("SplitPackage.Authorization.Users.User")
-                    .WithOne()
-                    .HasForeignKey("SplitPackage.Business.Product", "CreatorUserId");
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.ClassName).IsRequired().HasMaxLength(ProductClass.MaxClassNameLength);
+                b.Property(p => p.PTId).IsRequired().HasMaxLength(ProductClass.MaxPTIdLength);
+                b.Property(p => p.PostTaxRate);
+                b.Property(p => p.BCTaxRate);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.HasIndex(o => o.PTId).IsUnique();
+                b.ToTable("ProductClasses");
+            });
 
-                b.HasOne("SplitPackage.Authorization.Users.User")
-                    .WithOne()
-                    .HasForeignKey("SplitPackage.Business.Product", "DeleterUserId");
+            modelBuilder.Entity<ProductProductClass>(b =>
+            {
+                b.Property(p => p.ProductId);
+                b.Property(p => p.ProductClassId);
+                b.ToTable("Product_ProductClass");
+                b.HasKey(p => new { p.ProductId, p.ProductClassId });
+                b.HasOne(pt => pt.ProductClassBy)
+                    .WithMany(t => t.Products)
+                    .HasForeignKey(pt => pt.ProductClassId);
+                b.HasOne(pt => pt.ProductBy)
+                    .WithMany(p => p.ProductClasses)
+                    .HasForeignKey(pt => pt.ProductId);
+            });
 
-                b.HasOne("SplitPackage.Authorization.Users.User")
-                    .WithOne()
-                    .HasForeignKey("SplitPackage.Business.Product", "LastModifierUserId");
+            modelBuilder.Entity<SplitRule>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.LogisticLineId).IsRequired();
+                b.Property(p => p.MinPackage);
+                b.Property(p => p.MaxPackage);
+                b.Property(p => p.MaxWeight);
+                b.Property(p => p.MaxTax);
+                b.Property(p => p.MaxPrice);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.ToTable("SplitRules");
+            b.HasOne(p => p.LogisticLineBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticLineId);
+            });
 
-                b.HasOne("SplitPackage.MultiTenancy.Tenant")
-                    .WithOne()
-                    .HasForeignKey("SplitPackage.Business.Product", "TenantId");
+            modelBuilder.Entity<SplitRuleProductClass>(b =>
+            {
+                b.Property(p => p.SplitRuleId).IsRequired();
+                b.Property(p => p.ProductClassId).IsRequired();
+                b.Property(p => p.MaxNum);
+                b.HasKey(p => new { p.SplitRuleId, p.ProductClassId });
+                b.ToTable("SplitRule_ProductClass");
+                b.HasOne(pt => pt.SplitRuleBy)
+                    .WithMany(p => p.ProductClasses)
+                    .HasForeignKey(pt => pt.SplitRuleId);
+                b.HasOne(pt => pt.ProductClassBy)
+                    .WithMany(t => t.SplitRules)
+                    .HasForeignKey(pt => pt.ProductClassId);
+            });
+
+            modelBuilder.Entity<WeightFreight>(b =>
+            {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.LogisticLineId).IsRequired();
+                b.Property(p => p.StartingWeight);
+                b.Property(p => p.StartingPrice);
+                b.Property(p => p.StepWeight);
+                b.Property(p => p.Price);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.CreatorUserId);
+                b.Property(p => p.DeleterUserId);
+                b.Property(p => p.DeletionTime);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.IsDeleted);
+                b.Property(p => p.LastModificationTime);
+                b.Property(p => p.LastModifierUserId);
+                b.HasKey(p => p.Id);
+                b.ToTable("WeightFreights");
+                b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.WeightFreights).HasForeignKey(p=>p.LogisticLineId);
             });
 #pragma warning restore 612, 618
         }

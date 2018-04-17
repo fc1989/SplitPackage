@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using SplitPackage.EntityFrameworkCore;
+using SplitPackage.MultiTenancy;
 using System;
 
 namespace SplitPackage.Migrations

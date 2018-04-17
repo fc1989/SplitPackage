@@ -7,6 +7,7 @@ using Abp.EntityFrameworkCore.Uow;
 using Abp.MultiTenancy;
 using SplitPackage.EntityFrameworkCore.Seed.Host;
 using SplitPackage.EntityFrameworkCore.Seed.Tenants;
+using SplitPackage.EntityFrameworkCore.Seed.Business;
 
 namespace SplitPackage.EntityFrameworkCore.Seed
 {
@@ -27,6 +28,8 @@ namespace SplitPackage.EntityFrameworkCore.Seed
             // Default tenant seed (in host database).
             new DefaultTenantBuilder(context).Create();
             new TenantRoleAndUserBuilder(context, 1).Create();
+
+            new InitialBusinessDbBuilder(context).Create();
         }
 
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)

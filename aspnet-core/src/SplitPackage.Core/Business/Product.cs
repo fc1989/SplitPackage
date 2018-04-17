@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("Products")]
-    public class Product : FullAuditedEntity<long>, IPassivable , IMustHaveTenant
+    public class Product : FullAuditedEntity<long>, IPassivable, IMustHaveTenant
     {
         public const int MaxProductNameLength = 200;
         public const int MaxAbbreNameLength = 100;
@@ -56,6 +56,8 @@ namespace SplitPackage.Business
         /// 重量
         /// </summary>
         public double Weight { get; set; }
+
+        public virtual ICollection<ProductProductClass> ProductClasses { get; set; }
 
         public Product()
         {

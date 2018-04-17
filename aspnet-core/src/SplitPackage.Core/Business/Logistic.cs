@@ -32,5 +32,12 @@ namespace SplitPackage.Business
         public bool IsActive { get; set; }
 
         public int TenantId { get; set; }
+
+        public virtual ICollection<LogisticLine> LogisticLines { get; set; }
+
+        public Logistic()
+        {
+            IsActive = true;
+        }
     }
 }
