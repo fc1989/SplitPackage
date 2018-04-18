@@ -26,7 +26,6 @@ namespace SplitPackage.EntityFrameworkCore
         public SplitPackageDbContext(DbContextOptions<SplitPackageDbContext> options)
             : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

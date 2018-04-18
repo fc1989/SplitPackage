@@ -15,7 +15,7 @@
             <Table :columns="columns" border :data="products"></Table>
             <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
         </Card>
-        <Modal v-model="showModal" :title="L('CreateNewProduct')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showModal" :title="L('CreateNewProduct')">
             <div>
                 <Form ref="newProductForm" label-position="top" :rules="newProductRule" :model="createProduct">
                     <Tabs value="detail">
@@ -47,10 +47,10 @@
             </div>
             <div slot="footer">
                 <Button @click="showModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="create" type="primary">{{'Save'|l}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="L('EditProduct')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showEditModal" :title="L('EditProduct')">
             <div>
                 <Form ref="productForm" label-position="top" :rules="productRule" :model="editProduct">
                     <Tabs value="detail">
@@ -85,58 +85,55 @@
             </div>
             <div slot="footer">
                 <Button @click="showEditModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="edit" type="primary">{{'Save'|l}}</Button>
             </div>
         </Modal>
     </div>
 </template>
 <script>
+import ProductApi from '@/api/product'
+
 export default {
     methods:{
-        async save(){
-            if(!!this.editProduct.id){
-                console.log(this.editProduct);
-                this.$refs.productForm.validate(async (val)=>{
-                    if(val){
-                        await this.$store.dispatch({
-                            type:'product/update',
-                            data:this.editProduct
-                        })
-                        this.showEditModal=false;
-                        await this.getpage();
-                    }
-                })
-                
-            }else{
-                this.$refs.newProductForm.validate(async (val)=>{
-                    if(val){
-                        await this.$store.dispatch({
-                            type:'product/create',
-                            data:this.editProduct
-                        })
-                        this.showModal=false;
-                        await this.getpage();
-                    }
-                })
-            }
-            
+        async create(){
+            this.$refs.newProductForm.validate(async (val)=>{
+                if(val){
+                    await ProductApi.Create(this.createProduct);
+                    this.showModal=false;
+                    await this.getpage();
+                }
+            })
+        },
+        async edit(){
+            this.$refs.productForm.validate(async (val)=>{
+                if(val){
+                    await ProductApi.Update(this.editProduct);
+                    this.showEditModal=false;
+                    await this.getpage();
+                }
+            })
         },
         pageChange(page){
-            this.$store.commit('product/setCurrentPage',page);
+            this.state.currentPage=page;
             this.getpage();
         },
         pagesizeChange(pagesize){
-            this.$store.commit('product/setPageSize',pagesize);
+            this.state.pageSize=pagesize;
             this.getpage();
         },
         async getpage(){
-            await this.$store.dispatch({
-                type:'product/getAll'
-            })
+            let page={
+                maxResultCount:this.state.pageSize,
+                skipCount:(this.state.currentPage-1)*this.state.pageSize
+            }
+            let rep= await ProductApi.Search({params:page});
+            this.state.products=[];
+            this.state.products.push(...rep.data.result.items);
+            this.state.totalCount=rep.data.result.totalCount;
         },
         handleClickActionsDropdown(name){
             if(name==='Create'){
-
+                this.showModal=true;
             }else if(name==='Refresh'){
                 this.getpage();
             }
@@ -225,10 +222,7 @@ export default {
                                         okText:this.L('Yes'),
                                         cancelText:this.L('No'),
                                         onOk:async()=>{
-                                            await this.$store.dispatch({
-                                                type:'product/delete',
-                                                data:this.products[params.index]
-                                            })
+                                            await ProductApi.Delete(this.products[params.index].id)
                                             await this.getpage();
                                         }
                                     })
@@ -237,21 +231,27 @@ export default {
                         },this.L('Delete'))
                     ])
                 }
-            }]
+            }],
+            state: {
+                products:[],
+                totalCount:0,
+                pageSize:10,
+                currentPage:1
+            }
         }
     },
     computed:{
         products(){
-            return this.$store.state.product.products;
+            return this.state.products;
         },
         totalCount(){
-            return this.$store.state.product.totalCount;
+            return this.state.totalCount;
         },
         currentPage(){
-            return this.$store.state.product.currentPage;
+            return this.state.currentPage;
         },
         pageSize(){
-            return this.$store.state.product.pageSize;
+            return this.state.pageSize;
         }
     },
     async created(){

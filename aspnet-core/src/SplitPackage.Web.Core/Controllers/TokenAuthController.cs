@@ -58,7 +58,7 @@ namespace SplitPackage.Controllers
                 GetTenancyNameOrNull()
             );
 
-            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity, loginResult.Tenant));
 
             return new AuthenticateResultModel
             {
@@ -86,7 +86,7 @@ namespace SplitPackage.Controllers
             {
                 case AbpLoginResultType.Success:
                     {
-                        var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
+                        var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity, loginResult.Tenant));
                         return new ExternalAuthenticateResultModel
                         {
                             AccessToken = accessToken,
@@ -118,7 +118,7 @@ namespace SplitPackage.Controllers
 
                         return new ExternalAuthenticateResultModel
                         {
-                            AccessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity)),
+                            AccessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity, loginResult.Tenant)),
                             ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds
                         };
                     }
@@ -209,9 +209,13 @@ namespace SplitPackage.Controllers
             return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
         }
 
-        private static List<Claim> CreateJwtClaims(ClaimsIdentity identity)
+        private static List<Claim> CreateJwtClaims(ClaimsIdentity identity, Tenant tenant)
         {
             var claims = identity.Claims.ToList();
+            if (tenant != null)
+            {
+                claims.Add(new Claim(AbpClaimTypes.TenantId, tenant.Id.ToString()));
+            }
             var nameIdClaim = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
 
             // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.

@@ -1,7 +1,11 @@
 ﻿using SplitPackage.Split;
+using SplitPackage.Split.Common;
 using SplitPackage.Split.Dto;
+using SplitPackage.Split.RuleModels;
 using SplitPackage.Split.SplitModels;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace SplitPackage.Tests.Split
@@ -13,6 +17,60 @@ namespace SplitPackage.Tests.Split
         public SplitAppService_Tesst()
         {
             _splitAppService = Resolve<ISplitService>();
+        }
+
+        [Fact]
+        public void AllLogisticTest()
+        {
+            var files = Directory.EnumerateFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SplitPackageRules", "Rules"));
+            Tuple<string, SplitedOrder> result = null;
+            foreach (var item in files)
+            {
+                SplitPackageConfig rule = XmlHelper.LoadXmlFile<SplitPackageConfig>(item);
+                var isSpecial = item.Contains("Rule_EWEExpress Standard new.xml");
+                var request = new SplitWithExpRequest()
+                {
+                    UserName = "admin",
+                    OrderId = "18040300110001",
+                    ProList = new List<Product>() {
+                        new Product()
+                        {
+                            ProNo = "",
+                            SkuNo = isSpecial ? "10000264" : "10000027",
+                            Quantity = 1,
+                            ProName = isSpecial ? "Refresh Eye Drops  0.04眼药水" : "S26 Stage 3新版 1.1",
+                            ProPrice = 10,
+                            Weight = 10
+                        }
+                    },
+                    TotalQuantity = 1,
+                    LogisticsName = rule.OrganizationName,
+                    GradeName = "标准型"
+                };
+                result = this._splitAppService.SplitWithOrganization(request);
+                Assert.True(result.Item2.OrderList.Count > 0);
+
+                var request1 = new SplitWithExpRequest1()
+                {
+                    UserName = "admin",
+                    OrderId = "18040300110001",
+                    ProList = new List<Product>() {
+                        new Product()
+                        {
+                            ProNo = "",
+                            Quantity = 1,
+                            ProName = isSpecial ? "Refresh Eye Drops  0.04眼药水" : "S26 Stage 3新版 1.1",
+                            ProPrice = 10,
+                            Weight = 10,
+                            PTId = isSpecial ? 1010703 : 1019904
+                        }
+                    },
+                    TotalQuantity = 1,
+                    logistics = new List<string> { rule.OrganizationName }
+                };
+                result = this._splitAppService.SplitWithOrganization1(request1);
+                Assert.True(result.Item2.OrderList.Count > 0);
+            }
         }
 
         [Fact]

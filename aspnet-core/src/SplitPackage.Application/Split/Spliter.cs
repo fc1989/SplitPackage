@@ -118,7 +118,7 @@ namespace SplitPackage.Split
                     else
                     {
                         // 海关的配置不需要，代码不处理，不在配置文件目录中放海关的规则
-                        if (!Regex.IsMatch(config.OrganizationId, @"^(\-\d+)|0$"))
+                        if (!Regex.IsMatch(config.OrganizationId, @"^(\-\d+|0)$"))
                         {
                             logisticsList.Add(logisiticsModel);
                         }

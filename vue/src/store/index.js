@@ -7,7 +7,6 @@ import session from './modules/session'
 import account from './modules/account'
 import tenant from './modules/tenant'
 import role from './modules/role'
-import product from './modules/product'
 
 Vue.use(Vuex);
 
@@ -27,8 +26,7 @@ const store = new Vuex.Store({
         session,
         account,
         tenant,
-        role,
-        product
+        role
     }
 });
 

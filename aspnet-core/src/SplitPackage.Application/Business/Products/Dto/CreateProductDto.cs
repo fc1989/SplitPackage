@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SplitPackage.Business.Products.Dto
 {
     [AutoMap(typeof(Product))]
-    public class CreateProductDto: EntityDto<long>, IPassivable
+    public class CreateProductDto: EntityDto<long>
     {
         [Required]
         [StringLength(Product.MaxProductNameLength)]
@@ -30,7 +30,5 @@ namespace SplitPackage.Business.Products.Dto
         public string Brand { get; set; }
 
         public double Weight { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }
