@@ -77,7 +77,13 @@ export const appRouter = [
         name: 'business',
         component: Main,
         children: [
-            { path: 'products', title: 'products', name: 'products',permission:'Pages.Products', component: () => import('@/views/business/products/products.vue') }
+            { path: 'logisticlines', title: 'logisticlines', name: 'logisticlines',permission:'Pages.LogisticLines', component: () => import('@/views/business/logisticlines/logisticlines.vue') },
+            { path: 'logistics', title: 'logistics', name: 'logistics',permission:'Pages.Logistics', component: () => import('@/views/business/logistics/logistics.vue') },
+            { path: 'numfreights', title: 'numfreights', name: 'numfreights',permission:'Pages.NumFreights', component: () => import('@/views/business/numfreights/numfreights.vue') },
+            { path: 'productclasses', title: 'productclasses', name: 'productclasses',permission:'Pages.ProductClasses', component: () => import('@/views/business/productclasses/productclasses.vue') },
+            { path: 'products', title: 'products', name: 'products',permission:'Pages.Products', component: () => import('@/views/business/products/products.vue') },
+            { path: 'splitrules', title: 'splitrules', name: 'splitrules',permission:'Pages.SplitRules', component: () => import('@/views/business/splitrules/splitrules.vue') },
+            { path: 'weightfreights', title: 'weightfreights', name: 'weightfreights',permission:'Pages.WeightFreights', component: () => import('@/views/business/weightfreights/weightfreights.vue') }
         ]
     },
 ];
