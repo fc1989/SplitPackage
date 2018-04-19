@@ -8,32 +8,32 @@
             <Card :bordered="false">
                 <p slot="title">
                     <Icon type="log-in"></Icon>
-                    <span v-if="isMultiTenancyEnabled" class="multi-tenancy">{{'CurrentTenant'|l}}:<span v-if="tenant" class="tenant-name"> {{tenant.name}}</span><span v-if="!tenant"> {{'NotSelected'|l}}</span></span>
+                    <span v-if="isMultiTenancyEnabled" class="multi-tenancy">{{$t('Login.CurrentTenant')}}:<span v-if="tenant" class="tenant-name"> {{tenant.name}}</span><span v-if="!tenant"> {{$t('Login.NotSelected')}}</span></span>
                 </p>
                 <a href="#" slot="extra" @click="showChangeModal">
-                   {{'Change'|l}}
+                   {{$t('Login.Change')}}
                 </a>
                 <div class="form-con">
                     <Form ref="loginForm" :model="form" :rules="rules">
                         <FormItem prop="userNameOrEmailAddress">
-                            <Input v-model="form.userNameOrEmailAddress" :placeholder="'UserNameOrEmail'|l">
+                            <Input v-model="form.userNameOrEmailAddress" :placeholder="$t('Login.UserNameOrEmail')">
                                 <span slot="prepend">
                                     <Icon :size="16" type="person"></Icon>
                                 </span>
                             </Input>
                         </FormItem>
                         <FormItem prop="password">
-                            <Input type="password" v-model="form.password" :placeholder="'Password'|l">
+                            <Input type="password" v-model="form.password" :placeholder="$t('Login.Password')">
                                 <span slot="prepend">
                                     <Icon :size="14" type="locked"></Icon>
                                 </span>
                             </Input>
                         </FormItem>
                         <div style="margin-bottom:10px">
-                            <Checkbox v-model="form.rememberClient">{{'RememberMe'|l}}</Checkbox>
+                            <Checkbox v-model="form.rememberClient">{{$t('Login.RememberMe')}}</Checkbox>
                         </div>
                         <FormItem>
-                            <Button @click="handleSubmit" type="primary" long>{{'LogIn'|l}}</Button>
+                            <Button @click="handleSubmit" type="primary" long>{{$t('Public.Login')}}</Button>
                         </FormItem>
                     </Form>
                     <div>
@@ -43,20 +43,20 @@
                             </li>
                         </ul>
                     </div>
-                    <p class="login-tip">{{'PleaseEnterLoginInformation'|l}}</p>
+                    <p class="login-tip">{{$t('Login.PleaseEnterLoginInformation')}}</p>
                 </div>
             </Card>
         </div>
         <Modal
-         :title="'ChangeTenant'|l"
+         :title="$t('Login.ChangeTenant')"
          v-model="modalShow"
          @on-ok="changeTenant"
         >
-             <Input :placeholder="'TenancyName' | l" v-model="changedTenancyName"></Input>
-             <p>{{'LeaveEmptyToSwitchToHost' | l}}</p>
+             <Input :placeholder="$t('Login.TenancyName')" v-model="changedTenancyName"></Input>
+             <p>{{$t('Login.LeaveEmptyToSwitchToHost')}}</p>
              <div slot="footer">
-                <Button @click="modalShow=false">{{'Cancel'|l}}</Button>
-                <Button @click="changeTenant" type="primary">{{'Save'|l}}</Button>
+                <Button @click="modalShow=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="changeTenant" type="primary">{{$t('Public.Save')}}</Button>
              </div>
         </Modal>
     </div>
@@ -65,6 +65,8 @@
 <script>
 
 import Cookies from 'js-cookie';
+import Vue from 'vue';
+
 export default {
     data () {
         return {
@@ -81,10 +83,10 @@ export default {
             },
             rules: {
                 userNameOrEmailAddress: [
-                    { required: true, message: this.L('ThisFieldIsRequired'), trigger: 'blur' }
+                    { required: true, trigger: 'blur' }
                 ],
                 password: [
-                    { required: true, message: this.L('ThisFieldIsRequired'), trigger: 'blur' }
+                    { required: true, trigger: 'blur' }
                 ]
             }
         };
@@ -119,14 +121,14 @@ export default {
                         location.reload();
                         return;
                     case 2:
-                        let message=this.L('TenantIsNotActive',this.changedTenancyName)
+                        let message=this.$t('Login.TenantIsNotActive',this.changedTenancyName)
                         this.$Modal.error({
                             title:'',
                             content:message
                         });
                         break;
                     case 3:
-                        let message2 = this.L('ThereIsNoTenantDefinedWithName{0}',this.changedTenancyName)
+                        let message2 = this.$t('Login.ThereIsNoTenantDefinedWithName{0}',this.changedTenancyName)
                         this.$Modal.error({
                             title:'',
                             content:message2
@@ -142,7 +144,7 @@ export default {
             this.$refs.loginForm.validate(async (valid) => {
                 if (valid) {
                     this.$Message.loading({
-                        content: this.L('PleaseWait'),
+                        content: this.$t('Login.PleaseWait'),
                         duration:0
                     });
 
@@ -169,7 +171,8 @@ export default {
         this.languages=abp.localization.languages.filter(val=>{
             return !val.isDisabled;
         });
-        this.currentLanguage=abp.localization.currentLanguage
+        this.currentLanguage=abp.localization.currentLanguage;
+        Vue.config.lang = abp.localization.currentLanguage.name;
         this.isMultiTenancyEnabled=abp.multiTenancy.isEnabled;
     },
     computed:{

@@ -6,14 +6,14 @@
         :editRule="logisticRule">
         <template slot="newform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('CorporationName')" prop="corporationName">
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('Logistics.CorporationName')" prop="corporationName">
                         <Input v-model="slotProps.createModel.corporationName" :maxlength="200" :minlength="1"></Input>
                     </FormItem>
-                    <FormItem :label="L('CorporationUrl')" prop="corporationUrl">
+                    <FormItem :label="$t('Logistics.CorporationUrl')" prop="corporationUrl">
                         <Input v-model="slotProps.createModel.corporationUrl" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="L('LogisticFlag')" prop="logisticFlag">
+                    <FormItem :label="$t('Logistics.LogisticFlag')" prop="logisticFlag">
                         <Input v-model="slotProps.createModel.logisticFlag" :maxlength="50"></Input>
                     </FormItem>
                 </TabPane>
@@ -21,18 +21,18 @@
         </template>
         <template slot="editform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('CorporationName')" prop="corporationName">
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('Logistics.CorporationName')" prop="corporationName">
                         <Input v-model="slotProps.editModel.corporationName" :maxlength="200" :minlength="1"></Input>
                     </FormItem>
-                    <FormItem :label="L('CorporationUrl')" prop="corporationUrl">
+                    <FormItem :label="$t('Logistics.CorporationUrl')" prop="corporationUrl">
                         <Input v-model="slotProps.editModel.corporationUrl" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="L('LogisticFlag')" prop="logisticFlag">
+                    <FormItem :label="$t('Logistics.LogisticFlag')" prop="logisticFlag">
                         <Input v-model="slotProps.editModel.logisticFlag" :maxlength="50"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="slotProps.editModel.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
                 </TabPane>
             </Tabs>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "Logistic",
+      title: "Logistics",
       api: LogisticApi,
       newLogisticRule: {
         corporationName: [{ require: true }],
@@ -65,19 +65,19 @@ export default {
         needAction: true,
         columns: [
           {
-            title: this.L("CorporationName"),
+            title: this.$t('Logistics.CorporationName'),
             key: "corporationName"
           },
           {
-            title: this.L("CorporationUrl"),
+            title: this.$t('Logistics.CorporationUrl'),
             key: "corporationUrl"
           },
           {
-            title: this.L("LogisticFlag"),
+            title: this.$t('Logistics.LogisticFlag'),
             key: "logisticFlag"
           },
           {
-            title: this.L("IsActive"),
+            title: this.$t('Public.IsActive'),
             render: (h, params) => {
               return h("Checkbox", {
                 props: {

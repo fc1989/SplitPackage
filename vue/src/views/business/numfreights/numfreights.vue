@@ -6,14 +6,14 @@
         :editRule="numFreightRule">
         <template slot="newform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('PackagePrice')" prop="packagePrice">
-                        <Input v-model.number="slotProps.createModel.packagePrice"></Input>
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('NumFreights.PackagePrice')" prop="packagePrice">
+                        <Input-number v-model.number="slotProps.createModel.packagePrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('ProductNum')" prop="productNum">
-                        <Input v-model.number="slotProps.createModel.productNum"></Input>
+                    <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
+                        <Input-number v-model.number="slotProps.createModel.productNum" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('LogisticLine')" prop="logisticLineId">
+                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.createModel.logisticLineId"></Input>
                     </FormItem>
                 </TabPane>
@@ -21,18 +21,18 @@
         </template>
         <template slot="editform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('PackagePrice')" prop="packagePrice">
-                        <Input v-model.number="slotProps.editModel.packagePrice"></Input>
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('NumFreights.PackagePrice')" prop="packagePrice">
+                        <Input-number v-model.number="slotProps.editModel.packagePrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('ProductNum')" prop="productNum">
-                        <Input v-model.number="slotProps.editModel.productNum"></Input>
+                    <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
+                        <Input-number v-model.number="slotProps.editModel.productNum" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('LogisticLine')" prop="logisticLineId">
+                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.editModel.logisticLineId"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="slotProps.editModel.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
                 </TabPane>
             </Tabs>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "NumFreight",
+      title: "NumFreights",
       api: NumFreightApi,
       newNumFreightRule: {
         packagePrice: [{ type: "number" }],
@@ -65,19 +65,19 @@ export default {
         needAction: true,
         columns: [
           {
-            title: this.L("PackagePrice"),
+            title: this.$t('NumFreights.PackagePrice'),
             key: "packagePrice"
           },
           {
-            title: this.L("ProductNum"),
+            title: this.$t('NumFreights.ProductNum'),
             key: "productNum"
           },
           {
-            title: this.L("LogisticLineId"),
+            title: this.$t('LogisticLines'),
             key: "logisticLineId"
           },
           {
-            title: this.L("IsActive"),
+            title: this.$t('Public.IsActive'),
             render: (h, params) => {
               return h("Checkbox", {
                 props: {

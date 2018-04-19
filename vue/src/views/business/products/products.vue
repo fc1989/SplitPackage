@@ -1,91 +1,91 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{'Products'|l}}</p>
+            <p slot="title">{{$t('Products')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
-                    {{'Actions'|l}}
+                    {{$t('Public.Actions')}}
                     <Icon type="android-more-vertical"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                    <DropdownItem name='Refresh'>{{'Refresh'|l}}</DropdownItem>
-                    <DropdownItem name='Create'>{{'Create'|l}}</DropdownItem>
+                    <DropdownItem name='Refresh'>{{$t('Public.Refresh')}}</DropdownItem>
+                    <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
             <Table :columns="columns" border :data="products"></Table>
             <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
         </Card>
-        <Modal v-model="showModal" :title="L('CreateNewProduct')">
+        <Modal v-model="showModal" :title="$t('Public.Create')">
             <div>
                 <Form ref="newProductForm" label-position="top" :rules="newProductRule" :model="createProduct">
                     <Tabs value="detail">
-                        <TabPane :label="L('ProductDetails')" name="detail">
-                            <FormItem :label="L('ProductName')" prop="productName">
+                        <TabPane :label="$t('Public.Details')" name="detail">
+                            <FormItem :label="$t('Products.ProductName')" prop="productName">
                                 <Input v-model="createProduct.productName" :maxlength="200" :minlength="1"></Input>
                             </FormItem>
-                            <FormItem :label="L('AbbreName')" prop="abbreName">
+                            <FormItem :label="$t('Products.AbbreName')" prop="abbreName">
                                 <Input v-model="createProduct.abbreName" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('ProductNo')" prop="productNo">
+                            <FormItem :label="$t('Products.ProductNo')" prop="productNo">
                                 <Input v-model="createProduct.productNo" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('Sku')" prop="sku">
+                            <FormItem :label="$t('Products.Sku')" prop="sku">
                                 <Input v-model="createProduct.sku" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('TaxNo')" prop="taxNo">
+                            <FormItem :label="$t('Products.TaxNo')" prop="taxNo">
                                 <Input v-model="createProduct.taxNo" :maxlength="20"></Input>
                             </FormItem>
-                            <FormItem :label="L('Brand')" prop="brand">
+                            <FormItem :label="$t('Products.Brand')" prop="brand">
                                 <Input v-model="createProduct.brand" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('Weight')" prop="weight">
-                                <Input v-model.number="createProduct.weight"></Input>
+                            <FormItem :label="$t('Products.Weight')" prop="weight">
+                                <Input-number v-model.number="createProduct.weight" style="width:100%"></Input-number>
                             </FormItem>
                         </TabPane>
                     </Tabs>
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="create" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="create" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="L('EditProduct')">
+        <Modal v-model="showEditModal" :title="$t('Public.Edit')">
             <div>
                 <Form ref="productForm" label-position="top" :rules="productRule" :model="editProduct">
                     <Tabs value="detail">
-                        <TabPane :label="L('ProductDetails')" name="detail">
-                            <FormItem :label="L('ProductName')" prop="productName">
+                        <TabPane :label="$t('Public.Details')" name="detail">
+                            <FormItem :label="$t('Products.ProductName')" prop="productName">
                                 <Input v-model="editProduct.productName" :maxlength="200" :minlength="1"></Input>
                             </FormItem>
-                            <FormItem :label="L('AbbreName')" prop="abbreName">
+                            <FormItem :label="$t('Products.AbbreName')" prop="abbreName">
                                 <Input v-model="editProduct.abbreName" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('ProductNo')" prop="productNo">
+                            <FormItem :label="$t('Products.ProductNo')" prop="productNo">
                                 <Input v-model="editProduct.productNo" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('Sku')" prop="sku">
+                            <FormItem :label="$t('Products.Sku')" prop="sku">
                                 <Input v-model="editProduct.sku" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('TaxNo')" prop="taxNo">
+                            <FormItem :label="$t('Products.TaxNo')" prop="taxNo">
                                 <Input v-model="editProduct.taxNo" :maxlength="20"></Input>
                             </FormItem>
-                            <FormItem :label="L('Brand')" prop="brand">
+                            <FormItem :label="$t('Products.Brand')" prop="brand">
                                 <Input v-model="editProduct.brand" :maxlength="50"></Input>
                             </FormItem>
-                            <FormItem :label="L('Weight')" prop="weight">
-                                <Input v-model.number="editProduct.weight"></Input>
+                            <FormItem :label="$t('Products.Weight')" prop="weight">
+                                <Input-number v-model.number="editProduct.weight" style="width:100%"></Input-number>
                             </FormItem>
                             <FormItem>
-                                <Checkbox v-model="editProduct.isActive">{{'IsActive'|l}}</Checkbox>
+                                <Checkbox v-model="editProduct.isActive">{{$t('Public.IsActive')}}</Checkbox>
                             </FormItem>
                         </TabPane>
                     </Tabs>                    
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showEditModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="edit" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showEditModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="edit" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
     </div>
@@ -146,40 +146,40 @@ export default {
             showModal:false,
             showEditModal:false,
             newProductRule:{
-                productName:[{required: true,message:'Product Name is required',trigger: 'blur'}],
-                productNo:[{required:true,message:'ProductNo is required',trigger: 'blur'}],
-                sku:[{required:true,message:'Sku is required',trigger: 'blur'}],
+                productName:[{required: true,trigger: 'blur'}],
+                productNo:[{required:true,trigger: 'blur'}],
+                sku:[{required:true,trigger: 'blur'}],
                 weight:[{type: 'number'}]
             },
             productRule:{
-                productName:[{required: true,message:'Product Name is required',trigger: 'blur'}],
-                productNo:[{required:true,message:'ProductNo is required',trigger: 'blur'}],
-                sku:[{required:true,message:'Sku is required',trigger: 'blur'}],
+                productName:[{required: true,trigger: 'blur'}],
+                productNo:[{required:true,trigger: 'blur'}],
+                sku:[{required:true,trigger: 'blur'}],
                 weight:[{type: 'number'}]
             },
             columns:[{
-                title:this.L('ProductName'),
+                title:this.$t('Products.ProductName'),
                 key:'productName'
             },{
-                title:this.L('AbbreName'),
+                title:this.$t('Products.AbbreName'),
                 key:'abbreName'
             },{
-                title:this.L('ProductNo'),
+                title:this.$t('Products.ProductNo'),
                 key:'productNo'
             },{
-                title:this.L('Sku'),
+                title:this.$t('Products.Sku'),
                 key:'sku'
             },{
-                title:this.L('TaxNo'),
+                title:this.$t('Products.TaxNo'),
                 key:'taxNo'
             },{
-                title:this.L('Brand'),
+                title:this.$t('Products.Brand'),
                 key:'brand'
             },{
-                title:this.L('Weight'),
+                title:this.$t('Products.Weight'),
                 key:'weight'
             },{
-                title:this.L('IsActive'),
+                title:this.$t('Public.IsActive'),
                 render:(h,params)=>{
                     return h('Checkbox',{
                         props:{
@@ -189,7 +189,7 @@ export default {
                     })
                 }
             },{
-                title: this.L('Actions'),
+                title: this.$t('Public.Actions'),
                 key: 'action',
                 width:150,
                 render:(h,params)=>{
@@ -208,7 +208,7 @@ export default {
                                     this.showEditModal=true;
                                 }
                             }
-                        },this.L('Edit')),
+                        },this.$t('Public.Edit')),
                         h('Button',{
                             props:{
                                 type:'error',
@@ -217,10 +217,10 @@ export default {
                             on:{
                                 click:async()=>{
                                     this.$Modal.confirm({
-                                        title:this.L(''),
-                                        content:this.L('Delete product'),
-                                        okText:this.L('Yes'),
-                                        cancelText:this.L('No'),
+                                        title:this.$t(''),
+                                        content:this.$t('Products.Delete product'),
+                                        okText:this.$t('Public.Yes'),
+                                        cancelText:this.$t('Public.No'),
                                         onOk:async()=>{
                                             await ProductApi.Delete(this.products[params.index].id)
                                             await this.getpage();
@@ -228,7 +228,7 @@ export default {
                                     })
                                 }
                             }
-                        },this.L('Delete'))
+                        },this.$t('Public.Delete'))
                     ])
                 }
             }],

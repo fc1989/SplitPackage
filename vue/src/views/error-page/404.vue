@@ -9,8 +9,8 @@
                 <div class="error404-body-con-title">4<span><Icon type="ios-navigate-outline"></Icon></span>4</div>
                 <p class="error404-body-con-message">YOU&nbsp;&nbsp;LOOK&nbsp;&nbsp;LOST</p>
                 <div class="error404-btn-con">
-                    <Button @click="goHome" size="large" style="width: 200px;" type="text">{{'Return to Home page'|l}}</Button>
-                    <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">{{'Back to last page'|l}}</Button>
+                    <Button @click="goHome" size="large" style="width: 200px;" type="text">{{$t('Public.Return to Home page')}}</Button>
+                    <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">{{$t('Public.Back to last page')}}</Button>
                 </div>
             </Card>
         </div>

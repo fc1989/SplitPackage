@@ -36,6 +36,7 @@ namespace SplitPackage.EntityFrameworkCore
             modelBuilder.Entity<Tenant>().HasOne(p => p.LastModifierUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("LastModifierUserId");
             modelBuilder.Entity<ProductProductClass>().HasKey(p => new { p.ProductId, p.ProductClassId });
             modelBuilder.Entity<SplitRuleProductClass>().HasKey(p => new { p.SplitRuleId, p.ProductClassId });
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

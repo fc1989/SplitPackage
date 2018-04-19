@@ -1,64 +1,64 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{'Tenants'|l}}</p>
+            <p slot="title">{{$t('Tenants')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
-                    {{'Actions'|l}}
+                    {{$t('Public.Actions')}}
                     <Icon type="android-more-vertical"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                    <DropdownItem name='Refresh'>{{'Refresh'|l}}</DropdownItem>
-                    <DropdownItem name='Create'>{{'Create'|l}}</DropdownItem>
+                    <DropdownItem name='Refresh'>{{$t('Public.Refresh')}}</DropdownItem>
+                    <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
             <Table :columns="columns" border :data="tenants"></Table>
             <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
         </Card>
-        <Modal v-model="showModal" :title="L('CreateNewTenant')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showModal" :title="$t('Public.Create')" @on-ok="save" :okText="$t('Public.Save')" :cancelText="$t('Public.Cancel')">
             <div>
                 <Form ref="newTenantForm" label-position="top" :rules="newtenantRule" :show-message="false" :model="editTenant">
-                    <FormItem :label="L('TenancyName')" prop="tenancyName">
+                    <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName">
                         <Input v-model="editTenant.tenancyName" :maxlength="64" :minlength="2"></Input>
                     </FormItem>
-                    <FormItem :label="L('Name')" prop="name">
+                    <FormItem :label="$t('Public.Name')" prop="name">
                         <Input v-model="editTenant.name" :maxlength="128"></Input>
                     </FormItem>
-                    <FormItem :label="L('DatabaseConnectionString')+'('+L('Optional')+')'">
+                    <FormItem :label="$t('Tenants.DatabaseConnectionString')+'('+$t('Public.Optional')+')'">
                         <Input v-model="editTenant.connectionString" :maxlength="1024"></Input>
                     </FormItem>
-                    <FormItem :label="L('AdminEmailAddress')" prop="adminEmailAddress">
+                    <FormItem :label="$t('Tenants.AdminEmailAddress')" prop="adminEmailAddress">
                         <Input v-model="editTenant.adminEmailAddress" type="email" :maxlength="256"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="editTenant.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="editTenant.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
-                    <p><p>{{L("DefaultPasswordIs",'123qwe')}}</p></p>
+                    <p><p>{{$t('Public.DefaultPasswordIs','123qwe')}}</p></p>
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="L('EditTenant')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showEditModal" :title="$t('Public.Edit')" @on-ok="save" :okText="$t('Public.Save')" :cancelText="$t('Public.Cancel')">
             <div>
                 <Form ref="tenantForm" label-position="top" :rules="tenantRule" :show-message="false" :model="editTenant">
-                    <FormItem :label="L('TenancyName')" prop="tenancyName">
+                    <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName">
                         <Input v-model="editTenant.tenancyName" :maxlength="64" :minlength="2"></Input>
                     </FormItem>
-                    <FormItem :label="L('Name')" prop="name">
+                    <FormItem :label="$t('Public.Name')" prop="name">
                         <Input v-model="editTenant.name" :maxlength="128"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="editTenant.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="editTenant.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
-                    <p><p>{{L("DefaultPasswordIs",'123qwe')}}</p></p>
+                    <p><p>{{$t('Public.DefaultPasswordIs','123qwe')}}</p></p>
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showEditModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showEditModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
     </div>
@@ -133,13 +133,13 @@ export default {
                 name:[{required:true}],
             },
             columns:[{
-                title:this.L('TenancyName'),
+                title:this.$t('Tenants.TenancyName'),
                 key:'tenancyName'
             },{
-                title:this.L('Name'),
+                title:this.$t('Public.Name'),
                 key:'name'
             },{
-                title:this.L('IsActive'),
+                title:this.$t('Public.IsActive'),
                 render:(h,params)=>{
                     return h('Checkbox',{
                         props:{
@@ -149,7 +149,7 @@ export default {
                     })
                 }
             },{
-                title: this.L('Actions'),
+                title: this.$t('Public.Actions'),
                 key: 'action',
                 width:150,
                 render:(h,params)=>{
@@ -168,7 +168,7 @@ export default {
                                     this.showEditModal=true;
                                 }
                             }
-                        },this.L('Edit')),
+                        },this.$t('Public.Edit')),
                         h('Button',{
                             props:{
                                 type:'error',
@@ -177,10 +177,10 @@ export default {
                             on:{
                                 click:async()=>{
                                     this.$Modal.confirm({
-                                        title:this.L(''),
-                                        content:this.L('Delete tenant'),
-                                        okText:this.L('Yes'),
-                                        cancelText:this.L('No'),
+                                        title:this.$t(''),
+                                        content:this.$t('Tenants.Delete tenant'),
+                                        okText:this.$t('Public.Yes'),
+                                        cancelText:this.$t('Public.No'),
                                         onOk:async()=>{
                                             await this.$store.dispatch({
                                                 type:'tenant/delete',
@@ -191,7 +191,7 @@ export default {
                                     })
                                 }
                             }
-                        },this.L('Delete'))
+                        },this.$t('Public.Delete'))
                     ])
                 }
             }]

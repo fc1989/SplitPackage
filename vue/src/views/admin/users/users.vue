@@ -1,48 +1,48 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{'Users'|l}}</p>
+            <p slot="title">{{$t('Users')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
-                    {{'Actions'|l}}
+                    {{$t('Public.Actions')}}
                     <Icon type="android-more-vertical"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                    <DropdownItem name='Refresh'>{{'Refresh'|l}}</DropdownItem>
-                    <DropdownItem name='Create'>{{'Create'|l}}</DropdownItem>
+                    <DropdownItem name='Refresh'>{{$t('Public.Refresh')}}</DropdownItem>
+                    <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
             <Table :columns="columns" border :data="users"></Table>
             <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
         </Card>
-        <Modal v-model="showModal" :title="L('CreateNewUser')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showModal" :title="$t('Public.Create')" @on-ok="save" :okText="$t('Public.Save')" :cancelText="$t('Public.Cancel')">
             <div>
                 <Form ref="newUserForm" label-position="top" :rules="newUserRule" :model="editUser">
                     <Tabs value="detail">
-                        <TabPane :label="L('UserDetails')" name="detail">
-                            <FormItem :label="L('UserName')" prop="userName">
+                        <TabPane :label="$t('Public.Details')" name="detail">
+                            <FormItem :label="$t('Public.UserName')" prop="userName">
                                 <Input v-model="editUser.userName" :maxlength="32" :minlength="2"></Input>
                             </FormItem>
-                            <FormItem :label="L('Name')" prop="name">
+                            <FormItem :label="$t('Public.Name')" prop="name">
                                 <Input v-model="editUser.name" :maxlength="32"></Input>
                             </FormItem>
-                            <FormItem :label="L('Surname')" prop="surname">
+                            <FormItem :label="$t('Users.Surname')" prop="surname">
                                 <Input v-model="editUser.surname" :maxlength="1024"></Input>
                             </FormItem>
-                            <FormItem :label="L('EmailAddress')" prop="emailAddress">
+                            <FormItem :label="$t('Users.EmailAddress')" prop="emailAddress">
                                 <Input v-model="editUser.emailAddress" type="email" :maxlength="32"></Input>
                             </FormItem>
-                            <FormItem :label="L('Password')" prop="password">
+                            <FormItem :label="$t('Users.Password')" prop="password">
                                 <Input v-model="editUser.password" type="password" :maxlength="32"></Input>
                             </FormItem>
-                            <FormItem :label="L('ConfirmPassword')" prop="confirmPassword">
+                            <FormItem :label="$t('Users.ConfirmPassword')" prop="confirmPassword">
                                 <Input v-model="editUser.confirmPassword" type="password" :maxlength="32"></Input>
                             </FormItem>
                             <FormItem>
-                                <Checkbox v-model="editUser.isActive">{{'IsActive'|l}}</Checkbox>
+                                <Checkbox v-model="editUser.isActive">{{$t('Public.IsActive')}}</Checkbox>
                             </FormItem>
                         </TabPane>
-                        <TabPane :label="L('UserRoles')" name="roles">
+                        <TabPane :label="$t('Users.UserRoles')" name="roles">
                             <CheckboxGroup v-model="editUser.roleNames">
                                 <Checkbox :label="role.normalizedName" v-for="role in roles" :key="role.id"><span>{{role.name}}</span></Checkbox>
                             </CheckboxGroup>
@@ -52,32 +52,32 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="L('EditUser')" @on-ok="save" :okText="L('save')" :cancelText="L('cancel')">
+        <Modal v-model="showEditModal" :title="$t('Public.Edit')" @on-ok="save" :okText="$t('Public.Save')" :cancelText="$t('Public.Cancel')">
             <div>
                 <Form ref="userForm" label-position="top" :rules="userRule" :model="editUser">
                     <Tabs value="detail">
-                        <TabPane :label="L('UserDetails')" name="detail">
-                            <FormItem :label="L('UserName')" prop="userName">
+                        <TabPane :label="$t('Public.Details')" name="detail">
+                            <FormItem :label="$t('Public.UserName')" prop="userName">
                                 <Input v-model="editUser.userName" :maxlength="32" :minlength="2"></Input>
                             </FormItem>
-                            <FormItem :label="L('Name')" prop="name">
+                            <FormItem :label="$t('Public.Name')" prop="name">
                                 <Input v-model="editUser.name" :maxlength="32"></Input>
                             </FormItem>
-                            <FormItem :label="L('Surname')" prop="surname">
+                            <FormItem :label="$t('Users.Surname')" prop="surname">
                                 <Input v-model="editUser.surname" :maxlength="1024"></Input>
                             </FormItem>
-                            <FormItem :label="L('EmailAddress')" prop="emailAddress">
+                            <FormItem :label="$t('Users.EmailAddress')" prop="emailAddress">
                                 <Input v-model="editUser.emailAddress" type="email" :maxlength="32"></Input>
                             </FormItem>
                             <FormItem>
-                                <Checkbox v-model="editUser.isActive">{{'IsActive'|l}}</Checkbox>
+                                <Checkbox v-model="editUser.isActive">{{$t('Public.IsActive')}}</Checkbox>
                             </FormItem>
                         </TabPane>
-                        <TabPane :label="L('UserRoles')" name="roles">
+                        <TabPane :label="$t('Users.UserRoles')" name="roles">
                             <CheckboxGroup v-model="editUser.roleNames">
                                 <Checkbox :label="role.normalizedName" v-for="role in roles" :key="role.id"><span>{{role.name}}</span></Checkbox>
                             </CheckboxGroup>
@@ -86,8 +86,8 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showEditModal=false">{{'Cancel'|l}}</Button>
-                <Button @click="save" type="primary">{{'Save'|l}}</Button>
+                <Button @click="showEditModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
     </div>
@@ -162,31 +162,31 @@ export default {
             showModal:false,
             showEditModal:false,
             newUserRule:{
-                userName:[{required: true,message:'User Name is required',trigger: 'blur'}],
-                name:[{required:true,message:'Name is required',trigger: 'blur'}],
-                surname:[{required:true,message:'Surname is required',trigger: 'blur'}],
-                emailAddress:[{required:true,message:'Email is required',trigger: 'blur'},{type: 'email'}],
-                password:[{required:true,message:'Password is required',trigger: 'blur'}],
+                userName:[{required: true,trigger: 'blur'}],
+                name:[{required: true,trigger: 'blur'}],
+                surname:[{required: true,trigger: 'blur'}],
+                emailAddress:[{required: true,trigger: 'blur'},{type: 'email'}],
+                password:[{required: true,trigger: 'blur'}],
                 confirmPassword:{validator:validatePassCheck,trigger: 'blur'}
             },
             
             userRule:{
-                userName:[{required: true,message:'User Name is required',trigger: 'blur'}],
-                name:[{required:true,message:'Name is required',trigger: 'blur'}],
-                surname:[{required:true,message:'Surname is required',trigger: 'blur'}],
-                emailAddress:[{required:true,message:'Email is required',trigger: 'blur'},{type: 'email'}],
+                userName:[{required: true,trigger: 'blur'}],
+                name:[{required: true,trigger: 'blur'}],
+                surname:[{required: true,trigger: 'blur'}],
+                emailAddress:[{required: true,trigger: 'blur'},{type: 'email'}],
             },
             columns:[{
-                title:this.L('UserName'),
+                title:this.$t('Public.UserName'),
                 key:'userName'
             },{
-                title:this.L('FullName'),
+                title:this.$t('Users.FullName'),
                 key:'fullName'
             },{
-                title:this.L('EmailAddress'),
+                title:this.$t('Users.EmailAddress'),
                 key:'emailAddress'
             },{
-                title:this.L('IsActive'),
+                title:this.$t('Public.IsActive'),
                 render:(h,params)=>{
                     return h('Checkbox',{
                         props:{
@@ -196,7 +196,7 @@ export default {
                     })
                 }
             },{
-                title: this.L('Actions'),
+                title: this.$t('Public.Actions'),
                 key: 'action',
                 width:150,
                 render:(h,params)=>{
@@ -215,7 +215,7 @@ export default {
                                     this.showEditModal=true;
                                 }
                             }
-                        },this.L('Edit')),
+                        },this.$t('Public.Edit')),
                         h('Button',{
                             props:{
                                 type:'error',
@@ -224,10 +224,10 @@ export default {
                             on:{
                                 click:async()=>{
                                     this.$Modal.confirm({
-                                        title:this.L(''),
-                                        content:this.L('Delete user'),
-                                        okText:this.L('Yes'),
-                                        cancelText:this.L('No'),
+                                        title:this.$t(''),
+                                        content:this.$t('Users.Delete user'),
+                                        okText:this.$t('Public.Yes'),
+                                        cancelText:this.$t('Public.No'),
                                         onOk:async()=>{
                                             await this.$store.dispatch({
                                                 type:'user/delete',
@@ -238,7 +238,7 @@ export default {
                                     })
                                 }
                             }
-                        },this.L('Delete'))
+                        },this.$t('Public.Delete'))
                     ])
                 }
             }]

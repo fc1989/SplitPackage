@@ -42,7 +42,7 @@
                                     <Icon type="arrow-down-b"></Icon>
                                 </a>
                                 <DropdownMenu slot="list">
-                                    <DropdownItem name="loginout">{{'Logout'|l}}</DropdownItem>
+                                    <DropdownItem name="loginout">{{$t('Public.Logout')}}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                             <Avatar :src="avatorPath" style="background: #619fe7;margin-left: 10px;"></Avatar>

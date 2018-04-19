@@ -9,7 +9,7 @@ let util = {
 
 util.title = function (title) {
     title = title || 'SplitPackage';
-    window.document.title = this.localize(title);
+    window.document.title = title;
 };
 
 const ajaxUrl = env === 'development'
@@ -187,7 +187,7 @@ util.setCurrentPath = function (vm, name) {
         if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
             currentPathArr = [
                 {
-                    title: this.localize('HomePage'),
+                    title: 'HomePage',
                     path: '',
                     name: 'home_index'
                 }
@@ -195,7 +195,7 @@ util.setCurrentPath = function (vm, name) {
         } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
             currentPathArr = [
                 {
-                    title: this.localize('HomePage'),
+                    title: 'HomePage',
                     path: '/home',
                     name: 'home_index'
                 },
@@ -211,7 +211,7 @@ util.setCurrentPath = function (vm, name) {
             })[0];
             currentPathArr = [
                 {
-                    title: this.localize('HomePage'),
+                    title: 'HomePage',
                     path: '/home',
                     name: 'home_index'
                 },
@@ -304,10 +304,6 @@ util.toDefaultPage = function (routers, name, route, next) {
 util.fullscreenEvent = function (vm) {
     vm.$store.commit('initCachepage');
     vm.$store.commit('updateMenulist');
-};
-
-util.localize = function (key) {
-    return abp.localization.localize(key, 'SplitPackage');
 };
 
 export default util;

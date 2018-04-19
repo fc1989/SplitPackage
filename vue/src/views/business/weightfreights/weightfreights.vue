@@ -6,20 +6,20 @@
         :editRule="weightFreightRule">
         <template slot="newform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('StartingWeight')" prop="startingWeight">
-                        <Input v-model.number="slotProps.createModel.startingWeight"></Input>
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('WeightFreights.StartingWeight')" prop="startingWeight">
+                        <Input-number v-model.number="slotProps.createModel.startingWeight" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('StartingPrice')" prop="startingPrice">
-                        <Input v-model.number="slotProps.createModel.startingPrice"></Input>
+                    <FormItem :label="$t('WeightFreights.StartingPrice')" prop="startingPrice">
+                        <Input-number v-model.number="slotProps.createModel.startingPrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('StepWeight')" prop="stepWeight">
-                        <Input v-model.number="slotProps.createModel.stepWeight"></Input>
+                    <FormItem :label="$t('WeightFreights.StepWeight')" prop="stepWeight">
+                        <Input-number v-model.number="slotProps.createModel.stepWeight" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('Price')" prop="price">
-                        <Input v-model.number="slotProps.createModel.price"></Input>
+                    <FormItem :label="$t('WeightFreights.Price')" prop="price">
+                        <Input-number v-model.number="slotProps.createModel.price" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('LogisticLine')" prop="logisticLineId">
+                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.createModel.logisticLineId"></Input>
                     </FormItem>
                 </TabPane>
@@ -27,24 +27,24 @@
         </template>
         <template slot="editform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('StartingWeight')" prop="startingWeight">
-                        <Input v-model.number="slotProps.editModel.startingWeight"></Input>
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('WeightFreights.StartingWeight')" prop="startingWeight">
+                        <Input-number v-model.number="slotProps.editModel.startingWeight" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('StartingPrice')" prop="startingPrice">
-                        <Input v-model.number="slotProps.editModel.startingPrice"></Input>
+                    <FormItem :label="$t('WeightFreights.StartingPrice')" prop="startingPrice">
+                        <Input-number v-model.number="slotProps.editModel.startingPrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('StepWeight')" prop="stepWeight">
-                        <Input v-model.number="slotProps.editModel.stepWeight"></Input>
+                    <FormItem :label="$t('WeightFreights.StepWeight')" prop="stepWeight">
+                        <Input-number v-model.number="slotProps.editModel.stepWeight" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('Price')" prop="price">
-                        <Input v-model.number="slotProps.editModel.price"></Input>
+                    <FormItem :label="$t('WeightFreights.Price')" prop="price">
+                        <Input-number v-model.number="slotProps.editModel.price" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="L('LogisticLine')" prop="logisticLineId">
+                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.editModel.logisticLineId"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="slotProps.editModel.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
                 </TabPane>
             </Tabs>
@@ -61,7 +61,7 @@ export default {
   },
   data() {
     return {
-      title: "WeightFreight",
+      title: "WeightFreights",
       api: WeightFreightApi,
       newWeightFreightRule: {
         startingWeight: [{ type: "number" }],
@@ -81,27 +81,27 @@ export default {
         needAction: true,
         columns: [
           {
-            title: this.L("StartingWeight"),
+            title: this.$t('WeightFreights.StartingWeight'),
             key: "startingWeight"
           },
           {
-            title: this.L("StartingPrice"),
+            title: this.$t('WeightFreights.StartingPrice'),
             key: "startingPrice"
           },
           {
-            title: this.L("StepWeight"),
+            title: this.$t('WeightFreights.StepWeight'),
             key: "StepWeight"
           },
           {
-            title: this.L("Price"),
+            title: this.$t('WeightFreights.Price'),
             key: "price"
           },
           {
-            title: this.L("LogisticLineId"),
+            title: this.$t('LogisticLines'),
             key: "logisticLineId"
           },
           {
-            title: this.L("IsActive"),
+            title: this.$t('Public.IsActive'),
             render: (h, params) => {
               return h("Checkbox", {
                 props: {

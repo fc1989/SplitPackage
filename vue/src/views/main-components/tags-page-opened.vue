@@ -7,12 +7,12 @@
         <div class="close-all-tag-con">
             <Dropdown transfer @on-click="handleTagsOption">
                 <Button size="small" type="primary">
-                    {{"LabelOptions" | l}}
+                    {{$t('Public.LabelOptions')}}
                     <Icon type="arrow-down-b"></Icon>
                 </Button>
                 <DropdownMenu slot="list">
-                    <DropdownItem name="clearAll">{{"ClearAll" | l}}</DropdownItem>
-                    <DropdownItem name="clearOthers">{{"ClearOthers" | l}}</DropdownItem>
+                    <DropdownItem name="clearAll">{{$t('Public.ClearAll')}}</DropdownItem>
+                    <DropdownItem name="clearOthers">{{$t('Public.ClearOthers')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
         </div>
@@ -28,7 +28,7 @@
                     @click.native="linkTo(item)"
                     :closable="item.name==='home_index'?false:true"
                     :color="item.children?(item.children[0].name===currentPageName?'blue':'default'):(item.name===currentPageName?'blue':'default')"
-                >{{ itemTitle(item) | l}}</Tag>
+                >{{ $t(itemTitle(item))}}</Tag>
             </transition-group>
         </div>
     </div>

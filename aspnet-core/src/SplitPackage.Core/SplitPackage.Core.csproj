@@ -12,7 +12,8 @@
     <RootNamespace>SplitPackage</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Localization\SourceFiles\*.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <EmbeddedResource Include="Localization\SourceFiles\SplitPackage-zh-CN.xml" />
+    <EmbeddedResource Include="Localization\SourceFiles\SplitPackage.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.AutoMapper" Version="3.5.0" />

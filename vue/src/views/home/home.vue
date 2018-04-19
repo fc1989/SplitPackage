@@ -53,8 +53,8 @@
                                     <Input v-model="newToDoItemValue" icon="compose" placeholder="Please enter..." style="width: 300px" />
                                 </Row>
                                 <Row slot="footer">
-                                    <Button type="text" @click="cancelAdd">{{'Cancel' | l}}</Button>
-                                    <Button type="primary" @click="addNew">{{'Save' | l}}</Button>
+                                    <Button type="text" @click="cancelAdd">{{$t('Public.Cancel')}}</Button>
+                                    <Button type="primary" @click="addNew">{{$t('Public.Save')}}</Button>
                                 </Row>
                             </Modal>
                             <div class="to-do-list-con">

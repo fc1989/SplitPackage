@@ -4,7 +4,7 @@
             v-for="item in currentPath" 
             :href="item.path" 
             :key="item.name"
-        >{{ item.title|l }}</BreadcrumbItem>
+        >{{ $t(item.title) }}</BreadcrumbItem>
     </Breadcrumb>
 </template>
 

@@ -6,33 +6,33 @@
         :editRule="logisticLineRule">
         <template slot="newform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('LineName')" prop="lineName">
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('LogisticLines.LineName')" prop="lineName">
                         <Input v-model="slotProps.createModel.lineName" :maxlength="200" :minlength="1"></Input>
                     </FormItem>
-                    <FormItem :label="L('LineCode')" prop="lineCode">
+                    <FormItem :label="$t('LogisticLines.LineCode')" prop="lineCode">
                         <Input v-model="slotProps.createModel.lineCode" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="L('Logistic')" prop="logisticId">
-                        <Input v-model="slotProps.createModel.logisticId" :maxlength="50"></Input>
+                    <FormItem :label="$t('Logistics')" prop="logisticId">
+                        <Input v-model="slotProps.createModel.logisticId"></Input>
                     </FormItem>
                 </TabPane>
             </Tabs>
         </template>
         <template slot="editform" slot-scope="slotProps">
             <Tabs value="detail">
-                <TabPane :label="L('Details')" name="detail">
-                    <FormItem :label="L('LineName')" prop="lineName">
+                <TabPane :label="$t('Public.Details')" name="detail">
+                    <FormItem :label="$t('LogisticLines.LineName')" prop="lineName">
                         <Input v-model="slotProps.editModel.lineName" :maxlength="200" :minlength="1"></Input>
                     </FormItem>
-                    <FormItem :label="L('LineCode')" prop="lineCode">
+                    <FormItem :label="$t('LogisticLines.LineCode')" prop="lineCode">
                         <Input v-model="slotProps.editModel.lineCode" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="L('Logistic')" prop="logisticId">
-                        <Input v-model="slotProps.editModel.logisticId" :maxlength="50"></Input>
+                    <FormItem :label="$t('Logistics')" prop="logisticId">
+                        <Input v-model="slotProps.editModel.logisticId"></Input>
                     </FormItem>
                     <FormItem>
-                        <Checkbox v-model="slotProps.editModel.isActive">{{'IsActive'|l}}</Checkbox>
+                        <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
                 </TabPane>
             </Tabs>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "LogisticLine",
+      title: "LogisticLines",
       api: LogisticLineApi,
       newLogisticLineRule: {
         lineName: [{ require: true }],
@@ -65,19 +65,19 @@ export default {
         needAction: true,
         columns: [
           {
-            title: this.L("LineName"),
+            title: this.$t('LogisticLines.LineName'),
             key: "lineName"
           },
           {
-            title: this.L("LineCode"),
+            title: this.$t('LogisticLines.LineCode'),
             key: "lineCode"
           },
           {
-            title: this.L("LogisticId"),
+            title: this.$t('Logistics'),
             key: "logisticId"
           },
           {
-            title: this.L("IsActive"),
+            title: this.$t('Public.IsActive'),
             render: (h, params) => {
               return h("Checkbox", {
                 props: {

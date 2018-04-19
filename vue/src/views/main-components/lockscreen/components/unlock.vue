@@ -9,7 +9,7 @@
                 <img class="unlock-avator-img" :src="avatorPath">
                 <div  class="unlock-avator-cover">
                     <span><Icon type="unlocked" :size="30"></Icon></span>
-                    <p>{{'Unlock'|l}}</p>
+                    <p>{{$t('Public.Unlock')}}</p>
                 </div>
             </div>
             <div class="unlock-avator-under-back" :style="{marginLeft: avatorLeft}"></div>

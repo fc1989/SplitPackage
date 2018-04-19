@@ -60,6 +60,9 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint(
+                        name: "UQ_Products",
+                        columns:x=>new { x.TenantId, x.Sku});
                 });
 
             migrationBuilder.CreateTable(

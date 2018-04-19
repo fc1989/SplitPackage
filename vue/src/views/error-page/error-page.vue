@@ -9,7 +9,7 @@
             <Card>
                 <p slot="title">
                     <Icon :size="14" type="ios-navigate-outline"></Icon>
-                    404 - {{'Page does not exist'|l}}
+                    404 - {{$t('Public.Page does not exist')}}
                 </p>
                 <Row>
                     <Col span="10">

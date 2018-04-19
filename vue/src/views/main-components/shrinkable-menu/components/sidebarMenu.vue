@@ -8,12 +8,12 @@
             <Submenu :name="item.name" :key="item.name">
                 <template slot="title">
                     <Icon :type="item.icon" :size="iconSize"></Icon>
-                    <span class="layout-text">{{ item.title|l }}</span>
+                    <span class="layout-text">{{ $t(item.title) }}</span>
                 </template>
                 <template v-for="child in item.children">
                     <MenuItem :name="child.name" :key="'menuitem' + child.name">
                         <Icon :type="child.icon" :size="iconSize" :key="'icon' + child.name"></Icon>
-                        <span class="layout-text" :key="'title' + child.name">{{ child.title|l }}</span>
+                        <span class="layout-text" :key="'title' + child.name">{{ $t(child.title) }}</span>
                     </MenuItem>
                 </template>
             </Submenu>

@@ -19,6 +19,7 @@
     </div>
 </template>
 <script>
+import Vue from 'vue';
 export default {
     methods:{
         async setLanguage(name){
@@ -41,7 +42,8 @@ export default {
         this.languages=abp.localization.languages.filter(val=>{
             return !val.isDisabled;
         });
-        this.currentLanguage=abp.localization.currentLanguage
+        this.currentLanguage = abp.localization.currentLanguage;
+        Vue.config.lang = abp.localization.currentLanguage.name;
     }
 }
 </script>
