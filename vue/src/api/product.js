@@ -1,4 +1,5 @@
 import Util from '@/libs/util'
+import qs from 'qs';
 
 export default {
     Update(data){
@@ -12,5 +13,8 @@ export default {
     },
     Delete(id){
         return Util.ajax.delete('/api/services/app/Product/Delete?Id='+id)
+    },
+    Verify(sku){
+        return Util.ajax.post('/api/services/app/Product/Verify',qs.stringify({sku:sku}));
     }
 }

@@ -22,7 +22,7 @@
                     <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
                         <Input-number v-model.number="slotProps.createModel.maxPrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.createModel.logisticLineId"></Input>
                     </FormItem>
                 </TabPane>
@@ -46,7 +46,7 @@
                     <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
                         <Input-number v-model.number="slotProps.editModel.maxPrice" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.editModel.logisticLineId"></Input>
                     </FormItem>
                     <FormItem>
@@ -67,7 +67,7 @@ export default {
   },
   data() {
     return {
-      title: "SplitRules",
+      title: "Menu.Pages.SplitRules",
       api: SplitRuleApi,
       newSplitRuleRule: {
         logisticLineId: [{ require: true }],
@@ -109,7 +109,7 @@ export default {
             key: "maxPrice"
           },
           {
-            title: this.$t('LogisticLines'),
+            title: this.$t('Menu.Pages.LogisticLines'),
             key: "logisticLineId"
           },
           {

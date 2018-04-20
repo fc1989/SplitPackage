@@ -15,7 +15,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Host
         {
             return new List<ApplicationLanguage>
             {
-                new ApplicationLanguage(null, "en", "English", "famfamfam-flags gb"),
+                new ApplicationLanguage(null, "en-US", "English", "famfamfam-flags gb"),
                 new ApplicationLanguage(null, "zh-CN", "简体中文", "famfamfam-flags cn"),
             };
         }

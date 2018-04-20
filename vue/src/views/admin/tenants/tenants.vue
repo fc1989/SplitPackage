@@ -1,7 +1,7 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{$t('Tenants')}}</p>
+            <p slot="title">{{$t('Menu.Pages.Tenants')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
                     {{$t('Public.Actions')}}
@@ -33,7 +33,7 @@
                     <FormItem>
                         <Checkbox v-model="editTenant.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
-                    <p><p>{{$t('Public.DefaultPasswordIs','123qwe')}}</p></p>
+                    <p><p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p></p>
                 </Form>
             </div>
             <div slot="footer">
@@ -53,7 +53,7 @@
                     <FormItem>
                         <Checkbox v-model="editTenant.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
-                    <p><p>{{$t('Public.DefaultPasswordIs','123qwe')}}</p></p>
+                    <p><p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p></p>
                 </Form>
             </div>
             <div slot="footer">
@@ -178,7 +178,7 @@ export default {
                                 click:async()=>{
                                     this.$Modal.confirm({
                                         title:this.$t(''),
-                                        content:this.$t('Tenants.Delete tenant'),
+                                        content:this.$t('Tenants.Delete_tenant'),
                                         okText:this.$t('Public.Yes'),
                                         cancelText:this.$t('Public.No'),
                                         onOk:async()=>{

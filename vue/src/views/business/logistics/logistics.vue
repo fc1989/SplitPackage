@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "Logistics",
+      title: "Menu.Pages.Logistics",
       api: LogisticApi,
       newLogisticRule: {
         corporationName: [{ require: true }],

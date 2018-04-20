@@ -1,7 +1,7 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{$t('Products')}}</p>
+            <p slot="title">{{$t('Menu.Pages.Products')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
                     {{$t('Public.Actions')}}
@@ -65,7 +65,7 @@
                                 <Input v-model="editProduct.productNo" :maxlength="50"></Input>
                             </FormItem>
                             <FormItem :label="$t('Products.Sku')" prop="sku">
-                                <Input v-model="editProduct.sku" :maxlength="50"></Input>
+                                <Input v-model="editProduct.sku" :maxlength="50" ></Input>
                             </FormItem>
                             <FormItem :label="$t('Products.TaxNo')" prop="taxNo">
                                 <Input v-model="editProduct.taxNo" :maxlength="20"></Input>
@@ -126,7 +126,7 @@ export default {
                 maxResultCount:this.state.pageSize,
                 skipCount:(this.state.currentPage-1)*this.state.pageSize
             }
-            let rep= await ProductApi.Search({params:page});
+            let rep = await ProductApi.Search({params:page});
             this.state.products=[];
             this.state.products.push(...rep.data.result.items);
             this.state.totalCount=rep.data.result.totalCount;
@@ -140,6 +140,21 @@ export default {
         }
     },
     data(){
+        const validateSku = (rule, value, callback) => {
+            console.log(rule);
+            if (!value) {
+                callback(new Error('sku is required'));
+            }else {
+                ProductApi.Verify(value).then(function(rep){
+                    if(rep.data.result){
+                        callback();
+                    }
+                    else{
+                        callback('sku is exit');
+                    }
+                });
+            }
+        };
         return{
             editProduct:{},
             createProduct:{},
@@ -148,13 +163,12 @@ export default {
             newProductRule:{
                 productName:[{required: true,trigger: 'blur'}],
                 productNo:[{required:true,trigger: 'blur'}],
-                sku:[{required:true,trigger: 'blur'}],
+                sku:[{required:true,validator:validateSku,trigger: 'blur'}],
                 weight:[{type: 'number'}]
             },
             productRule:{
                 productName:[{required: true,trigger: 'blur'}],
                 productNo:[{required:true,trigger: 'blur'}],
-                sku:[{required:true,trigger: 'blur'}],
                 weight:[{type: 'number'}]
             },
             columns:[{
@@ -218,7 +232,7 @@ export default {
                                 click:async()=>{
                                     this.$Modal.confirm({
                                         title:this.$t(''),
-                                        content:this.$t('Products.Delete product'),
+                                        content:this.$t('Products.Delete_product'),
                                         okText:this.$t('Public.Yes'),
                                         cancelText:this.$t('Public.No'),
                                         onOk:async()=>{

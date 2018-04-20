@@ -43,7 +43,7 @@ export default {
             return !val.isDisabled;
         });
         this.currentLanguage = abp.localization.currentLanguage;
-        Vue.config.lang = abp.localization.currentLanguage.name;
+        this.$i18n.locale = abp.localization.currentLanguage.name;
     }
 }
 </script>

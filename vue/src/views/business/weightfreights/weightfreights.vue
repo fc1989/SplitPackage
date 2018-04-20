@@ -19,7 +19,7 @@
                     <FormItem :label="$t('WeightFreights.Price')" prop="price">
                         <Input-number v-model.number="slotProps.createModel.price" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.createModel.logisticLineId"></Input>
                     </FormItem>
                 </TabPane>
@@ -40,7 +40,7 @@
                     <FormItem :label="$t('WeightFreights.Price')" prop="price">
                         <Input-number v-model.number="slotProps.editModel.price" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.editModel.logisticLineId"></Input>
                     </FormItem>
                     <FormItem>
@@ -61,7 +61,7 @@ export default {
   },
   data() {
     return {
-      title: "WeightFreights",
+      title: "Menu.Pages.WeightFreights",
       api: WeightFreightApi,
       newWeightFreightRule: {
         startingWeight: [{ type: "number" }],
@@ -97,7 +97,7 @@ export default {
             key: "price"
           },
           {
-            title: this.$t('LogisticLines'),
+            title: this.$t('Menu.Pages.LogisticLines'),
             key: "logisticLineId"
           },
           {

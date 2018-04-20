@@ -1,6 +1,6 @@
 <template>
     <div @click="handleChange" v-if="showFullScreenBtn" class="full-screen-btn-con topbar-menu-item">
-        <Tooltip :content="value ? $t('Public.Exit full screen') : $t('Public.Full screen')" placement="bottom">
+        <Tooltip :content="value ? $t('Public.Exit_full_screen') : $t('Public.Full_screen')" placement="bottom">
             <Icon :type="value ? 'arrow-shrink' : 'arrow-expand'" :size="23"></Icon>
         </Tooltip>
     </div>

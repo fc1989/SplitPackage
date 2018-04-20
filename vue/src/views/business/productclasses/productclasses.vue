@@ -55,7 +55,7 @@ export default {
   },
   data() {
     return {
-      title: "ProductClasses",
+      title: "Menu.Pages.ProductClasses",
       api: ProductClassApi,
       newProductClassRule: {
         className: [{ require: true }],

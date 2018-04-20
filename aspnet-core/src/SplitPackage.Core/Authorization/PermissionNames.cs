@@ -2,24 +2,24 @@
 {
     public static class PermissionNames
     {
-        public const string Pages_Tenants = "Pages.Tenants";
+        public const string Pages_Admin_Tenants = "Pages.Admin.Tenants";
 
-        public const string Pages_Users = "Pages.Users";
+        public const string Pages_Tenant_Users = "Pages.Tenant.Users";
 
-        public const string Pages_Roles = "Pages.Roles";
+        public const string Pages_Tenant_Roles = "Pages.Tenant.Roles";
 
-        public const string Pages_Products = "Pages.Products";
+        public const string Pages_Tenant_Products = "Pages.Tenant.Products";
 
-        public const string Pages_ProductClasses = "Pages.ProductClasses";
+        public const string Pages_Tenant_ProductClasses = "Pages.Tenant.ProductClasses";
 
-        public const string Pages_Logistics = "Pages.Logistics";
+        public const string Pages_Tenant_Logistics = "Pages.Tenant.Logistics";
 
-        public const string Pages_LogisticLines = "Pages.LogisticLines";
+        public const string Pages_Tenant_LogisticLines = "Pages.Tenant.LogisticLines";
 
-        public const string Pages_SplitRules = "Pages.SplitRules";
+        public const string Pages_Tenant_SplitRules = "Pages.Tenant.SplitRules";
 
-        public const string Pages_WeightFreights = "Pages.WeightFreights";
+        public const string Pages_Tenant_WeightFreights = "Pages.Tenant.WeightFreights";
 
-        public const string Pages_NumFreights = "Pages.NumFreights";
+        public const string Pages_Tenant_NumFreights = "Pages.Tenant.NumFreights";
     }
 }

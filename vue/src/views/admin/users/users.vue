@@ -1,7 +1,7 @@
 <template>
     <div>
         <Card>
-            <p slot="title">{{$t('Users')}}</p>
+            <p slot="title">{{$t('Menu.Pages.Users')}}</p>
             <Dropdown slot="extra"  @on-click="handleClickActionsDropdown">
                 <a href="javascript:void(0)">
                     {{$t('Public.Actions')}}
@@ -225,7 +225,7 @@ export default {
                                 click:async()=>{
                                     this.$Modal.confirm({
                                         title:this.$t(''),
-                                        content:this.$t('Users.Delete user'),
+                                        content:this.$t('Users.Delete_user'),
                                         okText:this.$t('Public.Yes'),
                                         cancelText:this.$t('Public.No'),
                                         onOk:async()=>{

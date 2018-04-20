@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("Logistics")]
-    public class Logistic : FullAuditedEntity<long>, IPassivable, IMustHaveTenant
+    public class Logistic : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
         public const int MaxCorporationNameLength = 50;
         public const int MaxCorporationUrlLength = 200;
@@ -31,7 +31,7 @@ namespace SplitPackage.Business
 
         public bool IsActive { get; set; }
 
-        public int TenantId { get; set; }
+        public int? TenantId { get; set; }
 
         public virtual ICollection<LogisticLine> LogisticLines { get; set; }
 

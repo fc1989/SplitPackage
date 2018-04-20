@@ -16,7 +16,7 @@ using SplitPackage.Roles.Dto;
 
 namespace SplitPackage.Roles
 {
-    [AbpAuthorize(PermissionNames.Pages_Roles)]
+    [AbpAuthorize(PermissionNames.Pages_Tenant_Roles)]
     public class RoleAppService : AsyncCrudAppService<Role, RoleDto, int, PagedResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleManager _roleManager;

@@ -8,16 +8,16 @@ namespace SplitPackage.Authorization
     {
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
-            context.CreatePermission(PermissionNames.Pages_Users, L("Users"));
-            context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
-            context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
-            context.CreatePermission(PermissionNames.Pages_Products, L("Products"));
-            context.CreatePermission(PermissionNames.Pages_ProductClasses, L("ProductClasses"));
-            context.CreatePermission(PermissionNames.Pages_Logistics, L("Logistics"));
-            context.CreatePermission(PermissionNames.Pages_LogisticLines, L("LogisticLines"));
-            context.CreatePermission(PermissionNames.Pages_SplitRules, L("SplitRules"));
-            context.CreatePermission(PermissionNames.Pages_WeightFreights, L("WeightFreights"));
-            context.CreatePermission(PermissionNames.Pages_NumFreights, L("NumFreights"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_Users, L("Users"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_Roles, L("Roles"));
+            context.CreatePermission(PermissionNames.Pages_Admin_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
+            context.CreatePermission(PermissionNames.Pages_Tenant_Products, L("Products"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_ProductClasses, L("ProductClasses"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_Logistics, L("Logistics"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_LogisticLines, L("LogisticLines"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_SplitRules, L("SplitRules"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_WeightFreights, L("WeightFreights"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_NumFreights, L("NumFreights"));
         }
 
         private static ILocalizableString L(string name)

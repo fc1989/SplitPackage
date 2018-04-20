@@ -14,14 +14,14 @@ const app = {
         themeColor: '',
         initSignalR: false,
         pageOpenedList: [{
-            title: 'HomePage',
+            title: 'Menu.Pages.HomePage',
             path: '',
             name: 'home_index'
         }],
         currentPageName: '',
         currentPath: [
             {
-                title: 'HomePage',
+                title: 'Menu.Pages.HomePage',
                 path: '',
                 name: 'home_index'
             }

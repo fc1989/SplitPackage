@@ -13,7 +13,7 @@
                     <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
                         <Input-number v-model.number="slotProps.createModel.productNum" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.createModel.logisticLineId"></Input>
                     </FormItem>
                 </TabPane>
@@ -28,7 +28,7 @@
                     <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
                         <Input-number v-model.number="slotProps.editModel.productNum" style="width:100%"></Input-number>
                     </FormItem>
-                    <FormItem :label="$t('LogisticLines')" prop="logisticLineId">
+                    <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
                         <Input v-model="slotProps.editModel.logisticLineId"></Input>
                     </FormItem>
                     <FormItem>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "NumFreights",
+      title: "Menu.Pages.NumFreights",
       api: NumFreightApi,
       newNumFreightRule: {
         packagePrice: [{ type: "number" }],
@@ -73,7 +73,7 @@ export default {
             key: "productNum"
           },
           {
-            title: this.$t('LogisticLines'),
+            title: this.$t('Menu.Pages.LogisticLines'),
             key: "logisticLineId"
           },
           {

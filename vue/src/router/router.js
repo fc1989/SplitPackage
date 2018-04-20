@@ -51,7 +51,7 @@ export const otherRouter = {
     redirect: '/home',
     component: Main,
     children: [
-        { path: 'home', title: 'HomePage', name: 'home_index', component: () => import('@/views/home/home.vue') }
+        { path: 'home', title: 'Menu.Pages.HomePage', name: 'home_index', component: () => import('@/views/home/home.vue') }
     ]
 };
 
@@ -60,31 +60,100 @@ export const appRouter = [
     {
         path: '/admin',
         icon: 'settings',
-        title: 'Administration',
+        title: 'Menu.Modules.Administration',
         name: 'administration',
         component: Main,
         children: [
-            { path: 'tenants', title: 'Tenants', name: 'tenants',permission:'Pages.Tenants', component: () => import('@/views/admin/tenants/tenants.vue') },
-            { path: 'users', title: 'Users', name: 'users',permission:'Pages.Users', component: () => import('@/views/admin/users/users.vue') },
-            { path: 'roles', title: 'Roles', name: 'roles',permission:'Pages.Roles', component: () => import('@/views/admin/roles/roles.vue') }
+            { 
+                path: 'tenants', 
+                title: 'Menu.Pages.Tenants', 
+                name: 'tenants', 
+                permission: 'Pages.Admin.Tenants', 
+                component: () => import('@/views/admin/tenants/tenants.vue') 
+            }
         ]
     },
     {
         path: '/business',
         icon: 'briefcase',
-        title: 'Business',
+        title: 'Menu.Modules.Business',
         name: 'business',
         component: Main,
         children: [
-            { path: 'logisticlines', title: 'LogisticLines', name: 'logisticlines',permission:'Pages.LogisticLines', component: () => import('@/views/business/logisticlines/logisticlines.vue') },
-            { path: 'logistics', title: 'Logistics', name: 'logistics',permission:'Pages.Logistics', component: () => import('@/views/business/logistics/logistics.vue') },
-            { path: 'numfreights', title: 'NumFreights', name: 'numfreights',permission:'Pages.NumFreights', component: () => import('@/views/business/numfreights/numfreights.vue') },
-            { path: 'productclasses', title: 'ProductClasses', name: 'productclasses',permission:'Pages.ProductClasses', component: () => import('@/views/business/productclasses/productclasses.vue') },
-            { path: 'products', title: 'Products', name: 'products',permission:'Pages.Products', component: () => import('@/views/business/products/products.vue') },
-            { path: 'splitrules', title: 'SplitRules', name: 'splitrules',permission:'Pages.SplitRules', component: () => import('@/views/business/splitrules/splitrules.vue') },
-            { path: 'weightfreights', title: 'WeightFreights', name: 'weightfreights',permission:'Pages.WeightFreights', component: () => import('@/views/business/weightfreights/weightfreights.vue') }
+            { 
+                path: 'logisticlines', 
+                title: 'Menu.Pages.LogisticLines', 
+                name: 'logisticlines', 
+                permission: 'Pages.Tenant.LogisticLines', 
+                component: () => import('@/views/business/logisticlines/logisticlines.vue') 
+            },
+            { 
+                path: 'logistics', 
+                title: 'Menu.Pages.Logistics', 
+                name: 'logistics', 
+                permission: 'Pages.Tenant.Logistics', 
+                component: () => import('@/views/business/logistics/logistics.vue') 
+            },
+            { 
+                path: 'numfreights', 
+                title: 'Menu.Pages.NumFreights', 
+                name: 'numfreights', 
+                permission: 'Pages.Tenant.NumFreights', 
+                component: () => import('@/views/business/numfreights/numfreights.vue') 
+            },
+            { 
+                path: 'productclasses', 
+                title: 'Menu.Pages.ProductClasses', 
+                name: 'productclasses', 
+                permission: 'Pages.Tenant.ProductClasses', 
+                component: () => import('@/views/business/productclasses/productclasses.vue') 
+            },
+            { 
+                path: 'products', 
+                title: 'Menu.Pages.Products', 
+                name: 'products', 
+                permission: 'Pages.Tenant.Products', 
+                component: () => import('@/views/business/products/products.vue') 
+            },
+            { 
+                path: 'splitrules', 
+                title: 'Menu.Pages.SplitRules', 
+                name: 'splitrules', 
+                permission: 'Pages.Tenant.SplitRules', 
+                component: () => import('@/views/business/splitrules/splitrules.vue') 
+            },
+            { 
+                path: 'weightfreights', 
+                title: 'Menu.Pages.WeightFreights', 
+                name: 'weightfreights', 
+                permission: 'Pages.Tenant.WeightFreights', 
+                component: () => import('@/views/business/weightfreights/weightfreights.vue') 
+            }
         ]
     },
+    {
+        path: '/system',
+        icon: 'gear-b',
+        title: 'Menu.Modules.System',
+        name: 'system',
+        component: Main,
+        children: [
+            { 
+                path: 'users', 
+                title: 'Menu.Pages.Users', 
+                name: 'users', 
+                permission: 'Pages.Tenant.Users', 
+                component: () => import('@/views/admin/users/users.vue') 
+            },
+            { 
+                path: 'roles', 
+                title: 'Menu.Pages.Roles', 
+                name: 'roles', 
+                permission: 'Pages.Tenant.Roles', 
+                component: () => import('@/views/admin/roles/roles.vue') 
+            }
+        ]
+    }
 ];
 
 // All the routes defined above should be written in the routers below

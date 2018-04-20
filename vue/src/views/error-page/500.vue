@@ -11,8 +11,8 @@
                 </div>
                 <p class="error500-body-con-message">Oops! the server is wrong</p>
                 <div class="error500-btn-con">
-                    <Button @click="goHome" size="large" style="width: 200px;" type="text">{{$t('Public.Return to Home page')}}</Button>
-                    <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">{{$t('Public.Back to last page')}}</Button>
+                    <Button @click="goHome" size="large" style="width: 200px;" type="text">{{$t('Public.Return_to_Home_page')}}</Button>
+                    <Button @click="backPage" size="large" style="width: 200px;margin-left: 40px;" type="primary">{{$t('Public.Back_to_last_page')}}</Button>
                 </div>
             </Card>
         </div>

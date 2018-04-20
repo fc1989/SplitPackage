@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("Products")]
-    public class Product : FullAuditedEntity<long>, IPassivable, IMustHaveTenant
+    public class Product : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
         public const int MaxProductNameLength = 200;
         public const int MaxAbbreNameLength = 100;
@@ -20,7 +20,7 @@ namespace SplitPackage.Business
 
         public bool IsActive { get; set; }
 
-        public int TenantId { get; set; }
+        public int? TenantId { get; set; }
 
         /// <summary>
         /// 商品名称

@@ -128,7 +128,7 @@ export default {
                         });
                         break;
                     case 3:
-                        let message2 = this.$t('Login.ThereIsNoTenantDefinedWithName{0}',this.changedTenancyName)
+                        let message2 = this.$t('Login.ThereIsNoTenantDefinedWithName',{tname:this.changedTenancyName})
                         this.$Modal.error({
                             title:'',
                             content:message2

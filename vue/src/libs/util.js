@@ -187,7 +187,7 @@ util.setCurrentPath = function (vm, name) {
         if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
             currentPathArr = [
                 {
-                    title: 'HomePage',
+                    title: 'Menu.Pages.HomePage',
                     path: '',
                     name: 'home_index'
                 }
@@ -195,7 +195,7 @@ util.setCurrentPath = function (vm, name) {
         } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
             currentPathArr = [
                 {
-                    title: 'HomePage',
+                    title: 'Menu.Pages.HomePage',
                     path: '/home',
                     name: 'home_index'
                 },
@@ -211,7 +211,7 @@ util.setCurrentPath = function (vm, name) {
             })[0];
             currentPathArr = [
                 {
-                    title: 'HomePage',
+                    title: 'Menu.Pages.HomePage',
                     path: '/home',
                     name: 'home_index'
                 },

@@ -13,7 +13,7 @@
                     <FormItem :label="$t('LogisticLines.LineCode')" prop="lineCode">
                         <Input v-model="slotProps.createModel.lineCode" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="$t('Logistics')" prop="logisticId">
+                    <FormItem :label="$t('Menu.Pages.Logistics')" prop="logisticId">
                         <Input v-model="slotProps.createModel.logisticId"></Input>
                     </FormItem>
                 </TabPane>
@@ -28,7 +28,7 @@
                     <FormItem :label="$t('LogisticLines.LineCode')" prop="lineCode">
                         <Input v-model="slotProps.editModel.lineCode" :maxlength="50"></Input>
                     </FormItem>
-                    <FormItem :label="$t('Logistics')" prop="logisticId">
+                    <FormItem :label="$t('Menu.Pages.Logistics')" prop="logisticId">
                         <Input v-model="slotProps.editModel.logisticId"></Input>
                     </FormItem>
                     <FormItem>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      title: "LogisticLines",
+      title: "Menu.Pages.LogisticLines",
       api: LogisticLineApi,
       newLogisticLineRule: {
         lineName: [{ require: true }],
@@ -73,7 +73,7 @@ export default {
             key: "lineCode"
           },
           {
-            title: this.$t('Logistics'),
+            title: this.$t('Menu.Pages.Logistics'),
             key: "logisticId"
           },
           {

@@ -111,6 +111,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint(name:"UQ_Logistics",columns:x=>new { x.TenantId, x.LogisticFlag});
                 });
 
             migrationBuilder.CreateTable(
@@ -158,6 +159,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Logistics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint(name: "UQ_LogisticLines", columns: x => new { x.LogisticId, x.LineCode });
                 });
 
             migrationBuilder.CreateTable(
@@ -247,6 +249,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint(name: "UQ_ProductClasses", columns: x => new { x.PTId });
                 });
 
             migrationBuilder.CreateTable(
@@ -309,6 +312,7 @@ namespace SplitPackage.Migrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_SplitRuleProductClass", x => new { x.ProductClassId, x.SplitRuleId });
                     table.ForeignKey(
                         name: "FK_SplitRuleProductClass_ProductClasses_ProductClassId",
                         column: x => x.ProductClassId,
@@ -381,6 +385,7 @@ namespace SplitPackage.Migrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_ProductProductClass",x=>new { x.ProductClassId, x.ProductId});
                     table.ForeignKey(
                         name: "FK_ProductProductClass_ProductClasses_ProductClassId",
                         column: x => x.ProductClassId,
