@@ -8,9 +8,10 @@ namespace SplitPackage.Authorization
     {
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
+            context.CreatePermission(PermissionNames.Pages_Admin_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
+
             context.CreatePermission(PermissionNames.Pages_Tenant_Users, L("Users"));
             context.CreatePermission(PermissionNames.Pages_Tenant_Roles, L("Roles"));
-            context.CreatePermission(PermissionNames.Pages_Admin_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
             context.CreatePermission(PermissionNames.Pages_Tenant_Products, L("Products"));
             context.CreatePermission(PermissionNames.Pages_Tenant_ProductClasses, L("ProductClasses"));
             context.CreatePermission(PermissionNames.Pages_Tenant_Logistics, L("Logistics"));

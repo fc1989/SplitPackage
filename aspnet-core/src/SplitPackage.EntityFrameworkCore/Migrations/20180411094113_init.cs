@@ -755,14 +755,12 @@ namespace SplitPackage.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_CreatorUserId",
                 table: "Tenants",
-                column: "CreatorUserId",
-                unique: true);
+                column: "CreatorUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_DeleterUserId",
                 table: "Tenants",
-                column: "DeleterUserId",
-                unique: true);
+                column: "DeleterUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_EditionId",
@@ -772,8 +770,7 @@ namespace SplitPackage.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_LastModifierUserId",
                 table: "Tenants",
-                column: "LastModifierUserId",
-                unique: true);
+                column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",

@@ -142,12 +142,12 @@ export default {
                   click: async () => {
                     this.$Modal.confirm({
                       title: this.$t(''),
-                      content: this.$t('Delete') + ' ' + this.$t(this.title),
+                      content: this.$t('Public.Delete') + this.$t(this.title),
                       okText: this.$t('Public.Yes'),
                       cancelText: this.$t('Public.No'),
                       onOk: async () => {
                         await this.api.Delete(params.row.id);
-                        await this.getpage();
+                        // await this.getpage();
                       }
                     });
                   }

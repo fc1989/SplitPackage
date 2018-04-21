@@ -68,7 +68,7 @@ export default {
         startingPrice: [{ type: "number" }],
         stepWeight: [{ type: "number" }],
         price: [{ type: "number" }],
-        logisticLineId: [{ type: "number" }]
+        // logisticLineId: [{ type: "number" }]
       },
       weightFreightRule: {
         startingWeight: [{ type: "number" }],

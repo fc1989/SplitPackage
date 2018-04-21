@@ -29,6 +29,8 @@ namespace SplitPackage
             // Enable this line to create a multi-tenant application.
             Configuration.MultiTenancy.IsEnabled = SplitPackageConsts.MultiTenancyEnabled;
 
+            //close jobs
+            Configuration.BackgroundJobs.IsJobExecutionEnabled = false;
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
 
