@@ -18,7 +18,7 @@
         <Modal v-model="showModal" :title="$t('Public.Create')">
             <div>
                 <Form ref="newForm" label-position="top" :rules="newRule" :model="createModel">
-                    <slot name="newform" v-bind:createModel="createModel"></slot>
+                    <slot name="newform" v-bind:createModel="createModel" v-bind:rules="newRule"></slot>
                 </Form>
             </div>
             <div slot="footer">
@@ -57,6 +57,9 @@ export default {
     },
     editRule: {
       type: Object
+    },
+    createFormat:{
+      type: Function
     }
   },
   methods: {
@@ -64,6 +67,9 @@ export default {
       this.$refs.newForm.validate(async val => {
         if (val) {
           await this.api.Create(this.createModel);
+          if(this.createFormat){
+            this.createModel = this.createFormat();
+          }
           this.showModal = false;
           await this.getpage();
         }
@@ -105,6 +111,7 @@ export default {
     }
   },
   data() {
+    var cm = {};
     if (this.columnsetting.needAction) {
       this.columnsetting.columns.push({
         title: this.$t('Public.Actions'),
@@ -159,10 +166,13 @@ export default {
         }
       });
     }
+    if(this.createFormat){
+      cm = this.createFormat();
+    } 
     return {
       columns: this.columnsetting.columns,
       editModel: {},
-      createModel: {},
+      createModel: cm,
       showModal: false,
       showEditModal: false,
       state: {

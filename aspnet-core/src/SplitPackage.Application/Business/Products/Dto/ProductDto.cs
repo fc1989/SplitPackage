@@ -35,5 +35,7 @@ namespace SplitPackage.Business.Products.Dto
         public double Weight { get; set; }
 
         public bool IsActive { get; set; }
+
+        public IEnumerable<long> ProductClassIds { get; set; }
     }
 }

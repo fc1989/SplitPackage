@@ -19,10 +19,49 @@ namespace SplitPackage.Business.Products
 
         }
 
-        public async Task<bool> Verify(string sku)
+        public override async Task<PagedResultDto<ProductDto>> GetAll(PagedResultRequestDto input)
         {
             CheckGetAllPermission();
 
+            var query = CreateFilteredQuery(input);
+
+            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
+
+            query = ApplySorting(query, input);
+            query = ApplyPaging(query, input);
+
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Select(o=>new ProductDto() {
+                ProductName = o.ProductName,
+                AbbreName = o.AbbreName,
+                ProductNo = o.ProductNo,
+                Sku = o.Sku,
+                TaxNo = o.TaxNo,
+                Brand = o.Brand,
+                Weight = o.Weight,
+                IsActive = o.IsActive,
+                ProductClassIds = o.ProductClasses.Select(oi=>oi.ProductClassId)
+            }));
+
+            return new PagedResultDto<ProductDto>(
+                totalCount,
+                entities.ToList()
+            );
+        }
+
+        public override async Task<ProductDto> Create(CreateProductDto input)
+        {
+            CheckCreatePermission();
+
+            var entity = MapToEntity(input);
+            entity.TenantId = AbpSession.TenantId;
+            await Repository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return MapToEntityDto(entity);
+        }
+
+        public async Task<bool> Verify(string sku)
+        {
             var count = await this.Repository.GetAll().Where(o=>o.Sku == sku).CountAsync();
             if (count > 0)
                 return false;

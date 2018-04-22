@@ -42,6 +42,14 @@
                                 <Input-number v-model.number="createProduct.weight" style="width:100%"></Input-number>
                             </FormItem>
                         </TabPane>
+                        <TabPane :label="$t('Menu.Pages.ProductClasses')" name="productclass">
+                            <FormItem :label="$t('Menu.Pages.ProductClasses')">
+                                    <Select v-model="createProduct.productClassIds" 
+                                            filterable clearable remote :remote-method="remotePCMethod"
+                                            :multiple="true" :loading="loading2">
+                                    </Select>
+                            </FormItem>
+                        </TabPane>
                     </Tabs>
                 </Form>
             </div>
@@ -137,11 +145,26 @@ export default {
             }else if(name==='Refresh'){
                 this.getpage();
             }
+        },
+        remotePCMethod(query){
+            let self = this;
+            if (query) {
+                self.loading2 = true;
+                let params = {
+                    name: query
+                }
+                this.$api.get("/user/search", {params: params}).then(function (res) {
+                if (res.data.code === 200) {
+                    self.userList = res.data.data.list;
+                } else {
+                    self.$Message.error('获取数据失败！' + res.data.code);
+                }});
+                this.loading2 = false;
+            }
         }
     },
     data(){
         const validateSku = (rule, value, callback) => {
-            console.log(rule);
             if (!value) {
                 callback(new Error('sku is required'));
             }else {
@@ -158,12 +181,13 @@ export default {
         return{
             editProduct:{},
             createProduct:{},
+            loading2:false,
             showModal:false,
             showEditModal:false,
             newProductRule:{
-                productName:[{required: true,trigger: 'blur'}],
-                productNo:[{required:true,trigger: 'blur'}],
-                sku:[{required:true,validator:validateSku,trigger: 'blur'}],
+                productName:[{required: true}],
+                productNo:[{required:true}],
+                sku:[{required:true,validator:validateSku}],
                 weight:[{type: 'number'}]
             },
             productRule:{

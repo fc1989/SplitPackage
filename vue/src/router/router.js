@@ -70,6 +70,13 @@ export const appRouter = [
                 name: 'tenants', 
                 permission: 'Pages.Admin.Tenants', 
                 component: () => import('@/views/admin/tenants/tenants.vue') 
+            },
+            { 
+                path: 'productclasses', 
+                title: 'Menu.Pages.ProductClasses', 
+                name: 'productclasses', 
+                permission: 'Pages.Tenant.ProductClasses', 
+                component: () => import('@/views/business/productclasses/productclasses.vue') 
             }
         ]
     },
@@ -81,13 +88,6 @@ export const appRouter = [
         component: Main,
         children: [
             { 
-                path: 'logisticlines', 
-                title: 'Menu.Pages.LogisticLines', 
-                name: 'logisticlines', 
-                permission: 'Pages.Tenant.LogisticLines', 
-                component: () => import('@/views/business/logisticlines/logisticlines.vue') 
-            },
-            { 
                 path: 'logistics', 
                 title: 'Menu.Pages.Logistics', 
                 name: 'logistics', 
@@ -95,18 +95,11 @@ export const appRouter = [
                 component: () => import('@/views/business/logistics/logistics.vue') 
             },
             { 
-                path: 'numfreights', 
-                title: 'Menu.Pages.NumFreights', 
-                name: 'numfreights', 
-                permission: 'Pages.Tenant.NumFreights', 
-                component: () => import('@/views/business/numfreights/numfreights.vue') 
-            },
-            { 
-                path: 'productclasses', 
-                title: 'Menu.Pages.ProductClasses', 
-                name: 'productclasses', 
-                permission: 'Pages.Tenant.ProductClasses', 
-                component: () => import('@/views/business/productclasses/productclasses.vue') 
+                path: 'logisticlines', 
+                title: 'Menu.Pages.LogisticLines', 
+                name: 'logisticlines', 
+                permission: 'Pages.Tenant.LogisticLines', 
+                component: () => import('@/views/business/logisticlines/logisticlines.vue') 
             },
             { 
                 path: 'products', 
@@ -121,6 +114,13 @@ export const appRouter = [
                 name: 'splitrules', 
                 permission: 'Pages.Tenant.SplitRules', 
                 component: () => import('@/views/business/splitrules/splitrules.vue') 
+            },
+            { 
+                path: 'numfreights', 
+                title: 'Menu.Pages.NumFreights', 
+                name: 'numfreights', 
+                permission: 'Pages.Tenant.NumFreights', 
+                component: () => import('@/views/business/numfreights/numfreights.vue') 
             },
             { 
                 path: 'weightfreights', 
