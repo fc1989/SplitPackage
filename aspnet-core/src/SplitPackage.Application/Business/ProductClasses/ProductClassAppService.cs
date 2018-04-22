@@ -26,5 +26,14 @@ namespace SplitPackage.Business.ProductClasses
             else
                 return true;
         }
+
+
+        public async Task<object> Query(string flag)
+        {
+            return await this.Repository.GetAll().Where(o => o.PTId.StartsWith(flag) || o.ClassName.StartsWith(flag)).Take(20).Select(o=>new {
+                value = o.Id,
+                label = string.Format("{0}[{1}]",o.ClassName,o.PTId)
+            }).ToListAsync();
+        }
     }
 }
