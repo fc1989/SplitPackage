@@ -9,14 +9,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace SplitPackage.Business.Products
 {
     public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, PagedResultRequestDto, CreateProductDto, UpdateProductDto>, IProductAppService
     {
-        public ProductAppService(IRepository<Product, long> repository) : base(repository)
-        {
+        protected IRepository<ProductProductClass, long> PPCRepository;
+        protected static IMapper PMapper = new MapperConfiguration(cfg => {
+            cfg.CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.ProductClassIds,
+                    opt => opt.MapFrom(src => src.ProductClasses.Select(o => o.ProductClassId).ToList()));
+            cfg.CreateMap<UpdateProductDto, Product>();
+        }).CreateMapper();
 
+        public ProductAppService(IRepository<Product, long> repository, IRepository<ProductProductClass, long> ppcRepository) : base(repository)
+        {
+            this.PPCRepository = ppcRepository;
         }
 
         public override async Task<PagedResultDto<ProductDto>> GetAll(PagedResultRequestDto input)
@@ -30,21 +39,11 @@ namespace SplitPackage.Business.Products
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Select(o=>new ProductDto() {
-                ProductName = o.ProductName,
-                AbbreName = o.AbbreName,
-                ProductNo = o.ProductNo,
-                Sku = o.Sku,
-                TaxNo = o.TaxNo,
-                Brand = o.Brand,
-                Weight = o.Weight,
-                IsActive = o.IsActive,
-                ProductClassIds = o.ProductClasses.Select(oi=>oi.ProductClassId)
-            }));
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.ProductClasses));
 
             return new PagedResultDto<ProductDto>(
                 totalCount,
-                entities.ToList()
+                entities.Select(o=> PMapper.Map<ProductDto>(o)).ToList()
             );
         }
 
@@ -56,8 +55,46 @@ namespace SplitPackage.Business.Products
             entity.TenantId = AbpSession.TenantId;
             await Repository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
+            foreach (var item in input.ProductClassIds ?? new List<long>())
+            {
+                await this.PPCRepository.InsertAsync(new ProductProductClass()
+                {
+                    ProductId = entity.Id,
+                    ProductClassId = item
+                });
+            }
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return PMapper.Map<ProductDto>(entity);
+        }
 
-            return MapToEntityDto(entity);
+        public override async Task<ProductDto> Update(UpdateProductDto input)
+        {
+            CheckUpdatePermission();
+
+            var entity = this.Repository.GetAll().Include(p=>p.ProductClasses).FirstOrDefault(o => o.Id == input.Id);
+            PMapper.Map(input, entity);
+
+            //insert
+            var icl = input.ProductClassIds.Where(o => !entity.ProductClasses.Any(oi => oi.ProductClassId == o)).ToList();
+            foreach (var item in icl)
+            {
+                await this.PPCRepository.InsertAsync(new ProductProductClass()
+                {
+                    ProductId = entity.Id,
+                    ProductClassId = item
+                });
+            }
+
+            //delete
+            var dcl = entity.ProductClasses.Where(o => !input.ProductClassIds.Contains(o.ProductClassId)).Select(o=>o.Id).ToList();
+            if (dcl.Count > 0)
+            {
+                await this.PPCRepository.DeleteAsync(o => dcl.Contains(o.Id));
+            }
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return PMapper.Map<ProductDto>(entity);
         }
 
         public async Task<bool> Verify(string sku)

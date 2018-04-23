@@ -8,7 +8,6 @@ using System.Text;
 
 namespace SplitPackage.Business.Products.Dto
 {
-    [AutoMapFrom(typeof(Product))]
     public class ProductDto : EntityDto<long>, IPassivable
     {
         [Required]

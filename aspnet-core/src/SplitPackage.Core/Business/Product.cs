@@ -57,7 +57,7 @@ namespace SplitPackage.Business
         /// </summary>
         public double Weight { get; set; }
 
-        public virtual ICollection<ProductProductClass> ProductClasses { get; set; }
+        public ICollection<ProductProductClass> ProductClasses { get; set; }
 
         public Product()
         {

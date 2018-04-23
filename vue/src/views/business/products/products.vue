@@ -6,8 +6,8 @@
         :editRule="productRule"
         :createFormat="createFormat">
         <template slot="newform" slot-scope="slotProps">
-            <Tabs value="detail">
-                <TabPane :label="$t('Public.Details')" name="detail">
+            <Tabs>
+                <TabPane :label="$t('Public.Details')">
                     <FormItem :label="$t('Products.ProductName')" prop="productName">
                         <Input v-model="slotProps.createModel.productName" :maxlength="200" :minlength="1"></Input>
                     </FormItem>
@@ -30,7 +30,7 @@
                         <Input-number v-model.number="slotProps.createModel.weight" style="width:100%"></Input-number>
                     </FormItem>
                 </TabPane>
-                <TabPane :label="$t('Menu.Pages.ProductClasses')" name="productclass">
+                <TabPane :label="$t('Menu.Pages.ProductClasses')">
                     <FormItem :label="$t('Menu.Pages.ProductClasses')">
                         <Select
                             v-model="slotProps.createModel.productClassIds"
@@ -73,14 +73,27 @@
                         <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
                     </FormItem>
                 </TabPane>
+                <TabPane :label="$t('Menu.Pages.ProductClasses')">
+                    <FormItem :label="$t('Menu.Pages.ProductClasses')">
+                        <Select ref="es"
+                            :label="label"
+                            v-model="slotProps.editModel.productClassIds"
+                            filterable
+                            remote
+                            :remote-method="remotePCMethod"
+                            :loading="loading2">
+                            <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+                        </Select>
+                    </FormItem>
+                </TabPane>
             </Tabs>
         </template>
     </simplePage>
 </template>
 <script>
 import simplePage from "../../../components/simplepage.vue";
-import ProductClassApi from "../../../api/productclass";
-import ProductApi from "../../../api/product";
+import ProductClassApi from "@/api/productclass";
+import ProductApi from "@/api/product";
 
 export default {
   components: {
@@ -91,18 +104,27 @@ export default {
       if (query !== "") {
         let _this = this;
         this.loading2 = true;
-        ProductClassApi.Query(query).then(function(req) {
+        ProductClassApi.Query(query, null).then(function(req) {
           _this.loading2 = false;
           _this.options = req.data.result;
         });
       } else {
-        this.options2 = [];
+        this.options = [];
       }
     }
   },
   data() {
+    var _this = this;
     const cf = function() {
+      _this.options = [];
       return {
+        productName: null,
+        abbreName: null,
+        productNo: null,
+        sku: null,
+        taxNo: null,
+        brand: null,
+        weight: 0,
         productClassIds: []
       };
     };
@@ -120,6 +142,7 @@ export default {
       }
     };
     return {
+      label:null,
       title: "Menu.Pages.Products",
       loading2: false,
       options: [],
@@ -137,7 +160,7 @@ export default {
         weight: [{ type: "number" }]
       },
       columnsetting: {
-        needAction: true,
+        needAction: false,
         columns: [
           {
             title: this.$t("Products.ProductName"),
@@ -176,6 +199,65 @@ export default {
                   disabled: true
                 }
               });
+            }
+          },
+          {
+            title: this.$t("Public.Actions"),
+            key: "action",
+            width: 150,
+            render: (h, params) => {
+              return h("div", [
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "primary",
+                      size: "small"
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                        _this.$refs.simplepage.editModel = params.row;
+                        _this.$refs.simplepage.showEditModal = true;
+                        ProductClassApi.Query(
+                          "",
+                          params.row.productClassIds
+                        ).then(function(req) {
+                          _this.options = req.data.result;
+                          _this.label = _this.options[0].label;
+                        });
+                      }
+                    }
+                  },
+                  this.$t("Public.Edit")
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "error",
+                      size: "small"
+                    },
+                    on: {
+                      click: async () => {
+                        this.$Modal.confirm({
+                          title: this.$t(""),
+                          content:
+                            this.$t("Public.Delete") + this.$t(this.title),
+                          okText: this.$t("Public.Yes"),
+                          cancelText: this.$t("Public.No"),
+                          onOk: async () => {
+                            await _this.api.Delete(params.row.id);
+                          }
+                        });
+                      }
+                    }
+                  },
+                  this.$t("Public.Delete")
+                )
+              ]);
             }
           }
         ]

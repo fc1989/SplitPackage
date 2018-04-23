@@ -6,6 +6,7 @@ using SplitPackage.Business.ProductClasses.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,9 +29,26 @@ namespace SplitPackage.Business.ProductClasses
         }
 
 
-        public async Task<object> Query(string flag)
+        public async Task<object> Query(QueryRequire req)
         {
-            return await this.Repository.GetAll().Where(o => o.PTId.StartsWith(flag) || o.ClassName.StartsWith(flag)).Take(20).Select(o=>new {
+            Expression<Func<ProductClass, bool>> filter;
+            if (!string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
+            {
+                filter = o => o.PTId.StartsWith(req.Flag) || o.ClassName.StartsWith(req.Flag);
+            }
+            else if (string.IsNullOrEmpty(req.Flag) && (req.Ids != null || req.Ids.Count > 0))
+            {
+                filter = o => req.Ids.Contains(o.Id);
+            }
+            else if (string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
+            {
+                filter = o => true;
+            }
+            else
+            {
+                filter = o => o.PTId.StartsWith(req.Flag) || o.ClassName.StartsWith(req.Flag) || req.Ids.Contains(o.Id);
+            }
+            return await this.Repository.GetAll().Where(filter).Take(20).Select(o=>new {
                 value = o.Id,
                 label = string.Format("{0}[{1}]",o.ClassName,o.PTId)
             }).ToListAsync();

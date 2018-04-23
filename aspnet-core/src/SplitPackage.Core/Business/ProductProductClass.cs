@@ -7,7 +7,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("Product_ProductClass")]
-    public class ProductProductClass
+    public class ProductProductClass : Entity<long>
     {
         public long ProductId { get; set; }
 

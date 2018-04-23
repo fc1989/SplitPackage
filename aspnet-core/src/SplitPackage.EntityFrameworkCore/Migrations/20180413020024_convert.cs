@@ -380,12 +380,14 @@ namespace SplitPackage.Migrations
                 name: "Product_ProductClass",
                 columns: table => new
                 {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ProductId = table.Column<long>(nullable:false),
                     ProductClassId = table.Column<long>(nullable: false),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductProductClass",x=>new { x.ProductClassId, x.ProductId});
+                    table.PrimaryKey("PK_ProductProductClass",x=>x.Id);
                     table.ForeignKey(
                         name: "FK_ProductProductClass_ProductClasses_ProductClassId",
                         column: x => x.ProductClassId,
@@ -398,6 +400,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint("UQ_ProductProductClass", x => new { x.ProductClassId, x.ProductId });
                 });
 
             migrationBuilder.CreateIndex(

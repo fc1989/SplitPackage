@@ -40,7 +40,7 @@
 </template>
 <script>
 import simplePage from "../../../components/simplepage.vue";
-import ProductClassApi from "@/api/productClass";
+import ProductClassApi from "@/api/productclass";
 
 export default {
   components: {

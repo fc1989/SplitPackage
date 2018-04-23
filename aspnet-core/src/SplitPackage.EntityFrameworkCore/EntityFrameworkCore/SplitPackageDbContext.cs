@@ -34,9 +34,27 @@ namespace SplitPackage.EntityFrameworkCore
             modelBuilder.Entity<Tenant>().HasOne(p => p.CreatorUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("CreatorUserId");
             modelBuilder.Entity<Tenant>().HasOne(p => p.DeleterUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("DeleterUserId");
             modelBuilder.Entity<Tenant>().HasOne(p => p.LastModifierUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("LastModifierUserId");
-            modelBuilder.Entity<ProductProductClass>().HasKey(p => new { p.ProductId, p.ProductClassId });
             modelBuilder.Entity<SplitRuleProductClass>().HasKey(p => new { p.SplitRuleId, p.ProductClassId });
-            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductClasses)
+                .WithOne(p => p.ProductBy)
+                .HasForeignKey(p => p.ProductId);
+
+            modelBuilder.Entity<ProductClass>()
+                .HasMany(p => p.Products)
+                .WithOne(p => p.ProductClassBy)
+                .HasForeignKey(p=>p.ProductClassId);
+
+            modelBuilder.Entity<ProductProductClass>()
+                .HasOne(bc => bc.ProductBy)
+                .WithMany(b => b.ProductClasses)
+                .HasForeignKey(bc => bc.ProductId);
+
+            modelBuilder.Entity<ProductProductClass>()
+                .HasOne(bc => bc.ProductClassBy)
+                .WithMany(c => c.Products)
+                .HasForeignKey(bc => bc.ProductClassId);
         }
     }
 }

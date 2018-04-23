@@ -64,23 +64,26 @@ export default {
   },
   methods: {
     async create() {
+      var _this = this;
       this.$refs.newForm.validate(async val => {
         if (val) {
-          await this.api.Create(this.createModel);
-          if(this.createFormat){
-            this.createModel = this.createFormat();
+          await _this.api.Create(_this.createModel);
+          if(_this.createFormat){
+            _this.createModel = _this.createFormat();
+            _this.$refs.newForm.resetFields();
           }
-          this.showModal = false;
-          await this.getpage();
+          _this.showModal = false;
+          await _this.getpage();
         }
       });
     },
     async edit() {
+      var _this = this;
       this.$refs.productForm.validate(async val => {
         if (val) {
-          await this.api.Update(this.editModel);
-          this.showEditModal = false;
-          await this.getpage();
+          await _this.api.Update(_this.editModel);
+          _this.showEditModal = false;
+          await _this.getpage();
         }
       });
     },

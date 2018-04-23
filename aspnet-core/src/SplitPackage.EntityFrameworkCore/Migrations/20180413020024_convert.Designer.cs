@@ -106,6 +106,7 @@ namespace SplitPackage.Migrations
                 b.HasKey(p=>p.Id);
                 b.HasIndex(p=>new { p.TenantId,p.Sku}).IsUnique();
                 b.ToTable("Products");
+                b.HasMany(p => p.ProductClasses).WithOne(p => p.ProductBy).HasForeignKey(p => p.ProductId);
             });
 
             modelBuilder.Entity<ProductClass>(b =>
@@ -133,7 +134,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.ProductId);
                 b.Property(p => p.ProductClassId);
                 b.ToTable("Product_ProductClass");
-                b.HasKey(p => new { p.ProductId, p.ProductClassId });
+                b.HasKey(p => p.Id);
                 b.HasOne(pt => pt.ProductClassBy)
                     .WithMany(t => t.Products)
                     .HasForeignKey(pt => pt.ProductClassId);
