@@ -12,13 +12,19 @@
                     <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
-            <Table :columns="columns" border :data="tableData"></Table>
-            <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+            <Row v-if="searchData">
+                <solt name="search" v-bind:searchData="searchData"></solt>
+                <span style="margin: 0 10px;"><Button @on-click="getpage" type="primary" icon="search">{{$t('Public.Search')}}</Button></span>
+            </Row>
+            <Row class="margin-top-10 searchable-table-con1">
+              <Table :columns="columns" border :data="tableData"></Table>
+              <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+            </Row>
         </Card>
         <Modal v-model="showModal" :title="$t('Public.Create')">
             <div>
                 <Form ref="newForm" label-position="top" :rules="newRule" :model="createModel">
-                    <slot name="newform" v-bind:createModel="createModel" v-bind:rules="newRule"></slot>
+                    <slot name="newform" v-bind:createModel="createModel"></slot>
                 </Form>
             </div>
             <div slot="footer">
@@ -96,6 +102,9 @@ export default {
         maxResultCount: this.state.pageSize,
         skipCount: (this.state.currentPage - 1) * this.state.pageSize
       };
+      if(this.searchData){
+        page["filter"] = this.searchData;
+      }
       let rep = await this.api.Search({ params: page });
       this.state.tableData = [];
       this.state.tableData.push(...rep.data.result.items);
@@ -160,7 +169,7 @@ export default {
                       cancelText: this.$t('Public.No'),
                       onOk: async () => {
                         await this.api.Delete(params.row.id);
-                        // await this.getpage();
+                        await this.getpage();
                       }
                     });
                   }
@@ -177,6 +186,7 @@ export default {
     } 
     return {
       columns: this.columnsetting.columns,
+      searchData: null,
       editModel: {},
       createModel: cm,
       showModal: false,
