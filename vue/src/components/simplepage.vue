@@ -68,10 +68,6 @@ export default {
       this.$refs.newForm.validate(async val => {
         if (val) {
           await _this.api.Create(_this.createModel);
-          if(_this.createFormat){
-            _this.createModel = _this.createFormat();
-            _this.$refs.newForm.resetFields();
-          }
           _this.showModal = false;
           await _this.getpage();
         }
@@ -107,6 +103,10 @@ export default {
     },
     handleClickActionsDropdown(name) {
       if (name === "Create") {
+          if(this.createFormat){
+            this.createModel = this.createFormat();
+            this.$refs.newForm.resetFields();
+          }
         this.showModal = true;
       } else if (name === "Refresh") {
         this.getpage();

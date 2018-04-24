@@ -75,14 +75,15 @@
                 </TabPane>
                 <TabPane :label="$t('Menu.Pages.ProductClasses')">
                     <FormItem :label="$t('Menu.Pages.ProductClasses')">
-                        <Select ref="es"
+                        <Select
+                            multiple
                             :label="label"
                             v-model="slotProps.editModel.productClassIds"
                             filterable
                             remote
                             :remote-method="remotePCMethod"
                             :loading="loading2">
-                            <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+                            <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
                         </Select>
                     </FormItem>
                 </TabPane>
@@ -104,12 +105,12 @@ export default {
       if (query !== "") {
         let _this = this;
         this.loading2 = true;
-        ProductClassApi.Query(query, null).then(function(req) {
-          _this.loading2 = false;
+        ProductClassApi.Query(query, null).then(function(req){
           _this.options = req.data.result;
+          _this.loading2 = false;
         });
       } else {
-        this.options = [];
+        this.options = null;
       }
     }
   },
@@ -218,16 +219,17 @@ export default {
                       marginRight: "5px"
                     },
                     on: {
-                      click: () => {
-                        _this.$refs.simplepage.editModel = params.row;
-                        _this.$refs.simplepage.showEditModal = true;
-                        ProductClassApi.Query(
+                      click: async () => {
+                        let req = await ProductClassApi.Query(
                           "",
                           params.row.productClassIds
-                        ).then(function(req) {
-                          _this.options = req.data.result;
-                          _this.label = _this.options[0].label;
+                        );
+                        _this.options = req.data.result;
+                        _this.label = _this.options.map(function(v){
+                          return v.label;
                         });
+                        _this.$refs.simplepage.editModel = params.row;
+                        _this.$refs.simplepage.showEditModal = true;
                       }
                     }
                   },
