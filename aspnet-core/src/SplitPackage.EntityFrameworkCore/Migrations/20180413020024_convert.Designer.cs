@@ -59,6 +59,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
+                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.HasIndex(o => new { o.LogisticId ,o.LineCode }).IsUnique();
                 b.ToTable("LogisticLines");
@@ -79,6 +80,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
+                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("NumFreights");
                 b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.NumFreights).HasForeignKey(p=>p.LogisticLineId);
@@ -160,6 +162,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
+                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("SplitRules");
             b.HasOne(p => p.LogisticLineBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticLineId);
@@ -196,6 +199,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
+                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("WeightFreights");
                 b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.WeightFreights).HasForeignKey(p=>p.LogisticLineId);

@@ -39,7 +39,7 @@
                             remote
                             :remote-method="remotePCMethod"
                             :loading="loading2">
-                            <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+                            <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
                         </Select>
                     </FormItem>
                 </TabPane>
@@ -156,8 +156,8 @@ export default {
         weight: [{ type: "number" }]
       },
       productRule: {
-        productName: [{ required: true, trigger: "blur" }],
-        productNo: [{ required: true, trigger: "blur" }],
+        productName: [{ required: true }],
+        productNo: [{ required: true }],
         weight: [{ type: "number" }]
       },
       columnsetting: {

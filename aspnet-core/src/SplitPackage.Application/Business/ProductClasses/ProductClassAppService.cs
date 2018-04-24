@@ -29,7 +29,7 @@ namespace SplitPackage.Business.ProductClasses
         }
 
 
-        public async Task<object> Query(QueryRequire req)
+        public async Task<object> Query(QueryRequire<long> req)
         {
             Expression<Func<ProductClass, bool>> filter;
             if (!string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))

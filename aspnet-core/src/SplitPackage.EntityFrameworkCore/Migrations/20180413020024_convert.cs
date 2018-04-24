@@ -72,7 +72,7 @@ namespace SplitPackage.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CorporationName = table.Column<string>(maxLength:Logistic.MaxCorporationNameLength),
-                    CorporationUrl = table.Column<string>(maxLength: Logistic.MaxCorporationUrlLength),
+                    CorporationUrl = table.Column<string>(nullable:true, maxLength: Logistic.MaxCorporationUrlLength),
                     LogisticFlag = table.Column<string>(maxLength :Logistic.MaxLogisticFlagLength),
                     TenantId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
@@ -130,7 +130,8 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,6 +160,12 @@ namespace SplitPackage.Migrations
                         principalTable: "Logistics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LogisticLines_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.UniqueConstraint(name: "UQ_LogisticLines", columns: x => new { x.LogisticId, x.LineCode });
                 });
 
@@ -178,7 +185,8 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -207,6 +215,12 @@ namespace SplitPackage.Migrations
                         principalTable: "LogisticLines",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NumFreights_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -226,7 +240,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
                 },
                 constraints: table =>
                 {
@@ -271,7 +285,8 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,6 +313,12 @@ namespace SplitPackage.Migrations
                         name: "FK_SplitRules_LogisticLines_LogisticLineId",
                         column: x => x.LogisticLineId,
                         principalTable: "LogisticLines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SplitRules_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -345,7 +366,8 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -372,6 +394,12 @@ namespace SplitPackage.Migrations
                         name: "FK_WeightFreights_LogisticLines_LogisticLineId",
                         column: x => x.LogisticLineId,
                         principalTable: "LogisticLines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_WeightFreights_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -464,6 +492,11 @@ namespace SplitPackage.Migrations
                 column: "LogisticId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LogisticLines_TenantId",
+                table: "LogisticLines",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NumFreights_CreatorUserId",
                 table: "NumFreights",
                 column: "CreatorUserId");
@@ -482,6 +515,11 @@ namespace SplitPackage.Migrations
                 name: "IX_NumFreights_LogisticLineId",
                 table: "NumFreights",
                 column: "LogisticLineId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NumFreights_TenantId",
+                table: "NumFreights",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductClasses_CreatorUserId",
@@ -519,6 +557,11 @@ namespace SplitPackage.Migrations
                 column: "LogisticLineId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SplitRules_TenantId",
+                table: "SplitRules",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SplitRuleProductClass_ProductClassId",
                 table: "SplitRule_ProductClass",
                 column: "ProductClassId");
@@ -547,6 +590,11 @@ namespace SplitPackage.Migrations
                 name: "IX_WeightFreights_LogisticLineId",
                 table: "WeightFreights",
                 column: "LogisticLineId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeightFreights_TenantId",
+                table: "WeightFreights",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductProductClass_ProductClassId",

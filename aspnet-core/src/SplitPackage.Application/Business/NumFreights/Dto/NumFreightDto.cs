@@ -14,6 +14,8 @@ namespace SplitPackage.Business.NumFreights.Dto
         [Required]
         public long LogisticLineId { get; set; }
 
+        public string LogisticLineName { get; set; }
+
         public int ProductNum { get; set; }
 
         public double PackagePrice { get; set; }

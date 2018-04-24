@@ -22,6 +22,8 @@ namespace SplitPackage.Business.LogisticLines.Dto
         [Required]
         public long LogisticId { get; set; }
 
+        public string LogisticName { get; set; }
+
         public bool IsActive { get; set; }
     }
 }

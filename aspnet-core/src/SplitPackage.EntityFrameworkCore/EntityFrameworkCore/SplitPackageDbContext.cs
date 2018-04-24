@@ -55,6 +55,8 @@ namespace SplitPackage.EntityFrameworkCore
                 .HasOne(bc => bc.ProductClassBy)
                 .WithMany(c => c.Products)
                 .HasForeignKey(bc => bc.ProductClassId);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

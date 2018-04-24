@@ -29,7 +29,7 @@
                         <Input v-model="slotProps.editModel.corporationUrl" :maxlength="50"></Input>
                     </FormItem>
                     <FormItem :label="$t('Logistics.LogisticFlag')" prop="logisticFlag">
-                        <Input v-model="slotProps.editModel.logisticFlag" :maxlength="50"></Input>
+                        <Input v-model="slotProps.editModel.logisticFlag" :maxlength="50" disabled="disabled" ></Input>
                     </FormItem>
                     <FormItem>
                         <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
@@ -48,18 +48,29 @@ export default {
     simplePage
   },
   data() {
+    const validateFlag = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("logisticFlag is required"));
+      } else {
+        LogisticApi.Verify(value).then(function(rep) {
+          if (rep.data.result) {
+            callback();
+          } else {
+            callback("logisticFlag is exit");
+          }
+        });
+      }
+    };
     return {
       title: "Menu.Pages.Logistics",
       api: LogisticApi,
       newLogisticRule: {
-        corporationName: [{ require: true }],
-        liCorporationUrlneCode: [{ require: true }],
-        logisticFlag: [{ require: true }]
+        corporationName: [{ required: true }],
+        logisticFlag: [{ required: true, validator:validateFlag }]
       },
       logisticRule: {
-        corporationName: [{ require: true }],
-        liCorporationUrlneCode: [{ require: true }],
-        logisticFlag: [{ require: true }]
+        corporationName: [{ required: true }],
+        logisticFlag: [{ required: true }]
       },
       columnsetting: {
         needAction: true,

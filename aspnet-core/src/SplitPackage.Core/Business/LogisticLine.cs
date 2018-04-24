@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("LogisticLines")]
-    public class LogisticLine : FullAuditedEntity<long>, IPassivable
+    public class LogisticLine : FullAuditedEntity<long>, IPassivable,IMayHaveTenant
     {
         public const int MaxLineNameLength = 50;
         public const int MaxLineCodeLength = 50;
@@ -37,6 +37,8 @@ namespace SplitPackage.Business
         public virtual ICollection<WeightFreight> WeightFreights { get; set; }
 
         public virtual ICollection<NumFreight> NumFreights { get; set; }
+
+        public int? TenantId { get; set; }
 
         public LogisticLine()
         {

@@ -103,10 +103,13 @@ export default {
     },
     handleClickActionsDropdown(name) {
       if (name === "Create") {
-          if(this.createFormat){
-            this.createModel = this.createFormat();
-            this.$refs.newForm.resetFields();
-          }
+        if(this.createFormat){
+          this.createModel = this.createFormat();
+          this.$refs.newForm.resetFields();
+        }
+        else{
+          this.createModel = {};
+        }
         this.showModal = true;
       } else if (name === "Refresh") {
         this.getpage();

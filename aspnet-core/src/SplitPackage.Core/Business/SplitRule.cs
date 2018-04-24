@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("SplitRules")]
-    public class SplitRule : FullAuditedEntity<long>, IPassivable
+    public class SplitRule : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
         public long LogisticLineId { get; set; }
 
@@ -43,6 +43,8 @@ namespace SplitPackage.Business
         public double MaxPrice { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int? TenantId { get; set; }
 
         public virtual ICollection<SplitRuleProductClass> ProductClasses { get; set; }
 

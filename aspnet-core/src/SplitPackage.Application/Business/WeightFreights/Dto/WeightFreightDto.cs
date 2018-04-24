@@ -14,6 +14,8 @@ namespace SplitPackage.Business.WeightFreights.Dto
         [Required]
         public long LogisticLineId { get; set; }
 
+        public string LogisticLineName { get; set; }
+
         public double StartingWeight { get; set; }
 
         public double StartingPrice { get; set; }

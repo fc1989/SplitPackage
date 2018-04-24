@@ -4,10 +4,10 @@ using System.Text;
 
 namespace SplitPackage.Business.ProductClasses.Dto
 {
-    public class QueryRequire
+    public class QueryRequire<T> where T :struct
     {
         public string Flag { get; set; }
 
-        public List<long> Ids { get; set; }
+        public List<T> Ids { get; set; }
     }
 }

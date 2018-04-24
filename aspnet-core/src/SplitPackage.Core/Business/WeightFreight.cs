@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("WeightFreights")]
-    public class WeightFreight : FullAuditedEntity<long>, IPassivable
+    public class WeightFreight : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
         public long LogisticLineId { get; set; }
 
@@ -38,6 +38,8 @@ namespace SplitPackage.Business
         public double Price { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int? TenantId { get; set; }
 
         public WeightFreight()
         {
