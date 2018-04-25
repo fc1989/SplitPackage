@@ -4,13 +4,13 @@
     {
         public const string Pages_Admin_Tenants = "Pages.Admin.Tenants";
 
+        public const string Pages_Admin_ProductClasses = "Pages.Admin.ProductClasses";
+
         public const string Pages_Tenant_Users = "Pages.Tenant.Users";
 
         public const string Pages_Tenant_Roles = "Pages.Tenant.Roles";
 
         public const string Pages_Tenant_Products = "Pages.Tenant.Products";
-
-        public const string Pages_Tenant_ProductClasses = "Pages.Tenant.ProductClasses";
 
         public const string Pages_Tenant_Logistics = "Pages.Tenant.Logistics";
 

@@ -17,6 +17,9 @@ using SplitPackage.Authorization;
 using SplitPackage.Authorization.Users;
 using SplitPackage.Models.TokenAuth;
 using SplitPackage.MultiTenancy;
+using SplitPackage.Authorization.Roles;
+using Abp.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace SplitPackage.Controllers
 {
@@ -30,6 +33,9 @@ namespace SplitPackage.Controllers
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
+        private readonly IRepository<User, long> _userRepository;
+        private readonly IRepository<Tenant> _tenantRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -38,7 +44,10 @@ namespace SplitPackage.Controllers
             TokenAuthConfiguration configuration,
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
-            UserRegistrationManager userRegistrationManager)
+            UserRegistrationManager userRegistrationManager,
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
+            IRepository<User, long> userRepository,
+            IRepository<Tenant> tenantRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -47,6 +56,9 @@ namespace SplitPackage.Controllers
             _externalAuthConfiguration = externalAuthConfiguration;
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
+            _claimsPrincipalFactory = claimsPrincipalFactory;
+            _userRepository = userRepository;
+            _tenantRepository = tenantRepository;
         }
 
         [HttpPost]
@@ -60,6 +72,35 @@ namespace SplitPackage.Controllers
 
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity, loginResult.Tenant));
 
+            return new AuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncrpyedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                UserId = loginResult.User.Id
+            };
+        }
+
+        [HttpPost]
+        public async Task<AuthenticateResultModel> Switching(long id)
+        {
+            var tenant = await this._tenantRepository.GetAll().IgnoreQueryFilters().FirstOrDefaultAsync(o=>o.Id == id && !o.IsDeleted && o.IsActive);
+            AbpLoginResult<Tenant, User> loginResult;
+            if (tenant == null)
+            {
+                loginResult = new AbpLoginResult<Tenant, User>(AbpLoginResultType.UserIsNotActive);
+            }
+            else
+            {
+                var user = await this._userRepository.GetAll().IgnoreQueryFilters().FirstAsync(o => o.UserName == "admin" && o.TenantId == tenant.Id);
+                var principal = await _claimsPrincipalFactory.CreateAsync(user);
+                loginResult = new AbpLoginResult<Tenant, User>(
+                    tenant,
+                    user,
+                    principal.Identity as ClaimsIdentity
+                );
+            }
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity, loginResult.Tenant));
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -212,10 +253,6 @@ namespace SplitPackage.Controllers
         private static List<Claim> CreateJwtClaims(ClaimsIdentity identity, Tenant tenant)
         {
             var claims = identity.Claims.ToList();
-            if (tenant != null)
-            {
-                claims.Add(new Claim(AbpClaimTypes.TenantId, tenant.Id.ToString()));
-            }
             var nameIdClaim = claims.First(c => c.Type == ClaimTypes.NameIdentifier);
 
             // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.

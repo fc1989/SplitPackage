@@ -11,6 +11,9 @@ export default {
         return Util.ajax.get('/api/services/app/Tenant/GetAll',data);
     },
     Delete(id){
-        return Util.ajax.delete('/api/services/app/Tenant/Delete?Id='+id)
+        return Util.ajax.delete('/api/services/app/Tenant/Delete?Id='+id);
+    },
+    Switching(id){
+        return Util.ajax.post('/api/TokenAuth/Switching?id='+id);
     }
 }

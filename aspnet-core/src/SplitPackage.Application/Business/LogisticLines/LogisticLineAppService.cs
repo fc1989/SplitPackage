@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization;
 using SplitPackage.Business.LogisticLines.Dto;
 using SplitPackage.Business.ProductClasses.Dto;
+using SplitPackage.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace SplitPackage.Business.LogisticLines
                 return true;
         }
 
-        public async Task<object> Query(QueryRequire<long> req)
+        public async Task<List<OptionDto>> Query(QueryRequire<long> req)
         {
             Expression<Func<LogisticLine, bool>> filter;
             if (!string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
@@ -77,9 +78,10 @@ namespace SplitPackage.Business.LogisticLines
             {
                 filter = o => o.LineCode.StartsWith(req.Flag) || o.LineName.StartsWith(req.Flag) || req.Ids.Contains(o.Id);
             }
-            return await this.Repository.GetAll().Where(filter).Take(20).Select(o => new {
-                value = o.Id,
-                label = string.Format("{0}[{1}]", o.LineName, o.LineCode)
+            return await this.Repository.GetAll().Where(filter).Take(20).Select(o => new OptionDto
+            {
+                Value = o.Id.ToString(),
+                Label = string.Format("{0}[{1}]", o.LineName, o.LineCode)
             }).ToListAsync();
         }
     }

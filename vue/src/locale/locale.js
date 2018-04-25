@@ -2,6 +2,7 @@ export default {
   'en-US': {
     'Public': {
       'Actions': 'Actions',
+      'Switching': 'Switching',
       'Refresh': 'Refresh',
       'Create': 'Create',
       'Cancel': 'Cancel',
@@ -134,6 +135,7 @@ export default {
   'zh-CN': {
     'Public': {
       'Actions': '操作',
+      'Switching': '切换',
       'Refresh': '刷新',
       'Create': '创建',
       'Cancel': '取消',

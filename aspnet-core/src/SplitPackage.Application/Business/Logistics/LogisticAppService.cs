@@ -7,6 +7,7 @@ using SplitPackage.Authorization;
 using SplitPackage.Business.Logistics.Dto;
 using SplitPackage.Business.ProductClasses.Dto;
 using SplitPackage.Business.Products.Dto;
+using SplitPackage.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,9 +47,14 @@ namespace SplitPackage.Business.Logistics
                 return true;
         }
 
-        public async Task<object> Query(QueryRequire<long> req)
+        public async Task<List<OptionDto>> Query(QueryRequire<long> req)
         {
-            Expression<Func<Logistic, bool>> filter;
+            var param = Expression.Parameter(typeof(Logistic), "o");
+            var variable = Expression.Constant(req);
+            var judge1 = Expression.Call(Expression.Property(param, "LogisticFlag"), typeof(String).GetMethod("StartsWith", new Type[] { typeof(String) }), Expression.Property(variable, "Flag"));
+            var judge2 = Expression.Call(Expression.Property(param, "CorporationName"), typeof(String).GetMethod("StartsWith", new Type[] { typeof(String) }), Expression.Property(variable, "Flag"));
+            Expression<Func<Logistic, bool>> filter = Expression.Lambda<Func<Logistic, bool>>(Expression.OrElse(judge1, judge2), param);
+
             if (!string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
             {
                 filter = o => o.LogisticFlag.StartsWith(req.Flag) || o.CorporationName.StartsWith(req.Flag);
@@ -65,9 +71,10 @@ namespace SplitPackage.Business.Logistics
             {
                 filter = o => o.LogisticFlag.StartsWith(req.Flag) || o.CorporationName.StartsWith(req.Flag) || req.Ids.Contains(o.Id);
             }
-            return await this.Repository.GetAll().Where(filter).Take(20).Select(o => new {
-                value = o.Id,
-                label = string.Format("{0}[{1}]", o.CorporationName, o.LogisticFlag)
+            return await this.Repository.GetAll().Where(filter).Take(20).Select(o => new OptionDto
+            {
+                Value = o.Id.ToString(),
+                Label = string.Format("{0}[{1}]", o.CorporationName, o.LogisticFlag)
             }).ToListAsync();
         }
     }
