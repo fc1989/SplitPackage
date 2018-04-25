@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SplitPackage.Authorization;
 using SplitPackage.Business.WeightFreights.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Business.WeightFreights
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_WeightFreights)]
     public class WeightFreightAppService : AsyncCrudAppService<WeightFreight, WeightFreightDto, long, PagedResultRequestDto, CreateWeightFreightDto, UpdateWeightFreightDto>, IWeightFreightAppService
     {
         public WeightFreightAppService(IRepository<WeightFreight, long> repository) : base(repository)

@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SplitPackage.Authorization;
 using SplitPackage.Business.ProductClasses.Dto;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Business.ProductClasses
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_ProductClasses)]
     public class ProductClassAppService : AsyncCrudAppService<ProductClass, ProductClassDto, long, PagedResultRequestDto, CreateProductClassDto, UpdateProductClassDto>, IProductClassAppService
     {
         public ProductClassAppService(IRepository<ProductClass, long> repository) : base(repository)

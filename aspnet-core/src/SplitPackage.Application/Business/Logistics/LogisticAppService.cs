@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SplitPackage.Authorization;
 using SplitPackage.Business.Logistics.Dto;
 using SplitPackage.Business.ProductClasses.Dto;
 using SplitPackage.Business.Products.Dto;
@@ -14,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Business.Logistics
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_Logistics)]
     public class LogisticAppService : AsyncCrudAppService<Logistic, LogisticDto, long, PagedResultRequestDto, CreateLogisticDto, UpdateLogisticDto>, ILogisticAppService
     {
         public LogisticAppService(IRepository<Logistic, long> repository) : base(repository)

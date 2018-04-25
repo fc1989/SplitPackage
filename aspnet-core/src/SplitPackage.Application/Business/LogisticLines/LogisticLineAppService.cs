@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SplitPackage.Authorization;
 using SplitPackage.Business.LogisticLines.Dto;
 using SplitPackage.Business.ProductClasses.Dto;
 using System;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Business.LogisticLines
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_LogisticLines)]
     public class LogisticLineAppService : AsyncCrudAppService<LogisticLine, LogisticLineDto, long, PagedResultRequestDto, CreateLogisticLineDto, UpdateLogisticLineDto>, ILogisticLineAppService
     {
         public LogisticLineAppService(IRepository<LogisticLine, long> repository) : base(repository)

@@ -10,9 +10,12 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using Abp.Authorization;
+using SplitPackage.Authorization;
 
 namespace SplitPackage.Business.Products
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_Products)]
     public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, PagedResultRequestDto, CreateProductDto, UpdateProductDto>, IProductAppService
     {
         protected IRepository<ProductProductClass, long> PPCRepository;

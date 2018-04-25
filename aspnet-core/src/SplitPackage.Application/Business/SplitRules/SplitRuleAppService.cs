@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SplitPackage.Authorization;
 using SplitPackage.Business.SplitRules.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Business.SplitRules
 {
+    [AbpAuthorize(PermissionNames.Pages_Tenant_SplitRules)]
     public class SplitRuleAppService : AsyncCrudAppService<SplitRule, SplitRuleDto, long, PagedResultRequestDto, CreateSplitRuleDto, UpdateSplitRuleDto>, ISplitRuleAppService
     {
         public SplitRuleAppService(IRepository<SplitRule, long> repository) : base(repository)
