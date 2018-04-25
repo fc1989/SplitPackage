@@ -143,14 +143,14 @@ export const appRouter = [
                 title: 'Menu.Pages.Users', 
                 name: 'users', 
                 permission: 'Pages.Tenant.Users', 
-                component: () => import('@/views/admin/users/users.vue') 
+                component: () => import('@/views/business/users/users.vue') 
             },
             { 
                 path: 'roles', 
                 title: 'Menu.Pages.Roles', 
                 name: 'roles', 
                 permission: 'Pages.Tenant.Roles', 
-                component: () => import('@/views/admin/roles/roles.vue') 
+                component: () => import('@/views/business/roles/roles.vue') 
             }
         ]
     }
