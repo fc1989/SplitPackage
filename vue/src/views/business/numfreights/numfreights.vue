@@ -34,6 +34,7 @@
                 <Select
                     v-model="slotProps.editModel.logisticLineId"
                     :label="label"
+                    disabled
                     filterable
                     remote
                     :remote-method="remoteLLMethod"

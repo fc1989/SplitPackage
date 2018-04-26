@@ -20,7 +20,6 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
         {
             var sr = new SplitRule()
             {
-                MinPackage = 1,
                 MaxPackage = 10,
                 MaxWeight = 2000,
                 MaxTax = 2000,

@@ -7,7 +7,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("SplitRule_ProductClass")]
-    public class SplitRuleProductClass
+    public class SplitRuleProductClass: Entity<long>
     {
         public long ProductClassId { get; set; }
 
@@ -16,6 +16,8 @@ namespace SplitPackage.Business
         public long SplitRuleId { get; set; }
 
         public virtual SplitRule SplitRuleBy { get; set; }
+
+        public int MinNum { get; set; }
 
         public int MaxNum { get; set; }
     }

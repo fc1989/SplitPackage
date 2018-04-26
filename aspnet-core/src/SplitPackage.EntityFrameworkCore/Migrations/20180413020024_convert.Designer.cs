@@ -149,7 +149,6 @@ namespace SplitPackage.Migrations
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
                 b.Property(p => p.LogisticLineId).IsRequired();
-                b.Property(p => p.MinPackage);
                 b.Property(p => p.MaxPackage);
                 b.Property(p => p.MaxWeight);
                 b.Property(p => p.MaxTax);
@@ -165,7 +164,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("SplitRules");
-            b.HasOne(p => p.LogisticLineBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticLineId);
+                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticLineId);
             });
 
             modelBuilder.Entity<SplitRuleProductClass>(b =>
@@ -173,7 +172,8 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.SplitRuleId).IsRequired();
                 b.Property(p => p.ProductClassId).IsRequired();
                 b.Property(p => p.MaxNum);
-                b.HasKey(p => new { p.SplitRuleId, p.ProductClassId });
+                b.Property(p => p.MinNum);
+                b.HasKey(p => p.Id);
                 b.ToTable("SplitRule_ProductClass");
                 b.HasOne(pt => pt.SplitRuleBy)
                     .WithMany(p => p.ProductClasses)

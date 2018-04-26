@@ -75,7 +75,7 @@ export const appRouter = [
                 path: 'productclasses', 
                 title: 'Menu.Pages.ProductClasses', 
                 name: 'productclasses', 
-                permission: 'Pages.Tenant.ProductClasses', 
+                permission: 'Pages.Admin.ProductClasses', 
                 component: () => import('@/views/business/productclasses/productclasses.vue') 
             }
         ]

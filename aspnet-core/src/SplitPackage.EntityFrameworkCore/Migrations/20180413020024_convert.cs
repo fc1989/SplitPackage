@@ -272,7 +272,6 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    MinPackage = table.Column<int>(),
                     MaxPackage = table.Column<int>(),
                     MaxWeight = table.Column<double>(),
                     MaxTax = table.Column<double>(),
@@ -327,13 +326,16 @@ namespace SplitPackage.Migrations
                 name: "SplitRule_ProductClass",
                 columns: table => new
                 {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ProductClassId = table.Column<long>(),
                     SplitRuleId = table.Column<long>(),
-                    MaxNum = table.Column<int>()
+                    MaxNum = table.Column<int>(),
+                    MinNum = table.Column<int>()
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SplitRuleProductClass", x => new { x.ProductClassId, x.SplitRuleId });
+                    table.PrimaryKey("PK_SplitRuleProductClass", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SplitRuleProductClass_ProductClasses_ProductClassId",
                         column: x => x.ProductClassId,

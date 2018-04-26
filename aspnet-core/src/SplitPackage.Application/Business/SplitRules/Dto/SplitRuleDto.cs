@@ -16,8 +16,6 @@ namespace SplitPackage.Business.SplitRules.Dto
 
         public string LogisticLineName { get; set; }
 
-        public int MinPackage { get; set; }
-
         public int MaxPackage { get; set; }
 
         public double MaxWeight { get; set; }
@@ -27,5 +25,7 @@ namespace SplitPackage.Business.SplitRules.Dto
         public double MaxPrice { get; set; }
 
         public bool IsActive { get; set; }
+
+        public IEnumerable<RuleItemDto> RuleItems { get; set; }
     }
 }

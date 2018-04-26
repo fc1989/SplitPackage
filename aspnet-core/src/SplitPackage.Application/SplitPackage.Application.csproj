@@ -19,7 +19,6 @@
   <ItemGroup>
     <Folder Include="Business\Logistics\" />
     <Folder Include="Business\LogisticLines\" />
-    <Folder Include="Business\SplitRules\" />
     <Folder Include="Business\NumFreights\" />
     <Folder Include="Business\WeightFreights\" />
   </ItemGroup>

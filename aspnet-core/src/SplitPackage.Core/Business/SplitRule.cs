@@ -18,11 +18,6 @@ namespace SplitPackage.Business
         public virtual LogisticLine LogisticLineBy { get; set; }
 
         /// <summary>
-        /// 包裹最小数量
-        /// </summary>
-        public int MinPackage { get; set; }
-
-        /// <summary>
         /// 包裹最大数量
         /// </summary>
         public int MaxPackage { get; set; }
