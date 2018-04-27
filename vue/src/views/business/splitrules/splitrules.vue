@@ -4,7 +4,8 @@
         :api="api"
         :newRule="newSplitRuleRule"
         :editRule="splitRuleRule"
-        :createFormat="createFormat">
+        :createFormat="createFormat"
+        :modalWidth="800">
         <template slot="newform" slot-scope="slotProps">
             <Tabs value="detail">
                 <TabPane :label="$t('Public.Details')" name="detail">
@@ -32,39 +33,54 @@
                       </Select>
                   </FormItem>
                 </TabPane>
-                <TabPane :label="$t('Menu.Pages.ProductClasses')" name="productClass" :disabled="false" style="overflow: auto;max-height: 400px;">
+                <TabPane 
+                  :label="$t('Menu.Pages.ProductClasses')" 
+                  name="productClass" 
+                  :disabled="false" 
+                  style="overflow: auto;max-height: 400px;">
                   <rule-items v-model="slotProps.createModel.ruleItems"></rule-items>
                 </TabPane>
             </Tabs>
         </template>
         <template slot="editform" slot-scope="slotProps">
-            <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
-                <Input-number v-model.number="slotProps.editModel.maxPackage" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
-                <Input-number v-model.number="slotProps.editModel.maxWeight" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
-                <Input-number v-model.number="slotProps.editModel.maxTax" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
-                <Input-number v-model.number="slotProps.editModel.maxPrice" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
-                <Select
-                    v-model="slotProps.editModel.logisticLineId"
-                    disabled
-                    :label="label"
-                    filterable
-                    remote
-                    :remote-method="remoteLLMethod"
-                    :loading="loading2">
-                    <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
-                </Select>
-            </FormItem>
-            <FormItem>
-                <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
-            </FormItem>
+            <Tabs value="detail">
+                <TabPane :label="$t('Public.Details')" name="detail">
+                  <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
+                      <Input-number v-model.number="slotProps.editModel.maxPackage" style="width:100%"></Input-number>
+                  </FormItem>
+                  <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
+                      <Input-number v-model.number="slotProps.editModel.maxWeight" style="width:100%"></Input-number>
+                  </FormItem>
+                  <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
+                      <Input-number v-model.number="slotProps.editModel.maxTax" style="width:100%"></Input-number>
+                  </FormItem>
+                  <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
+                      <Input-number v-model.number="slotProps.editModel.maxPrice" style="width:100%"></Input-number>
+                  </FormItem>
+                  <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
+                      <Select
+                          v-model="slotProps.editModel.logisticLineId"
+                          disabled
+                          :label="label"
+                          filterable
+                          remote
+                          :remote-method="remoteLLMethod"
+                          :loading="loading2">
+                          <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
+                      </Select>
+                  </FormItem>
+                  <FormItem>
+                      <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
+                  </FormItem>
+                </TabPane>
+                <TabPane 
+                  :label="$t('Menu.Pages.ProductClasses')" 
+                  name="productClass" 
+                  :disabled="false" 
+                  style="overflow: auto;max-height: 400px;">
+                  <rule-items v-model="slotProps.editModel.ruleItems"></rule-items>
+                </TabPane>
+            </Tabs>
         </template>
     </simplePage>
 </template>

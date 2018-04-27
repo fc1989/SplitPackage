@@ -21,7 +21,7 @@
               <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
             </Row>
         </Card>
-        <Modal v-model="showModal" :title="$t('Public.Create')">
+        <Modal v-model="showModal" :title="$t('Public.Create')" :width="modalWidth">
             <div>
                 <Form ref="newForm" label-position="top" :rules="newRule" :model="createModel">
                     <slot name="newform" v-bind:createModel="createModel"></slot>
@@ -32,7 +32,7 @@
                 <Button @click="create" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="$t('Public.Edit')">
+        <Modal v-model="showEditModal" :title="$t('Public.Edit')" :width="modalWidth">
             <div>
                 <Form ref="productForm" label-position="top" :rules="editRule" :model="editModel">
                     <slot name="editform" v-bind:editModel="editModel"></slot>
@@ -64,8 +64,11 @@ export default {
     editRule: {
       type: Object
     },
-    createFormat:{
+    createFormat: {
       type: Function
+    },
+    modalWidth: {
+      type: [Number, String]
     }
   },
   methods: {
