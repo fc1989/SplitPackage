@@ -32,7 +32,7 @@ namespace SplitPackage.Business.ProductClasses
                 return true;
         }
 
-
+        [AbpAllowAnonymous]
         public async Task<List<OptionDto>> Query(QueryRequire<long> req)
         {
             Expression<Func<ProductClass, bool>> filter;

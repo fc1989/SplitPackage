@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import LogisticLineApi from "@/api/logisticline";
+import ProductClassApi from "@/api/productclass";
 
 const labelRender = (h,value) => {
     return h("span", value);
@@ -21,9 +21,10 @@ const generalRender = (h, param, vm) => {
                 value: param.row[param.column.key]
             },
             on: {
-                "on-change"(event) {
+                "on-blur" (event) {
                     let key = param.column.key;
                     vm.thisTableData[param.index][key] = event.target.value;
+                    event.stopPropagation();
                 }
             }
         });
@@ -39,7 +40,7 @@ const dropdownRender = (h, param, vm, labelName) =>{
             {
                 props: {
                     label: vm.thisTableData[param.index][labelName],
-                    value: vm.thisTableData[param.index][param.row.key],
+                    value: vm.thisTableData[param.index][param.column.key],
                     filterable: true,
                     remote: true,
                     "remote-method": vm.remoteLLMethod,
@@ -47,10 +48,11 @@ const dropdownRender = (h, param, vm, labelName) =>{
                     labelInValue: true
                 },
                 on: {
-                    "on-change"(vl) {
+                    "on-change"(vl,e) {
                         let key = param.column.key;
                         vm.thisTableData[param.index][key] = vl.value;
                         vm.thisTableData[param.index][labelName] = vl.label;
+                        vm.$emit("input", vm.thisTableData);
                     }
                 }
             },
@@ -58,7 +60,8 @@ const dropdownRender = (h, param, vm, labelName) =>{
                 return h("Option", {
                     props: {
                         value: op.value,
-                        key: op.value
+                        label: op.label,
+                        key: param.index + ":" + op.value
                     }
                 });
             })
@@ -71,18 +74,17 @@ const addHeaderRender = (h, param, vm) => {
             on: {
                 click: async () => {
                     var newObj = {
-                        id: null,
+                        id: 0,
                         productClassId: null,
                         productClassName: null,
                         maxNum: 0,
                         minNum: 0,
-                        editting: false,
-                        edittingCell: true,
+                        editting: true,
                         saving: false
                     };
                     vm.thisTableData.push(newObj);
-                    vm.$emit("input", vm.handleBackdata(vm.thisTableData));
-                    vm.$emit("on-change", vm.handleBackdata(vm.thisTableData));
+                    vm.$emit("input", vm.thisTableData);
+                    // vm.$emit("on-change", vm.handleBackdata(vm.thisTableData));
                 }
             }
         },
@@ -105,12 +107,6 @@ const actionRender = (h, param, vm) => {
                 on: {
                     click: () => {
                         if (!param.row.editting) {
-                            if (param.row.edittingCell) {
-                                for (let name in param.row.edittingCell) {
-                                    param.row.edittingCell[name] = false;
-                                    vm.thisTableData[param.index].edittingCell[name] = false;
-                                }
-                            }
                             vm.thisTableData[param.index].editting = true;
                             vm.thisTableData = JSON.parse(JSON.stringify(vm.thisTableData));
                         } else {
@@ -120,8 +116,8 @@ const actionRender = (h, param, vm) => {
                             edittingRow.editting = false;
                             edittingRow.saving = false;
                             vm.thisTableData = JSON.parse(JSON.stringify(vm.thisTableData));
-                            vm.$emit("input", vm.handleBackdata(vm.thisTableData));
-                            vm.$emit("on-change", vm.handleBackdata(vm.thisTableData), param.index);
+                            vm.$emit("input", vm.thisTableData);
+                            // vm.$emit("on-change", vm.handleBackdata(vm.thisTableData), param.index);
                         }
                     }
                 }
@@ -132,14 +128,14 @@ const actionRender = (h, param, vm) => {
             {
                 props: {
                     confirm: true,
-                    title: "您确定要删除这条数据吗?",
+                    title: vm.$t('SplitRules.DeleteTip'),
                     transfer: true
                 },
                 on: {
                     "on-ok": () => {
                         vm.thisTableData.splice(param.index, 1);
-                        vm.$emit("input", vm.handleBackdata(vm.thisTableData));
-                        vm.$emit("on-delete", vm.handleBackdata(vm.thisTableData), param.index);
+                        vm.$emit("input", vm.thisTableData);
+                        // vm.$emit("on-delete", vm.handleBackdata(vm.thisTableData), param.index);
                     }
                 }
             },
@@ -173,31 +169,31 @@ export default {
     return {
       columnsList: [
         {
-          title: "序号",
+          title: _this.$t("SplitRules.Index"),
           type: "index",
           align: "center",
           renderHeader: (h,param) => { return addHeaderRender(h, param, _this);}
         },
         {
-          title: "商品类别",
+          title: _this.$t("Menu.Pages.ProductClasses"),
           align: "center",
           key: "productClassId",
           render: (h,param) => { return dropdownRender(h, param, _this, "productClassName");}
         },
         {
-          title: "最大数量",
+          title: _this.$t("SplitRules.MaxNum"),
           align: "center",
           key: "maxNum",
           render: (h,param) => { return generalRender(h, param, _this);}
         },
         {
-          title: "最小数量",
+          title: _this.$t("SplitRules.MinNum"),
           align: "center",
           key: "minNum",
           render: (h,param) => { return generalRender(h, param, _this);}
         },
         {
-          title: "操作",
+          title: _this.$t("Public.Actions"),
           align: "center",
           width: 190,
           key: "action",
@@ -214,30 +210,32 @@ export default {
       let clonedData = JSON.parse(JSON.stringify(data));
       clonedData.forEach(item => {
         delete item.editting;
-        delete item.edittingCell;
         delete item.saving;
       });
       return clonedData;
     },
     remoteLLMethod(query) {
       let _this = this;
-      if (query !== "") {
+      if (query !== "" && query !==null) {
         _this.loading = true;
-        LogisticLineApi.Query(query, null).then(function(req) {
+        ProductClassApi.Query(query, null).then(function(req) {
           _this.options = req.data.result;
           _this.loading = false;
         });
       } else {
-        _this.options = null;
+        _this.options = [];
       }
     }
   },
   watch: {
     value (data) {
         this.thisTableData = data.map(function(v){
-            v.editting = false;
-            v.edittingCell = true;
-            v.saving = false;
+            if(v.editting === undefined){
+                v.editting = false;
+            }
+            if(v.saving === undefined){
+                v.saving = false;
+            }
             return v;
         });
     }

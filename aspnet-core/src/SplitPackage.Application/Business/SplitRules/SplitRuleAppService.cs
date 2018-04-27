@@ -21,6 +21,9 @@ namespace SplitPackage.Business.SplitRules
 
         protected static IMapper SRMapper = new MapperConfiguration(cfg =>
         {
+            cfg.CreateMap<SplitRuleProductClass, RuleItemDto>().ForMember(dest => dest.ProductClassName,
+                opt => opt.MapFrom(src => string.Format("{0}[{1}]", src.ProductClassBy.ClassName, src.ProductClassBy.PTId)))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
             cfg.CreateMap<SplitRule, SplitRuleDto>()
                 .ForMember(dest => dest.RuleItems,
                     opt => opt.MapFrom(src => src.ProductClasses.Select(oi => new RuleItemDto()
@@ -29,10 +32,9 @@ namespace SplitPackage.Business.SplitRules
                         MaxNum = oi.MaxNum,
                         MinNum = oi.MinNum
                     })))
-                 .ForMember(dest => dest.LogisticLineName, opt => opt.MapFrom(src => src.LogisticLineBy.LineName));
+                 .ForMember(dest => dest.LogisticLineName, opt => opt.MapFrom(src => src.LogisticLineBy.LineName))
+                 .ForMember(dest => dest.RuleItems, opt => opt.MapFrom(src => src.ProductClasses.Select(o=> SRMapper.Map<RuleItemDto>(o))));
             cfg.CreateMap<UpdateSplitRuleDto, SplitRule>();
-            cfg.CreateMap<SplitRuleProductClass, RuleItemDto>().ForMember(dest => dest.ProductClassName,
-                opt => opt.MapFrom(src => src.ProductClassBy.ClassName));
         }).CreateMapper();
 
         public SplitRuleAppService(IRepository<SplitRule, long> repository, IRepository<SplitRuleProductClass, long> srpRepository) : base(repository)
@@ -51,7 +53,7 @@ namespace SplitPackage.Business.SplitRules
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.ProductClasses).ThenInclude((SplitRuleProductClass srp) => srp.ProductClassBy));
 
             return new PagedResultDto<SplitRuleDto>(
                 totalCount,
@@ -90,24 +92,38 @@ namespace SplitPackage.Business.SplitRules
             var entity = this.Repository.GetAll().Include(p => p.ProductClasses).FirstOrDefault(o => o.Id == input.Id);
             SRMapper.Map(input, entity);
 
-            //insert
+            // delete
+            var dcl = entity.ProductClasses.Where(o => !input.RuleItems.Select(oi => oi.ProductClassId).Contains(o.ProductClassId)).ToList();
+            if (dcl.Count > 0)
+            {
+                dcl.ForEach(o => {
+                    entity.ProductClasses.Remove(o);
+                });
+                await this._srpRepository.DeleteAsync(o => dcl.Select(oi => oi.Id).Contains(o.Id));
+            }
+
+            // update
+            foreach (var item in entity.ProductClasses)
+            {
+                var update = input.RuleItems.FirstOrDefault(o => o.ProductClassId == item.ProductClassId);
+                item.MaxNum = update.MaxNum;
+                item.MinNum = update.MinNum;
+                await this._srpRepository.UpdateAsync(item);
+            }
+
+            // insert
             var icl = input.RuleItems.Where(o => !entity.ProductClasses.Any(oi => oi.ProductClassId == o.ProductClassId)).ToList();
             foreach (var item in icl)
             {
-                await this._srpRepository.InsertAsync(new SplitRuleProductClass()
+                var srp = new SplitRuleProductClass()
                 {
                     ProductClassId = item.ProductClassId,
                     SplitRuleId = input.Id,
                     MinNum = item.MinNum,
                     MaxNum = item.MaxNum
-                });
-            }
-
-            //delete
-            var dcl = entity.ProductClasses.Where(o => !input.RuleItems.Select(oi => oi.ProductClassId).Contains(o.ProductClassId)).Select(o => o.Id).ToList();
-            if (dcl.Count > 0)
-            {
-                await this._srpRepository.DeleteAsync(o => dcl.Contains(o.Id));
+                };
+                await this._srpRepository.InsertAsync(srp);
+                entity.ProductClasses.Add(srp);
             }
 
             await CurrentUnitOfWork.SaveChangesAsync();

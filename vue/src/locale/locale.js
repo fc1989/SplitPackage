@@ -123,7 +123,11 @@ export default {
       'MaxPackage': 'MaxPackage',
       'MaxWeight': 'MaxWeight',
       'MaxTax': 'MaxTax',
-      'MaxPrice': 'MaxPrice'
+      'MaxPrice': 'MaxPrice',
+      'DeleteTip': 'DeleteTip',
+      'Index': 'Index',
+      'MaxNum': 'MaxNum',
+      'MinNum': 'MinNum'
     },
     'WeightFreights': {
       'StartingWeight': 'StartingWeight',
@@ -256,7 +260,11 @@ export default {
       'MaxPackage': '最大打包数',
       'MaxWeight': '最大重量',
       'MaxTax': '最大税费',
-      'MaxPrice': '最大价值'
+      'MaxPrice': '最大价值',
+      'DeleteTip': '您确定要删除这条数据吗?',
+      'Index': '序号',
+      'MaxNum': '最大数量',
+      'MinNum': '最小数量'
     },
     'WeightFreights': {
       'StartingWeight': '开始重量',

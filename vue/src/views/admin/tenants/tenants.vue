@@ -132,6 +132,7 @@ export default {
                             Cookies.set('Abp.TenantId',params.row.id);
                             this.$store.commit('clearAllTags');
                             window.location = "/#/home";
+                            window.location.reload();
                           }
                         });
                       }
