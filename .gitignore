@@ -4,6 +4,7 @@
 .vs/
 obj/
 bin/
+node_modules/
 aspnet-core/src/SplitPackage.Web.Host/App_Data/Logs/
 aspnet-core/src/SplitPackage.Web.Mvc/App_Data/Logs/
 aspnet-core/src/SplitPackage.Migrator/Logs/Logs.txt
