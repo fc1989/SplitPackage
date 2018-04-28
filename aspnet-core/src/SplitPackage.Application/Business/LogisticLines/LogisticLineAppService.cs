@@ -24,6 +24,18 @@ namespace SplitPackage.Business.LogisticLines
 
         }
 
+        public override async Task<LogisticLineDto> Create(CreateLogisticLineDto input)
+        {
+            CheckCreatePermission();
+
+            var entity = MapToEntity(input);
+            entity.TenantId = AbpSession.TenantId;
+            await Repository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return MapToEntityDto(entity);
+        }
+
         public override async Task<PagedResultDto<LogisticLineDto>> GetAll(PagedResultRequestDto input)
         {
             CheckGetAllPermission();

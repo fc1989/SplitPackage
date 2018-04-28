@@ -73,6 +73,9 @@ const addHeaderRender = (h, param, vm) => {
         {
             on: {
                 click: async () => {
+                    if(vm.thisTableData.find(function(vl){ return vl.editting == true;})){
+                        return false;
+                    }
                     var newObj = {
                         id: 0,
                         productClassId: null,

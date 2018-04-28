@@ -12,10 +12,10 @@ util.title = function (title) {
     window.document.title = title;
 };
 
-const ajaxUrl = env === 'development'
+const ajaxUrl = env.env === 'development'
     ? AppConsts.remoteServiceBaseUrl
-    : env === 'production'
-        ? 'https://www.url.com'
+    : env.env === 'production'
+        ? env.remoteServiceBaseUrl
         : 'https://debug.url.com';
 
 util.ajax = axios.create({

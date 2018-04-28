@@ -12,7 +12,10 @@ const path = require('path');
 const package = require('../package.json');
 
 fs.open('./build/env.js', 'w', function(err, fd) {
-    const buf = 'export default "production";';
+    const buf = "export default {\
+        env: 'production',\
+        remoteServiceBaseUrl: 'http://192.168.1.7:8081/'\
+    }";
     fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) {});
 });
 
@@ -82,6 +85,10 @@ module.exports = merge(webpackBaseConfig, {
                 to:'abp'
             },{
                 from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js',
+                to:'abp'
+            },
+            {
+                from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.jquery.js',
                 to:'abp'
             }
         ], {
