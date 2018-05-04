@@ -11,16 +11,19 @@
             <FormItem :label="$t('Public.Name')" prop="name">
                 <Input v-model="slotProps.createModel.name" :maxlength="128"></Input>
             </FormItem>
-            <!-- <FormItem :label="$t('Tenants.DatabaseConnectionString')+'('+$t('Public.Optional')+')'">
-                <Input v-model="slotProps.createModel.connectionString" :maxlength="1024"></Input>
-            </FormItem> -->
             <FormItem :label="$t('Tenants.AdminEmailAddress')" prop="adminEmailAddress">
                 <Input v-model="slotProps.createModel.adminEmailAddress" type="email" :maxlength="256"></Input>
+            </FormItem>
+            <FormItem label="ApiKey" prop="ApiKey">
+                <Input v-model="slotProps.createModel.apiKey" :maxlength="50"></Input>
+            </FormItem>
+            <FormItem label="ApiSecret" prop="ApiSecret">
+                <Input v-model="slotProps.createModel.apiSecret" :maxlength="100"></Input>
             </FormItem>
             <FormItem>
                 <Checkbox v-model="slotProps.createModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
             </FormItem>
-            <p><p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p></p>
+            <p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p>
         </template>
         <template slot="editform" slot-scope="slotProps">
             <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName">
@@ -29,10 +32,16 @@
             <FormItem :label="$t('Public.Name')" prop="name">
                 <Input v-model="slotProps.editModel.name" :maxlength="128"></Input>
             </FormItem>
+            <FormItem label="ApiKey" prop="ApiKey">
+                <Input v-model="slotProps.editModel.apiKey" :maxlength="50"></Input>
+            </FormItem>
+            <FormItem label="ApiSecret" prop="ApiSecret">
+                <Input v-model="slotProps.editModel.apiSecret" :maxlength="100"></Input>
+            </FormItem>
             <FormItem>
                 <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
             </FormItem>
-            <p><p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p></p>
+            <p>{{$t('Public.DefaultPasswordIs',{pwd:'123qwe'})}}</p>
         </template>
     </simplePage>
 </template>
@@ -69,6 +78,14 @@ export default {
           {
             title: this.$t("Public.Name"),
             key: "name"
+          },
+          {
+            title: "ApiKey",
+            key: "apiKey"
+          },
+          {
+            title: 'ApiSecret',
+            key: "apiSecret"
           },
           {
             title: this.$t("Public.IsActive"),

@@ -35,7 +35,6 @@
     <ProjectReference Include="F:\Fire\NetCore\aspnetboilerplate\src\Abp.Castle.Log4Net\Abp.Castle.Log4Net.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

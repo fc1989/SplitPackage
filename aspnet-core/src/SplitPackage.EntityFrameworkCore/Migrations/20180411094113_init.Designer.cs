@@ -938,6 +938,10 @@ namespace SplitPackage.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
+                    b.Property<string>("ApiKey").HasMaxLength(50);
+
+                    b.Property<string>("ApiSecret").HasMaxLength(100);
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorUserId")

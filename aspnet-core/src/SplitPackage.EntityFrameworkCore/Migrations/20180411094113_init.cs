@@ -494,7 +494,9 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
-                    TenancyName = table.Column<string>(maxLength: 64, nullable: false)
+                    TenancyName = table.Column<string>(maxLength: 64, nullable: false),
+                    ApiKey = table.Column<string>(maxLength: 50, nullable: true),
+                    ApiSecret = table.Column<string>(maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {

@@ -11,6 +11,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="SplitPackageRules\LogisticsRelated.xml" />
     <None Remove="SplitPackageRules\Product.xml" />
     <None Remove="SplitPackageRules\Rules\Rule_AolExpressnew.xml" />
     <None Remove="SplitPackageRules\Rules\Rule_ArkExpress new.xml" />
@@ -28,6 +29,9 @@
     <None Remove="SplitPackageRules\Rules\Rule_yundaExpressnew.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SplitPackageRules\LogisticsRelated.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SplitPackageRules\Product.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

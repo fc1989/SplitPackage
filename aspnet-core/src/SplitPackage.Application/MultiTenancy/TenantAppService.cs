@@ -99,6 +99,8 @@ namespace SplitPackage.MultiTenancy
             entity.Name = updateInput.Name;
             entity.TenancyName = updateInput.TenancyName;
             entity.IsActive = updateInput.IsActive;
+            entity.ApiKey = updateInput.ApiKey;
+            entity.ApiSecret = updateInput.ApiSecret;
         }
 
         public override async Task Delete(EntityDto<int> input)

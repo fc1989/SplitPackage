@@ -15,6 +15,12 @@ using SplitPackage.Authentication.JwtBearer;
 using SplitPackage.Configuration;
 using SplitPackage.Identity;
 using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Runtime.ExceptionServices;
+using SplitPackage.Authentication.BasicAuth;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -106,6 +112,40 @@ namespace SplitPackage.Web.Host.Startup
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Headers.ContainsKey("Authorization"))
+                {
+                    var scheme = context.Request.Headers["Authorization"].ToString().Split(' ')[0];
+                    if (scheme.Equals(JwtBearerDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+                    {
+                        scheme = JwtBearerDefaults.AuthenticationScheme;
+                    }
+                    else if (scheme.Equals(BasicAuthenticationDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+                    {
+                        scheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                    }
+                    AuthenticateResult result = await context.AuthenticateAsync(scheme);
+                    if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
+                    {
+                        if (result?.Principal != null)
+                        {
+                            context.User = result.Principal;
+                        }
+                    }
+                    else if (result.Failure != null)
+                    {
+                        // Rethrow, let the exception page handle it.
+                        ExceptionDispatchInfo.Capture(result.Failure).Throw();
+                    }
+                    else
+                    {
+                        await context.ChallengeAsync(scheme);
+                    }
+                }
+                await next();
+            });
 
             app.UseAbpRequestLocalization();
 

@@ -9,6 +9,7 @@ using SplitPackage.Split.SplitModels;
 using SplitPackage.Split.Common;
 using System.Diagnostics;
 using Abp.Logging;
+using SplitPackage.RuleModels;
 
 namespace SplitPackage.Split
 {
@@ -62,6 +63,8 @@ namespace SplitPackage.Split
 
         // Key:产品SKU NO
         private Dictionary<string, ProductEntity> prodDic = new Dictionary<string, ProductEntity>();
+
+        private List<RelatedItem> logisticsRelated;
 
         #region 初始化
         /// <summary>
@@ -155,6 +158,8 @@ namespace SplitPackage.Split
                     }
                 }
 
+                logisticsRelated = this.LoadLogisticsRelated(Path.Combine(folderPath, "LogisticsRelated.xml"));
+
                 CheckLevelConfig();
                 splitConfig.Initialize(ruleEntityList);
                 bcRuleEntity.Initialize(productConfig.ProductClass.BcConfig, SubLevelDic);
@@ -227,6 +232,21 @@ namespace SplitPackage.Split
             return config;
         }
 
+        public List<RelatedItem> LoadLogisticsRelated(string fileName)
+        {
+            LogHelper.Logger.Info(String.Format("Loading LogisticsRelated @[{0}]", fileName));
+            if (!File.Exists(fileName))
+            {
+                return new List<RelatedItem>();
+            }
+
+            var relates = XmlHelper.LoadXmlFile<List<RelatedItem>>(fileName);
+            if (relates != null && relates.Count > 0)
+            {
+                LogHelper.Logger.Info(String.Format("Loading LogisticsRelated Completed. Loaded Products Count is [{0}]", relates.Count));
+            }
+            return relates;
+        }
         #endregion
 
         /// <summary>
@@ -264,6 +284,54 @@ namespace SplitPackage.Split
                 {
                     // 指定物流情况下，重新调用一遍价格优先将剩余订单拆分
                     result.Item1.AddSubOrderRange(SplitOrder(orderId, result.Item2, pel.Item2, totalQuantity, SplitPrinciple.PriceFirst));
+                }
+                result.Item1.GenerateSubOrderId();
+                LogHelper.Logger.Info(string.Format("Spliter.SplitWithOrganization return:\n    {0}", result.Item1));
+                return result.Item1;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Logger.Info(ex.Message, ex);
+                throw;
+            }
+        }
+
+        public SplitedOrder SplitWithOrganization1(string orderId, List<Product> productList, int totalQuantity, List<string> logistics)
+        {
+            try
+            {
+                var pel = ConvertToProductEntity(productList, false);
+                List<RuleEntity> rules = new List<RuleEntity>();
+                foreach (var item in logistics)
+                {
+                    Logistic l = this.GetLogisticcDic()[Logistic.GetLogisticName(item, "标准型")];
+                    if (l != null && l.RuleSequenceDic != null)
+                    {
+                        rules.AddRange(l.RuleSequenceDic.Values);
+                    }
+                }
+                // 指定物流拆单
+                var result = SplitOrderWithOrganization(orderId, pel.Item1, totalQuantity, rules);
+                if (result.Item2.Count > 0)
+                {
+                    var secondLogistics = logisticsRelated.Where(o => o.Logistics.Any(oi => logistics.Contains(oi))).SelectMany(o => o.Logistics)
+                        .Where(o => !logistics.Contains(o));
+                    List<RuleEntity> secondRules = new List<RuleEntity>();
+                    foreach (var item in secondLogistics)
+                    {
+                        Logistic l = this.GetLogisticcDic()[Logistic.GetLogisticName(item, "标准型")];
+                        if (l != null && l.RuleSequenceDic != null)
+                        {
+                            secondRules.AddRange(l.RuleSequenceDic.Values);
+                        }
+                    }
+                    var secondResult = SplitOrderWithOrganization(orderId, result.Item2, totalQuantity, secondRules);
+                    result.Item1.AddSubOrderRange(secondResult.Item1);
+                    if (secondResult.Item2.Count > 0)
+                    {
+                        // 指定物流情况下，重新调用一遍价格优先将剩余订单拆分
+                        result.Item1.AddSubOrderRange(SplitOrder(orderId, secondResult.Item2, pel.Item2, totalQuantity, SplitPrinciple.PriceFirst));
+                    }
                 }
                 result.Item1.GenerateSubOrderId();
                 LogHelper.Logger.Info(string.Format("Spliter.SplitWithOrganization return:\n    {0}", result.Item1));

@@ -15,8 +15,14 @@ namespace SplitPackage.MultiTenancy.Dto
 
         [Required]
         [StringLength(AbpTenantBase.MaxNameLength)]
-        public string Name { get; set; }        
-        
+        public string Name { get; set; }
+
+        [StringLength(Tenant.MaxApiKeyLength)]
+        public string ApiKey { get; set; }
+
+        [StringLength(Tenant.MaxApiSecretLength)]
+        public string ApiSecret { get; set; }
+
         public bool IsActive {get; set;}
     }
 }

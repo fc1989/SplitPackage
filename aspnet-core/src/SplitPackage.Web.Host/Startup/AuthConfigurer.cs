@@ -1,12 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Abp.Runtime.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Abp.Runtime.Security;
+using SplitPackage.Authentication.BasicAuth;
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SplitPackage.Web.Host.Startup
 {
@@ -16,10 +17,7 @@ namespace SplitPackage.Web.Host.Startup
         {
             if (bool.Parse(configuration["Authentication:JwtBearer:IsEnabled"]))
             {
-                services.AddAuthentication(options => {
-                    options.DefaultAuthenticateScheme = "JwtBearer";
-                    options.DefaultChallengeScheme = "JwtBearer";
-                }).AddJwtBearer("JwtBearer", options =>
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
                 {
                     options.Audience = configuration["Authentication:JwtBearer:Audience"];
 
@@ -50,6 +48,7 @@ namespace SplitPackage.Web.Host.Startup
                     };
                 });
             }
+            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic();
         }
 
         /* This method is needed to authorize SignalR javascript client.

@@ -95,18 +95,18 @@ namespace SplitPackage.Split
                 string errorStr = string.Format("指定物流Id:{0}不存在", string.Join(",", logisticsIds.Where(o => !logistics.Any(oi => oi.ID == o))));
                 return Tuple.Create<string, SplitedOrder>(errorStr, null);
             }
-            List<RuleEntity> rules = new List<RuleEntity>();
-            foreach (var item in logistics)
-            {
-                Logistic l = this.spliter.GetLogisticcDic()[Logistic.GetLogisticName(item.Name, "标准型")];
-                if (l == null || l.RuleSequenceDic == null)
-                {
-                    return Tuple.Create<string, SplitedOrder>(string.Format("物流Id:{0}下没有标准型拆单规则", item.ID),null);
-                }
-                rules.AddRange(l.RuleSequenceDic.Values);
-            }
+            //List<RuleEntity> rules = new List<RuleEntity>();
+            //foreach (var item in logistics)
+            //{
+            //    Logistic l = this.spliter.GetLogisticcDic()[Logistic.GetLogisticName(item.Name, "标准型")];
+            //    if (l == null || l.RuleSequenceDic == null)
+            //    {
+            //        return Tuple.Create<string, SplitedOrder>(string.Format("物流Id:{0}下没有标准型拆单规则", item.ID),null);
+            //    }
+            //    rules.AddRange(l.RuleSequenceDic.Values);
+            //}
             LogHelper.Logger.Info("Call Spliter.SplitWithOrganization(): " + request);
-            SplitedOrder result = this.spliter.SplitWithOrganization1(request.OrderId.ToString(), request.ProList, request.TotalQuantity, rules);
+            SplitedOrder result = this.spliter.SplitWithOrganization1(request.OrderId.ToString(), request.ProList, request.TotalQuantity, request.logistics);
             return Tuple.Create(string.Empty, result);
         }
 

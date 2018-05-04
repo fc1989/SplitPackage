@@ -632,5 +632,46 @@ namespace SplitPackage.Tests.Split
             Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
             Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
         }
+
+        [Fact]
+        public void SplitWithExp1Test_5()
+        {
+            var request = new SplitWithExpRequest1()
+            {
+                UserName = "admin",
+                OrderId = "18040300110001",
+                ProList = new List<Product>() {
+                    new Product()
+                    {
+                        ProNo = "9310160814098",
+                        SkuNo = "9310160814098",
+                        Quantity = 1,
+                        ProName = "Menevit 爱乐维男性备孕营养素 90粒装",
+                        ProPrice = 5.69M,
+                        Weight = 200,
+                        PTId = 101990401
+                    },
+                    new Product()
+                    {
+                        ProNo = "9320971310566",
+                        SkuNo = "9320971310566",
+                        Quantity = 2,
+                        ProName = "全脂奶粉",
+                        ProPrice = 5.69M,
+                        Weight = 200,
+                        PTId = 1010701
+                    }
+                },
+                TotalQuantity = 1,
+                logistics = new List<string> { "EWE Express 标准线" }
+            };
+            var result = this._splitAppService.SplitWithOrganization1(request);
+            Assert.Equal(string.Empty, result.Item1);
+            Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("EWE Express 标准线", result.Item2.OrderList[0].LogisticsName);
+            Assert.Equal("EWE杂货标准线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[1].LogisticsName);
+            Assert.Equal("EWE杂货经济线", result.Item2.OrderList[1].SubBusinessName);
+        }
     }
 }

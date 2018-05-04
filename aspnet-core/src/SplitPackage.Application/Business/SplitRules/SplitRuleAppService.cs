@@ -53,7 +53,7 @@ namespace SplitPackage.Business.SplitRules
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.ProductClasses).ThenInclude((SplitRuleProductClass srp) => srp.ProductClassBy));
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.LogisticLineBy).Include(p=>p.ProductClasses).ThenInclude((SplitRuleProductClass srp) => srp.ProductClassBy));
 
             return new PagedResultDto<SplitRuleDto>(
                 totalCount,
