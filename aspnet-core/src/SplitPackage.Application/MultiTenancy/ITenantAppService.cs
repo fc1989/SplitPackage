@@ -4,7 +4,7 @@ using SplitPackage.MultiTenancy.Dto;
 
 namespace SplitPackage.MultiTenancy
 {
-    public interface ITenantAppService : IAsyncCrudAppService<TenantDto, int, PagedResultRequestDto, CreateTenantDto, TenantDto>
+    public interface ITenantAppService : IAsyncCrudAppService<TenantDto, int, TenantSearchFilter, CreateTenantDto, TenantDto>
     {
     }
 }

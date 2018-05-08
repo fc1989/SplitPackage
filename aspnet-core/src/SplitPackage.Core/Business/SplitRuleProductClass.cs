@@ -9,9 +9,7 @@ namespace SplitPackage.Business
     [Table("SplitRule_ProductClass")]
     public class SplitRuleProductClass: Entity<long>
     {
-        public long ProductClassId { get; set; }
-
-        public virtual ProductClass ProductClassBy { get; set; }
+        public string PTId { get; set; }
 
         public long SplitRuleId { get; set; }
 

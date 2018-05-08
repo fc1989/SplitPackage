@@ -70,13 +70,6 @@ export const appRouter = [
                 name: 'tenants', 
                 permission: 'Pages.Admin.Tenants', 
                 component: () => import('@/views/admin/tenants/tenants.vue') 
-            },
-            { 
-                path: 'productclasses', 
-                title: 'Menu.Pages.ProductClasses', 
-                name: 'productclasses', 
-                permission: 'Pages.Admin.ProductClasses', 
-                component: () => import('@/views/business/productclasses/productclasses.vue') 
             }
         ]
     },
@@ -100,6 +93,13 @@ export const appRouter = [
                 name: 'logisticlines', 
                 permission: 'Pages.Tenant.LogisticLines', 
                 component: () => import('@/views/business/logisticlines/logisticlines.vue') 
+            },
+            {
+                path: 'productclasses', 
+                title: 'Menu.Pages.ProductClasses', 
+                name: 'productclasses', 
+                permission: 'Pages.Tenant.ProductClasses', 
+                component: () => import('@/views/business/productclasses/productclasses.vue') 
             },
             { 
                 path: 'products', 

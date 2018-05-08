@@ -21,14 +21,13 @@ namespace SplitPackage.Business.SplitRules
 
         protected static IMapper SRMapper = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<SplitRuleProductClass, RuleItemDto>().ForMember(dest => dest.ProductClassName,
-                opt => opt.MapFrom(src => string.Format("{0}[{1}]", src.ProductClassBy.ClassName, src.ProductClassBy.PTId)))
+            cfg.CreateMap<SplitRuleProductClass, RuleItemDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
             cfg.CreateMap<SplitRule, SplitRuleDto>()
                 .ForMember(dest => dest.RuleItems,
                     opt => opt.MapFrom(src => src.ProductClasses.Select(oi => new RuleItemDto()
                     {
-                        ProductClassId = oi.ProductClassId,
+                        PTId = oi.PTId,
                         MaxNum = oi.MaxNum,
                         MinNum = oi.MinNum
                     })))
@@ -53,7 +52,7 @@ namespace SplitPackage.Business.SplitRules
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.LogisticLineBy).Include(p=>p.ProductClasses).ThenInclude((SplitRuleProductClass srp) => srp.ProductClassBy));
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.LogisticLineBy).Include(p=>p.ProductClasses));
 
             return new PagedResultDto<SplitRuleDto>(
                 totalCount,
@@ -73,7 +72,7 @@ namespace SplitPackage.Business.SplitRules
             {
                 var ruleItem = new SplitRuleProductClass()
                 {
-                    ProductClassId = item.ProductClassId,
+                    PTId = item.PTId,
                     SplitRuleId = ruleId,
                     MinNum = item.MinNum,
                     MaxNum = item.MaxNum
@@ -93,7 +92,7 @@ namespace SplitPackage.Business.SplitRules
             SRMapper.Map(input, entity);
 
             // delete
-            var dcl = entity.ProductClasses.Where(o => !input.RuleItems.Select(oi => oi.ProductClassId).Contains(o.ProductClassId)).ToList();
+            var dcl = entity.ProductClasses.Where(o => !input.RuleItems.Select(oi => oi.PTId).Contains(o.PTId)).ToList();
             if (dcl.Count > 0)
             {
                 dcl.ForEach(o => {
@@ -105,19 +104,19 @@ namespace SplitPackage.Business.SplitRules
             // update
             foreach (var item in entity.ProductClasses)
             {
-                var update = input.RuleItems.FirstOrDefault(o => o.ProductClassId == item.ProductClassId);
+                var update = input.RuleItems.FirstOrDefault(o => o.PTId == item.PTId);
                 item.MaxNum = update.MaxNum;
                 item.MinNum = update.MinNum;
                 await this._srpRepository.UpdateAsync(item);
             }
 
             // insert
-            var icl = input.RuleItems.Where(o => !entity.ProductClasses.Any(oi => oi.ProductClassId == o.ProductClassId)).ToList();
+            var icl = input.RuleItems.Where(o => !entity.ProductClasses.Any(oi => oi.PTId == o.PTId)).ToList();
             foreach (var item in icl)
             {
                 var srp = new SplitRuleProductClass()
                 {
-                    ProductClassId = item.ProductClassId,
+                    PTId = item.PTId,
                     SplitRuleId = input.Id,
                     MinNum = item.MinNum,
                     MaxNum = item.MaxNum

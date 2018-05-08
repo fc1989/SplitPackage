@@ -11,87 +11,24 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="SplitPackageRules\LogisticsRelated.xml" />
-    <None Remove="SplitPackageRules\Product.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AolExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_ArkExpress new.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueMilknew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueZhhuannew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AueZhyounew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_AuodExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_BlueSkyExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_changjiangExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Economic new.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_EWEExpress Standard new.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_FSExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_PCAExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_TransrushExpressnew.xml" />
-    <None Remove="SplitPackageRules\Rules\Rule_yundaExpressnew.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SplitPackageRules\LogisticsRelated.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Product.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AolExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_ArkExpress new.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueMilknew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueZhhuannew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AueZhyounew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_AuodExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_BlueSkyExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_changjiangExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Economic new.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_EWEExpress Standard new.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_FSExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_PCAExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_TransrushExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SplitPackageRules\Rules\Rule_yundaExpressnew.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="SplitPackageRules\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SplitPackage.Application\SplitPackage.Application.csproj" />
     <ProjectReference Include="..\..\src\SplitPackage.EntityFrameworkCore\SplitPackage.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.AspNetCore.TestBase" Version="3.5.0" />
+    <PackageReference Include="Abp.AspNetCore.TestBase" Version="3.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Shouldly" Version="3.0.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.extensibility.execution" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-    <PackageReference Include="Abp.TestBase" Version="3.5.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.2" />
+    <PackageReference Include="Abp.TestBase" Version="3.6.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.3" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
   </ItemGroup>
   <ItemGroup>

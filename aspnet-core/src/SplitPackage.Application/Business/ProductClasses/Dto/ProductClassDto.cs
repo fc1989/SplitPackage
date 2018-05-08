@@ -9,23 +9,8 @@ using System.Text;
 
 namespace SplitPackage.Business.ProductClasses.Dto
 {
-    [AutoMapFrom(typeof(ProductClass))]
-    public class ProductClassDto : EntityDto<long>, IPassivable
+    public class ProductClassDto
     {
-        [Required]
-        [StringLength(ProductClass.MaxClassNameLength)]
-        public string ClassName { get; set; }
 
-        [Required]
-        [StringLength(ProductClass.MaxPTIdLength)]
-        [JsonProperty("ptid")]
-        public string PTId { get; set; }
-
-        public double PostTaxRate { get; set; }
-
-        [JsonProperty("bcTaxRate")]
-        public double BCTaxRate { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

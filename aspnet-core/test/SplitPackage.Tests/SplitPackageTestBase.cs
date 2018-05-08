@@ -26,6 +26,7 @@ using Xunit;
 using Abp.TestBase.Runtime.Session;
 using Microsoft.AspNetCore.TestHost;
 using Abp.Dependency;
+using SplitPackage.EntityFrameworkCore.Seed.Business;
 
 namespace SplitPackage.Tests
 {
@@ -47,6 +48,7 @@ namespace SplitPackage.Tests
                 NormalizeDbContext(context);
                 new InitialHostDbBuilder(context).Create();
                 new DefaultTenantBuilder(context).Create();
+                new InitialBusinessDbBuilder(context).Create();
             });
 
             // Seed initial data for default tenant
@@ -62,19 +64,7 @@ namespace SplitPackage.Tests
             UsingDbContext(context =>
             {
                 NormalizeDbContext(context);
-                if (context.Products.Count() == 0)
-                {
-                    context.Products.Add(new SplitPackage.Business.Product() {
-                        ProductName = "测试商品",
-                        AbbreName = "测试1",
-                        ProductNo = "test",
-                        Sku = "0000000001",
-                        TaxNo = "123456789",
-                        Brand = "测试品牌",
-                        Weight = 10
-                    });
-                    context.SaveChanges();
-                }
+                new DefaultProductCreator(context).Create();
             });
 
             LoginAsDefaultTenantAdmin();

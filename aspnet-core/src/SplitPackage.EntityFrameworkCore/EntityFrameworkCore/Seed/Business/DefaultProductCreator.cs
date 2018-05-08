@@ -10,31 +10,28 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
     public class DefaultProductCreator
     {
         private readonly SplitPackageDbContext _context;
-        private readonly int _tenantId;
 
-        public DefaultProductCreator(SplitPackageDbContext context, int tenantId)
+        public DefaultProductCreator(SplitPackageDbContext context)
         {
             this._context = context;
-            this._tenantId = tenantId;
         }
 
         public void Create()
         {
             AddIfNotExists(new Product() {
-                TenantId = this._tenantId,
-                ProductName = "测试商品",
-                AbbreName = "测试",
-                ProductNo = "1000000000",
-                Sku = "1000000000",
-                TaxNo = "123456789",
-                Brand = "测试品牌",
-                Weight = 10
+                ProductName = "NESTLE成人奶粉840G",
+                Sku = "7613035243453",
+                Brand = "Nestle",
+                Weight = 1,
+                DeclarePrice = 200,
+                DeclareTaxrate = 0.5,
+                PTId = "1010706"
             });
         }
 
         private void AddIfNotExists(Product p)
         {
-            if (_context.Products.IgnoreQueryFilters().Any(s => p.Sku == p.Sku && s.TenantId == p.TenantId))
+            if (_context.Products.Any(s => p.Sku == p.Sku))
             {
                 return;
             }

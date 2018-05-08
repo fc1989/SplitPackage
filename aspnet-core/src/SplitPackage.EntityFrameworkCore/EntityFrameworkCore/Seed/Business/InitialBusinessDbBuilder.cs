@@ -16,15 +16,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
 
         public void Create()
         {
-            new DefaultProductClassCreator(_context).Create();
-            new DefaultProductCreator(_context, 1).Create();
-            new DefaultProductProductClassCreator(_context).Create();
-            new DefaultLogisticCreator(_context,1).Create();
-            new DefaultLogisticLineCreator(_context,1).Create();
-            new DefaultNumFreightCreator(_context,1).Create();
-            new DefaultSplitRuleCreator(_context,1).Create();
-            new DefaultWeightFreightCreator(_context, 1).Create();
-            new DefaultSplitRuleProductClassCreator(_context).Create();
+            new DefaultLogisticCreator(_context).Create();
             _context.SaveChanges();
         }
     }

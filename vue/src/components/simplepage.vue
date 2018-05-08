@@ -12,9 +12,11 @@
                     <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
-            <Row v-if="searchData">
-                <solt name="search" v-bind:searchData="searchData"></solt>
-                <span style="margin: 0 10px;"><Button @on-click="getpage" type="primary" icon="search">{{$t('Public.Search')}}</Button></span>
+            <Row v-if="showSearchFilter">
+                <slot name="search" v-bind:searchData="searchData"></slot>
+                <span style="margin: 0 10px;">
+                  <Button @click="getpage" type="primary" icon="search">{{$t('Public.Search')}}</Button>
+                </span>
             </Row>
             <Row class="margin-top-10 searchable-table-con1">
               <Table :columns="columns" border :data="tableData"></Table>
@@ -69,6 +71,10 @@ export default {
     },
     modalWidth: {
       type: [Number, String]
+    },
+    showSearchFilter: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -106,7 +112,9 @@ export default {
         skipCount: (this.state.currentPage - 1) * this.state.pageSize
       };
       if(this.searchData){
-        page["filter"] = this.searchData;
+        for(var key in this.searchData){
+          page[key] = this.searchData[key];
+        }
       }
       let rep = await this.api.Search({ params: page });
       this.state.tableData = [];
@@ -189,7 +197,7 @@ export default {
     } 
     return {
       columns: this.columnsetting.columns,
-      searchData: null,
+      searchData: {},
       editModel: {},
       createModel: cm,
       showModal: false,

@@ -1,16 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Abp.Domain.Entities;
+using Abp.Extensions;
 using Abp.Zero.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization.Roles;
 using SplitPackage.Authorization.Users;
-using SplitPackage.MultiTenancy;
-using Abp.Application.Editions;
-using Abp.EntityHistory;
 using SplitPackage.Business;
-using Abp.Runtime.Session;
-using System.Linq.Expressions;
+using SplitPackage.MultiTenancy;
 using System;
-using Abp.Domain.Entities;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace SplitPackage.EntityFrameworkCore
 {
@@ -21,8 +19,6 @@ namespace SplitPackage.EntityFrameworkCore
         public DbSet<Logistic> Logistics { get; set; }
         public DbSet<LogisticLine> LogisticLines { get; set; }
         public DbSet<NumFreight> NumFreights { get; set; }
-        public DbSet<ProductClass> ProductClasses { get; set; }
-        public DbSet<ProductProductClass> ProductProductClass { get; set; }
         public DbSet<SplitRule> SplitRules { get; set; }
         public DbSet<SplitRuleProductClass> SplitRuleProductClass { get; set; }
         public DbSet<WeightFreight> WeightFreights { get; set; }
@@ -38,27 +34,6 @@ namespace SplitPackage.EntityFrameworkCore
             modelBuilder.Entity<Tenant>().HasOne(p => p.CreatorUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("CreatorUserId");
             modelBuilder.Entity<Tenant>().HasOne(p => p.DeleterUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("DeleterUserId");
             modelBuilder.Entity<Tenant>().HasOne(p => p.LastModifierUser).WithOne().IsRequired(false).HasForeignKey<Tenant>("LastModifierUserId");
-            modelBuilder.Entity<SplitRuleProductClass>().HasKey(p => new { p.SplitRuleId, p.ProductClassId });
-
-            modelBuilder.Entity<Product>()
-                .HasMany(p => p.ProductClasses)
-                .WithOne(p => p.ProductBy)
-                .HasForeignKey(p => p.ProductId);
-
-            modelBuilder.Entity<ProductClass>()
-                .HasMany(p => p.Products)
-                .WithOne(p => p.ProductClassBy)
-                .HasForeignKey(p=>p.ProductClassId);
-
-            modelBuilder.Entity<ProductProductClass>()
-                .HasOne(bc => bc.ProductBy)
-                .WithMany(b => b.ProductClasses)
-                .HasForeignKey(bc => bc.ProductId);
-
-            modelBuilder.Entity<ProductProductClass>()
-                .HasOne(bc => bc.ProductClassBy)
-                .WithMany(c => c.Products)
-                .HasForeignKey(bc => bc.ProductClassId);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -112,6 +87,30 @@ namespace SplitPackage.EntityFrameworkCore
             }
 
             return expression;
+        }
+
+        protected override void CheckAndSetMayHaveTenantIdProperty(object entityAsObj)
+        {
+            if (SuppressAutoSetTenantId)
+            {
+                return;
+            }
+
+            //Only set IMayHaveTenant entities
+            if (!(entityAsObj is IMayHaveTenant))
+            {
+                return;
+            }
+
+            var entity = entityAsObj.As<IMayHaveTenant>();
+
+            //Don't set if it's already set
+            if (entity.TenantId != null)
+            {
+                return;
+            }
+
+            entity.TenantId = GetCurrentTenantIdOrNull();
         }
     }
 }

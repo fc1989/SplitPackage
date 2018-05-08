@@ -16,13 +16,12 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductName = table.Column<string>(nullable: false, maxLength : Product.MaxProductNameLength),
-                    AbbreName = table.Column<string>(nullable: true, maxLength: Product.MaxAbbreNameLength),
-                    ProductNo = table.Column<string>(nullable: false, maxLength: Product.MaxProductNoLength),
+                    ProductName = table.Column<string>(nullable: false, maxLength: Product.MaxProductNameLength),
                     Sku = table.Column<string>(nullable: false, maxLength: Product.MaxSkuLength),
-                    TaxNo = table.Column<string>(nullable:true, maxLength: Product.MaxTaxNoLength),
-                    Brand = table.Column<string>(nullable:true, maxLength: Product.MaxBrandLength),
+                    Brand = table.Column<string>(nullable: true, maxLength: Product.MaxBrandLength),
                     Weight = table.Column<double>(defaultValue: Product.DefaultWeightValue),
+                    DeclarePrice = table.Column<double>(defaultValue: Product.DefaultDeclarePriceValue),
+                    DeclareTaxrate = table.Column<double>(defaultValue: Product.DefaultDeclareTaxrateValue),
                     TenantId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
@@ -31,7 +30,8 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(defaultValue: true),
+                    PTId = table.Column<string>(nullable: false, maxLength: Product.MaxPTIdLength)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace SplitPackage.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.UniqueConstraint(
                         name: "UQ_Products",
-                        columns:x=>new { x.TenantId, x.Sku});
+                        columns: x => new { x.TenantId, x.Sku });
                 });
 
             migrationBuilder.CreateTable(
@@ -71,9 +71,9 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CorporationName = table.Column<string>(maxLength:Logistic.MaxCorporationNameLength),
-                    CorporationUrl = table.Column<string>(nullable:true, maxLength: Logistic.MaxCorporationUrlLength),
-                    LogisticFlag = table.Column<string>(maxLength :Logistic.MaxLogisticFlagLength),
+                    CorporationName = table.Column<string>(maxLength: Logistic.MaxCorporationNameLength),
+                    CorporationUrl = table.Column<string>(nullable: true, maxLength: Logistic.MaxCorporationUrlLength),
+                    LogisticFlag = table.Column<string>(maxLength: Logistic.MaxLogisticFlagLength),
                     TenantId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
@@ -111,7 +111,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint(name:"UQ_Logistics",columns:x=>new { x.TenantId, x.LogisticFlag});
+                    table.UniqueConstraint(name: "UQ_Logistics", columns: x => new { x.TenantId, x.LogisticFlag });
                 });
 
             migrationBuilder.CreateTable(
@@ -224,49 +224,6 @@ namespace SplitPackage.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductClasses",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ClassName = table.Column<string>(maxLength: ProductClass.MaxClassNameLength),
-                    PTId = table.Column<string>(maxLength: ProductClass.MaxPTIdLength),
-                    PostTaxRate = table.Column<double>(),
-                    BCTaxRate = table.Column<double>(),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductClasses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductClasses_Users_CreatorUserId",
-                        column: x => x.CreatorUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductClasses_Users_DeleterUserId",
-                        column: x => x.DeleterUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductClasses_Users_LastModifierUserId",
-                        column: x => x.LastModifierUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint(name: "UQ_ProductClasses", columns: x => new { x.PTId });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SplitRules",
                 columns: table => new
                 {
@@ -328,20 +285,14 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductClassId = table.Column<long>(),
-                    SplitRuleId = table.Column<long>(),
+                    PTId = table.Column<string>(nullable: false, maxLength: Product.MaxPTIdLength),
+                    SplitRuleId = table.Column<long>(nullable: false),
                     MaxNum = table.Column<int>(),
                     MinNum = table.Column<int>()
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SplitRuleProductClass", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SplitRuleProductClass_ProductClasses_ProductClassId",
-                        column: x => x.ProductClassId,
-                        principalTable: "ProductClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SplitRuleProductClass_SplitRules_SplitRuleId",
                         column: x => x.SplitRuleId,
@@ -404,33 +355,6 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Product_ProductClass",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductId = table.Column<long>(nullable:false),
-                    ProductClassId = table.Column<long>(nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductProductClass",x=>x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductProductClass_ProductClasses_ProductClassId",
-                        column: x => x.ProductClassId,
-                        principalTable: "ProductClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProductProductClass_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint("UQ_ProductProductClass", x => new { x.ProductClassId, x.ProductId });
                 });
 
             migrationBuilder.CreateIndex(
@@ -524,21 +448,6 @@ namespace SplitPackage.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductClasses_CreatorUserId",
-                table: "ProductClasses",
-                column: "CreatorUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductClasses_DeleterUserId",
-                table: "ProductClasses",
-                column: "DeleterUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductClasses_LastModifierUserId",
-                table: "ProductClasses",
-                column: "LastModifierUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SplitRules_CreatorUserId",
                 table: "SplitRules",
                 column: "CreatorUserId");
@@ -562,11 +471,6 @@ namespace SplitPackage.Migrations
                 name: "IX_SplitRules_TenantId",
                 table: "SplitRules",
                 column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SplitRuleProductClass_ProductClassId",
-                table: "SplitRule_ProductClass",
-                column: "ProductClassId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SplitRuleProductClass_SplitRuleId",
@@ -597,26 +501,14 @@ namespace SplitPackage.Migrations
                 name: "IX_WeightFreights_TenantId",
                 table: "WeightFreights",
                 column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductProductClass_ProductClassId",
-                table: "Product_ProductClass",
-                column: "ProductClassId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductProductClass_ProductId",
-                table: "Product_ProductClass",
-                column: "ProductId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(name: "SplitRule_ProductClass");
-            migrationBuilder.DropTable(name: "Product_ProductClass");
             migrationBuilder.DropTable(name: "SplitRules");
             migrationBuilder.DropTable(name: "NumFreights");
             migrationBuilder.DropTable(name: "WeightFreights");
-            migrationBuilder.DropTable(name: "ProductClasses");
             migrationBuilder.DropTable(name: "Products");
             migrationBuilder.DropTable(name: "LogisticLines");
             migrationBuilder.DropTable(name: "Logistics");

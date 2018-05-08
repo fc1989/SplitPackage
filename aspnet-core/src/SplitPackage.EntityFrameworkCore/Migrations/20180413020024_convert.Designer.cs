@@ -30,7 +30,7 @@ namespace SplitPackage.Migrations
             modelBuilder.Entity<Logistic>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p=>p.CorporationName).IsRequired().HasMaxLength(Logistic.MaxCorporationNameLength);
+                b.Property(p => p.CorporationName).IsRequired().HasMaxLength(Logistic.MaxCorporationNameLength);
                 b.Property(p => p.CorporationUrl).HasMaxLength(Logistic.MaxCorporationUrlLength);
                 b.Property(p => p.LogisticFlag).IsRequired().HasMaxLength(Logistic.MaxLogisticFlagLength);
                 b.Property(p => p.CreatorUserId);
@@ -41,7 +41,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
                 b.HasKey(p => p.Id);
-                b.HasIndex(o=> o.LogisticFlag).IsUnique();
+                b.HasIndex(o => o.LogisticFlag).IsUnique();
                 b.ToTable("Logistics");
             });
 
@@ -61,9 +61,9 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.LastModifierUserId);
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
-                b.HasIndex(o => new { o.LogisticId ,o.LineCode }).IsUnique();
+                b.HasIndex(o => new { o.LogisticId, o.LineCode }).IsUnique();
                 b.ToTable("LogisticLines");
-                b.HasOne(p => p.LogisticBy).WithMany(p=>p.LogisticLines).HasForeignKey(p=>p.LogisticId);
+                b.HasOne(p => p.LogisticBy).WithMany(p => p.LogisticLines).HasForeignKey(p => p.LogisticId);
             });
 
             modelBuilder.Entity<NumFreight>(b =>
@@ -83,7 +83,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("NumFreights");
-                b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.NumFreights).HasForeignKey(p=>p.LogisticLineId);
+                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.NumFreights).HasForeignKey(p => p.LogisticLineId);
             });
 
             modelBuilder.Entity<Product>(b =>
@@ -99,50 +99,14 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.LastModifierUserId);
                 b.Property(p => p.TenantId);
                 b.Property(p => p.ProductName).IsRequired().HasMaxLength(Product.MaxProductNameLength);
-                b.Property(p => p.AbbreName).IsRequired().HasMaxLength(Product.MaxAbbreNameLength);
-                b.Property(p => p.ProductNo).IsRequired().HasMaxLength(Product.MaxProductNoLength);
                 b.Property(p => p.Sku).IsRequired().HasMaxLength(Product.MaxSkuLength);
-                b.Property(p => p.TaxNo).HasMaxLength(Product.MaxTaxNoLength);
                 b.Property(p => p.Brand).HasMaxLength(Product.MaxBrandLength);
                 b.Property(p => p.Weight).HasDefaultValue(Product.DefaultWeightValue);
-                b.HasKey(p=>p.Id);
-                b.HasIndex(p=>new { p.TenantId,p.Sku}).IsUnique();
+                b.Property(p => p.DeclarePrice).HasDefaultValue(Product.DefaultDeclarePriceValue);
+                b.Property(p => p.DeclareTaxrate).HasDefaultValue(Product.DefaultDeclareTaxrateValue);
+                b.HasKey(p => p.Id);
+                b.HasIndex(p => new { p.TenantId, p.Sku }).IsUnique();
                 b.ToTable("Products");
-                b.HasMany(p => p.ProductClasses).WithOne(p => p.ProductBy).HasForeignKey(p => p.ProductId);
-            });
-
-            modelBuilder.Entity<ProductClass>(b =>
-            {
-                b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p => p.ClassName).IsRequired().HasMaxLength(ProductClass.MaxClassNameLength);
-                b.Property(p => p.PTId).IsRequired().HasMaxLength(ProductClass.MaxPTIdLength);
-                b.Property(p => p.PostTaxRate);
-                b.Property(p => p.BCTaxRate);
-                b.Property(p => p.IsActive);
-                b.Property(p => p.CreatorUserId);
-                b.Property(p => p.DeleterUserId);
-                b.Property(p => p.DeletionTime);
-                b.Property(p => p.IsActive);
-                b.Property(p => p.IsDeleted);
-                b.Property(p => p.LastModificationTime);
-                b.Property(p => p.LastModifierUserId);
-                b.HasKey(p => p.Id);
-                b.HasIndex(o => o.PTId).IsUnique();
-                b.ToTable("ProductClasses");
-            });
-
-            modelBuilder.Entity<ProductProductClass>(b =>
-            {
-                b.Property(p => p.ProductId);
-                b.Property(p => p.ProductClassId);
-                b.ToTable("Product_ProductClass");
-                b.HasKey(p => p.Id);
-                b.HasOne(pt => pt.ProductClassBy)
-                    .WithMany(t => t.Products)
-                    .HasForeignKey(pt => pt.ProductClassId);
-                b.HasOne(pt => pt.ProductBy)
-                    .WithMany(p => p.ProductClasses)
-                    .HasForeignKey(pt => pt.ProductId);
             });
 
             modelBuilder.Entity<SplitRule>(b =>
@@ -170,7 +134,7 @@ namespace SplitPackage.Migrations
             modelBuilder.Entity<SplitRuleProductClass>(b =>
             {
                 b.Property(p => p.SplitRuleId).IsRequired();
-                b.Property(p => p.ProductClassId).IsRequired();
+                b.Property(p => p.PTId).IsRequired();
                 b.Property(p => p.MaxNum);
                 b.Property(p => p.MinNum);
                 b.HasKey(p => p.Id);
@@ -178,9 +142,6 @@ namespace SplitPackage.Migrations
                 b.HasOne(pt => pt.SplitRuleBy)
                     .WithMany(p => p.ProductClasses)
                     .HasForeignKey(pt => pt.SplitRuleId);
-                b.HasOne(pt => pt.ProductClassBy)
-                    .WithMany(t => t.SplitRules)
-                    .HasForeignKey(pt => pt.ProductClassId);
             });
 
             modelBuilder.Entity<WeightFreight>(b =>
@@ -202,7 +163,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("WeightFreights");
-                b.HasOne(p => p.LogisticLineBy).WithMany(p=>p.WeightFreights).HasForeignKey(p=>p.LogisticLineId);
+                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.WeightFreights).HasForeignKey(p => p.LogisticLineId);
             });
 #pragma warning restore 612, 618
         }

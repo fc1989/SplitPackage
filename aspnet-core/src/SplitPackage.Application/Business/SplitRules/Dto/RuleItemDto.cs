@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +10,8 @@ namespace SplitPackage.Business.SplitRules.Dto
     [AutoMapFrom(typeof(SplitRuleProductClass))]
     public class RuleItemDto: EntityDto<long>
     {
-        public long ProductClassId { get; set; }
-
-        public string ProductClassName { get; set; }
+        [JsonProperty("ptid")]
+        public string PTId { get; set; }
 
         public int MaxNum { get; set; }
 

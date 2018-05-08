@@ -134,14 +134,15 @@ namespace SplitPackage.Web.Host.Startup
                             context.User = result.Principal;
                         }
                     }
-                    else if (result.Failure != null)
-                    {
-                        // Rethrow, let the exception page handle it.
-                        ExceptionDispatchInfo.Capture(result.Failure).Throw();
-                    }
+                    //else if (result.Failure != null)
+                    //{
+                    //    // Rethrow, let the exception page handle it.
+                    //    ExceptionDispatchInfo.Capture(result.Failure).Throw();
+                    //}
                     else
                     {
                         await context.ChallengeAsync(scheme);
+                        return;
                     }
                 }
                 await next();

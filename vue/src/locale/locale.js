@@ -29,7 +29,8 @@ export default {
       'Login': 'Login',
       'UserName': 'UserName',
       'Exit_full_screen': 'Exit full screen',
-      'Full_screen': 'Full screen'
+      'Full_screen': 'Full screen',
+      'CreationTime': 'CreationTime'
     },
     'Menu': {
       'Modules': {
@@ -110,12 +111,11 @@ export default {
     },
     'Products': {
       'ProductName': 'ProductName',
-      'AbbreName': 'AbbreName',
-      'ProductNo': 'ProductNo',
       'Sku': 'Sku',
-      'TaxNo': 'TaxNo',
       'Brand': 'Brand',
       'Weight': 'Weight',
+      'DeclarePrice': 'DeclarePrice',
+      'DeclareTaxrate': 'DeclarePrice',
       'Delete_product': 'Delete product'
     },
     'SplitRules': {
@@ -166,7 +166,8 @@ export default {
       'Login': '登陆',
       'UserName': '用户名',
       'Exit_full_screen': '退出全屏',
-      'Full_screen': '全屏'
+      'Full_screen': '全屏',
+      'CreationTime': '创建时间'
     },
     'Menu': {
       'Modules': {
@@ -247,12 +248,11 @@ export default {
     },
     'Products': {
       'ProductName': '商品名称',
-      'AbbreName': '简称',
-      'ProductNo': '商品编号',
-      'Sku': 'Sku',
-      'TaxNo': '税号',
+      'Sku': '商品条码',
       'Brand': '品牌',
       'Weight': '重量',
+      'DeclarePrice': '申报价格',
+      'DeclareTaxrate': '申报税率',
       'Delete_product': '删除商品'
     },
     'SplitRules': {

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
@@ -22,6 +23,8 @@ namespace SplitPackage.MultiTenancy.Dto
 
         [StringLength(Tenant.MaxApiSecretLength)]
         public string ApiSecret { get; set; }
+
+        public DateTime CreationTime { get; set; }
 
         public bool IsActive {get; set;}
     }

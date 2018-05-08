@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Abp.Domain.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,19 +16,9 @@ namespace SplitPackage.Business.Products.Dto
         [StringLength(Product.MaxProductNameLength)]
         public string ProductName { get; set; }
 
-        [StringLength(Product.MaxAbbreNameLength)]
-        public string AbbreName { get; set; }
-
-        [Required]
-        [StringLength(Product.MaxProductNoLength)]
-        public string ProductNo { get; set; }
-
         [Required]
         [StringLength(Product.MaxSkuLength)]
         public string Sku { get; set; }
-
-        [StringLength(Product.MaxTaxNoLength)]
-        public string TaxNo { get; set; }
 
         [StringLength(Product.MaxBrandLength)]
         public string Brand { get; set; }
@@ -36,6 +27,13 @@ namespace SplitPackage.Business.Products.Dto
 
         public bool IsActive { get; set; }
 
-        public List<long> ProductClassIds { get; set; }
+        public double DeclarePrice { get; set; }
+
+        public double DeclareTaxrate { get; set; }
+
+        [JsonProperty("ptid")]
+        [Required]
+        [StringLength(Product.MaxPTIdLength)]
+        public string PTId { get; set; }
     }
 }

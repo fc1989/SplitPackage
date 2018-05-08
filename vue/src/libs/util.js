@@ -50,10 +50,10 @@ util.ajax.interceptors.request.use(function (config) {
         }
         switch (error.response.status) {
             case 401:
-                abp.ajax.handleUnAuthorizedRequest(
-                    abp.ajax.showError(abp.ajax.defaultError401),
-                    abp.appPath
-                );
+                abp.ajax.showError(abp.ajax.defaultError401).done(function(){
+                    abp.auth.clearToken();
+                    window.location.reload();
+                });
                 break;
             case 403:
                 abp.ajax.showError(abp.ajax.defaultError403);

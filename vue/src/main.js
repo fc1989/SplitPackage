@@ -64,10 +64,15 @@ util.ajax.get('/AbpUserConfiguration/GetAll').then(result => {
             };
 
             abp.message.error = (message, title) => {
+                var dfd = $.Deferred();
                 this.$Modal.error({
                     title: title,
-                    content: message
-                })
+                    content: message,
+                    onOk: () => {
+                        dfd.resolve();
+                    }
+                });
+                return dfd;
             };
 
             abp.message.confirm = (message, titleOrCallback, callback) => {

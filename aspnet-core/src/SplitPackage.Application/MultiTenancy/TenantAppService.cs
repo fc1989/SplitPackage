@@ -14,11 +14,13 @@ using SplitPackage.Authorization.Roles;
 using SplitPackage.Authorization.Users;
 using SplitPackage.Editions;
 using SplitPackage.MultiTenancy.Dto;
+using System.Linq.Expressions;
+using System;
 
 namespace SplitPackage.MultiTenancy
 {
     [AbpAuthorize(PermissionNames.Pages_Admin_Tenants)]
-    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, PagedResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
+    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, TenantSearchFilter, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;
         private readonly EditionManager _editionManager;
@@ -44,7 +46,13 @@ namespace SplitPackage.MultiTenancy
             _abpZeroDbMigrator = abpZeroDbMigrator;
             _passwordHasher = passwordHasher;
         }
-        
+
+        protected override IQueryable<Tenant> CreateFilteredQuery(TenantSearchFilter input)
+        {
+            var filter = input.GenerateFilter();
+            return filter == null ? Repository.GetAll() : Repository.GetAll().Where(filter);
+        }
+
         public override async Task<TenantDto> Create(CreateTenantDto input)
         {
             CheckCreatePermission();

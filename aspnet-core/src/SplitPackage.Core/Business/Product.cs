@@ -11,41 +11,28 @@ namespace SplitPackage.Business
     public class Product : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
         public const int MaxProductNameLength = 200;
-        public const int MaxAbbreNameLength = 100;
-        public const int MaxProductNoLength = 50;
         public const int MaxSkuLength = 50;
-        public const int MaxTaxNoLength = 20;
         public const int MaxBrandLength = 50;
         public const double DefaultWeightValue = 0;
+        public const double DefaultDeclarePriceValue = 0;
+        public const double DefaultDeclareTaxrateValue = 0;
+        public const int MaxPTIdLength = 50;
 
         public bool IsActive { get; set; }
 
         public int? TenantId { get; set; }
 
+        public string PTId { get; set; }
+
         /// <summary>
-        /// 商品名称
+        /// 品名
         /// </summary>
         public string ProductName { get; set; }
-
-        /// <summary>
-        /// 商品简称
-        /// </summary>
-        public string AbbreName { get; set; }
-
-        /// <summary>
-        /// 商品编号
-        /// </summary>
-        public string ProductNo { get; set; }
 
         /// <summary>
         /// 商品条码
         /// </summary>
         public string Sku { get; set; }
-
-        /// <summary>
-        /// 税号
-        /// </summary>
-        public string TaxNo { get; set; }
 
         /// <summary>
         /// 品牌
@@ -57,7 +44,15 @@ namespace SplitPackage.Business
         /// </summary>
         public double Weight { get; set; }
 
-        public ICollection<ProductProductClass> ProductClasses { get; set; }
+        /// <summary>
+        /// 申报价格
+        /// </summary>
+        public double DeclarePrice { get; set; }
+
+        /// <summary>
+        /// 申报税率
+        /// </summary>
+        public double DeclareTaxrate { get; set; }
 
         public Product()
         {

@@ -3,7 +3,11 @@
         :columnsetting="columnsetting" 
         :api="api"
         :newRule="newtenantRule"
-        :editRule="tenantRule">
+        :editRule="tenantRule"
+        showSearchFilter>
+        <template slot="search" slot-scope="slotProps">
+            <Input v-model="slotProps.searchData.name" :maxlength="50" :placeholder="$t('Public.Name')" style="width:150px"></Input>
+        </template>
         <template slot="newform" slot-scope="slotProps">
             <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName">
                 <Input v-model="slotProps.createModel.tenancyName" :maxlength="64" :minlength="2"></Input>
@@ -86,6 +90,13 @@ export default {
           {
             title: 'ApiSecret',
             key: "apiSecret"
+          },
+          {
+            title: this.$t('Public.CreationTime'),
+            key: "creationTime",
+            render: (h,params) =>{
+              return h("label",this.$d(new Date(params.row.creationTime),'short'))
+            }
           },
           {
             title: this.$t("Public.IsActive"),
