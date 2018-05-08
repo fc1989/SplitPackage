@@ -38,7 +38,7 @@ namespace SplitPackage.Tests
             {
                 context.EntityChangeEventHelper = NullEntityChangeEventHelper.Instance;
                 context.EventBus = NullEventBus.Instance;
-                context.SuppressAutoSetTenantId = true;
+                //context.SuppressAutoSetTenantId = true;
             }
 
             // Seed initial data for host
