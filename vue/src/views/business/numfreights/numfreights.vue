@@ -12,9 +12,9 @@
             <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
                 <Input-number v-model.number="slotProps.createModel.productNum" style="width:100%"></Input-number>
             </FormItem>
-            <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
+            <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
                 <Select
-                    v-model="slotProps.createModel.logisticLineId"
+                    v-model="slotProps.createModel.logisticChannelId"
                     filterable
                     remote
                     :remote-method="remoteLLMethod"
@@ -30,9 +30,9 @@
             <FormItem :label="$t('NumFreights.ProductNum')" prop="productNum">
                 <Input-number v-model.number="slotProps.editModel.productNum" style="width:100%"></Input-number>
             </FormItem>
-            <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
+            <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
                 <Select
-                    v-model="slotProps.editModel.logisticLineId"
+                    v-model="slotProps.editModel.logisticChannelId"
                     :label="label"
                     disabled
                     filterable
@@ -51,7 +51,7 @@
 <script>
 import simplePage from "../../../components/simplepage.vue";
 import NumFreightApi from "@/api/numFreight";
-import LogisticLineApi from "@/api/logisticline";
+import LogisticChannelApi from "@/api/logisticchannel";
 
 export default {
   components: {
@@ -62,7 +62,7 @@ export default {
       if (query !== "") {
         let _this = this;
         this.loading2 = true;
-        LogisticLineApi.Query(query, null).then(function(req){
+        LogisticChannelApi.Query(query, null).then(function(req){
           _this.options = req.data.result;
           _this.loading2 = false;
         });
@@ -90,15 +90,18 @@ export default {
       newNumFreightRule: {
         packagePrice: [{ type: "number" }],
         productNum: [{ type: "number" }],
-        logisticLineId: [{ required: true }]
+        logisticChannelId: [{ required: true }]
       },
       numFreightRule: {
         packagePrice: [{ type: "number" }],
         productNum: [{ type: "number" }],
-        logisticLineId: [{ required: true }]
+        logisticChannelId: [{ required: true }]
       },
       columnsetting: {
-        needAction: false,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t('NumFreights.PackagePrice'),
@@ -109,8 +112,8 @@ export default {
             key: "productNum"
           },
           {
-            title: this.$t('Menu.Pages.LogisticLines'),
-            key: "logisticLineName"
+            title: this.$t('Menu.Pages.LogisticChannels'),
+            key: "logisticChannelName"
           },
           {
             title: this.$t('Public.IsActive'),
@@ -141,9 +144,9 @@ export default {
                     },
                     on: {
                       click: async () => {
-                        let req = await LogisticLineApi.Query(
+                        let req = await LogisticChannelApi.Query(
                           "",
-                          [params.row.logisticLineId]
+                          [params.row.logisticChannelId]
                         );
                         if(req.data.result.length){
                           _this.options = req.data.result;

@@ -21,33 +21,16 @@ namespace SplitPackage.Business.WeightFreights
 
         }
 
-        public override async Task<PagedResultDto<WeightFreightDto>> GetAll(PagedResultRequestDto input)
+        protected override IQueryable<WeightFreight> CreateFilteredQuery(PagedResultRequestDto input)
         {
-            CheckGetAllPermission();
+            return base.CreateFilteredQuery(input).Include(p=>p.LogisticChannelBy);
+        }
 
-            var query = CreateFilteredQuery(input);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = ApplySorting(query, input);
-            query = ApplyPaging(query, input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p => p.LogisticLineBy));
-
-            return new PagedResultDto<WeightFreightDto>(
-                totalCount,
-                entities.Select(o => new WeightFreightDto()
-                {
-                    Id = o.Id,
-                    LogisticLineId = o.LogisticLineId,
-                    LogisticLineName = o.LogisticLineBy.LineName,
-                    StartingWeight = o.StartingWeight,
-                    StartingPrice = o.StartingPrice,
-                    StepWeight = o.StepWeight,
-                    Price = o.Price,
-                    IsActive = o.IsActive
-                }).ToList()
-            );
+        protected override WeightFreightDto MapToEntityDto(WeightFreight entity)
+        {
+            var result = base.MapToEntityDto(entity);
+            result.LogisticChannelName = entity.LogisticChannelBy.ChannelName;
+            return result;
         }
     }
 }

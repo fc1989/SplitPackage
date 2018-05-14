@@ -56,7 +56,7 @@ namespace SplitPackage.Migrations
                     b.ToTable("Logistics");
                 });
 
-            modelBuilder.Entity("SplitPackage.Business.LogisticLine", b =>
+            modelBuilder.Entity("SplitPackage.Business.LogisticChannel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -75,11 +75,7 @@ namespace SplitPackage.Migrations
 
                     b.Property<long?>("LastModifierUserId");
 
-                    b.Property<string>("LineCode")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("LineName")
+                    b.Property<string>("ChannelName")
                         .IsRequired()
                         .HasMaxLength(50);
 
@@ -87,10 +83,10 @@ namespace SplitPackage.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LogisticId", "LineCode")
+                    b.HasIndex("LogisticId", "ChannelCode")
                         .IsUnique();
 
-                    b.ToTable("LogisticLines");
+                    b.ToTable("LogisticChannels");
                 });
 
             modelBuilder.Entity("SplitPackage.Business.NumFreight", b =>
@@ -112,7 +108,7 @@ namespace SplitPackage.Migrations
 
                     b.Property<long?>("LastModifierUserId");
 
-                    b.Property<long>("LogisticLineId");
+                    b.Property<long>("LogisticChannelId");
 
                     b.Property<double>("PackagePrice");
 
@@ -248,7 +244,7 @@ namespace SplitPackage.Migrations
 
                     b.Property<long?>("LastModifierUserId");
 
-                    b.Property<long>("LogisticLineId");
+                    b.Property<long>("LogisticChannelId");
 
                     b.Property<int>("MaxPackage");
 
@@ -297,7 +293,7 @@ namespace SplitPackage.Migrations
 
                     b.Property<long?>("LastModifierUserId");
 
-                    b.Property<long>("LogisticLineId");
+                    b.Property<long>("LogisticChannelId");
 
                     b.Property<double>("Price");
 
@@ -312,18 +308,18 @@ namespace SplitPackage.Migrations
                     b.ToTable("WeightFreights");
                 });
 
-            modelBuilder.Entity("SplitPackage.Business.LogisticLine", b =>
+            modelBuilder.Entity("SplitPackage.Business.LogisticChannel", b =>
                 {
                     b.HasOne("SplitPackage.Business.Logistic", "LogisticBy")
-                        .WithMany("LogisticLines")
+                        .WithMany("LogisticChannels")
                         .HasForeignKey("LogisticId");
                 });
 
             modelBuilder.Entity("SplitPackage.Business.NumFreight", b =>
                 {
-                    b.HasOne("SplitPackage.Business.LogisticLine", "LogisticLineBy")
+                    b.HasOne("SplitPackage.Business.LogisticChannel", "LogisticChannelBy")
                         .WithMany("NumFreights")
-                        .HasForeignKey("LogisticLineId");
+                        .HasForeignKey("LogisticChannelId");
                 });
 
             modelBuilder.Entity("SplitPackage.Business.ProductProductClass", b =>
@@ -339,9 +335,9 @@ namespace SplitPackage.Migrations
 
             modelBuilder.Entity("SplitPackage.Business.SplitRule", b =>
                 {
-                    b.HasOne("SplitPackage.Business.LogisticLine", "LogisticLineBy")
+                    b.HasOne("SplitPackage.Business.LogisticChannel", "LogisticChannelBy")
                         .WithMany("SplitRules")
-                        .HasForeignKey("LogisticLineId");
+                        .HasForeignKey("LogisticChannelId");
                 });
 
             modelBuilder.Entity("SplitPackage.Business.SplitRuleProductClass", b =>
@@ -357,9 +353,9 @@ namespace SplitPackage.Migrations
 
             modelBuilder.Entity("SplitPackage.Business.WeightFreight", b =>
                 {
-                    b.HasOne("SplitPackage.Business.LogisticLine", "LogisticLineBy")
+                    b.HasOne("SplitPackage.Business.LogisticChannel", "LogisticChannelBy")
                         .WithMany("WeightFreights")
-                        .HasForeignKey("LogisticLineId");
+                        .HasForeignKey("LogisticChannelId");
                 });
 #pragma warning restore 612, 618
         }

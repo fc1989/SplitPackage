@@ -69,7 +69,10 @@ export default {
         displayName: [{ required: true, trigger: "blur" }]
       },
       columnsetting: {
-        needAction: true,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t("Roles.RoleName"),

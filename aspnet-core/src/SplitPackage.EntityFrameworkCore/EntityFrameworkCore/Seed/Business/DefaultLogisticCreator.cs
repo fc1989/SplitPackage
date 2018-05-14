@@ -19,13 +19,13 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
             {
                 CorporationName = "AOLAU EXPRESS",
                 CorporationUrl = "http://www.aol-au.com",
-                LogisticFlag = "AOLAU EXPRESS"
+                LogisticCode = "AOLAU EXPRESS"
             });
         }
 
         private void AddIfNotExists(Logistic l)
         {
-            if (_context.Logistics.Any(s => s.LogisticFlag == l.LogisticFlag))
+            if (_context.Logistics.Any(s => s.LogisticCode == l.LogisticCode))
             {
                 return;
             }
@@ -33,23 +33,25 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
             _context.Logistics.Add(l);
             _context.SaveChanges();
 
-            var ll = new LogisticLine()
+            var ll = new LogisticChannel()
             {
-                LineName = "通达速递奶粉专线",
-                LineCode = "通达速递奶粉专线",
+                ChannelName = "通达速递奶粉专线",
                 IsActive = true,
                 LogisticId = l.Id
             };
-            _context.LogisticLines.Add(ll);
+            _context.LogisticChannels.Add(ll);
             _context.SaveChanges();
 
             _context.WeightFreights.Add(new WeightFreight()
             {
-                LogisticLineId = ll.Id,
+                LogisticChannelId = ll.Id,
+                Currency = "RMB",
+                Unit = "g",
                 StartingWeight = 1000,
-                StartingPrice = 5,
+                EndWeight = 20000,
                 StepWeight = 100,
-                Price = 0.5
+                CostPrice = 5,
+                Price = 5
             });
             var sr = new SplitRule()
             {
@@ -57,7 +59,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
                 MaxWeight = 40000,
                 MaxTax = 10000,
                 MaxPrice = 10000,
-                LogisticLineId = ll.Id
+                LogisticChannelId = ll.Id
             };
             _context.SplitRules.Add(sr);
             _context.SaveChanges();

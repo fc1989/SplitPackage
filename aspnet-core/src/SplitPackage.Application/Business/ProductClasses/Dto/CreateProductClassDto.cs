@@ -2,15 +2,12 @@
 using Abp.AutoMapper;
 using Abp.Domain.Entities;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace SplitPackage.Business.ProductClasses.Dto
 {
-    [AutoMapFrom(typeof(ProductClass))]
-    public class ProductClassDto : EntityDto<long>, IPassivable
+    [AutoMap(typeof(ProductClass))]
+    public class CreateProductClassDto : EntityDto<long>
     {
         [Required]
         [StringLength(ProductClass.MaxClassNameLength)]
@@ -25,7 +22,5 @@ namespace SplitPackage.Business.ProductClasses.Dto
 
         [JsonProperty("bcTaxRate")]
         public double BCTaxRate { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

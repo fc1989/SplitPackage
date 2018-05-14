@@ -70,7 +70,14 @@ export const appRouter = [
                 name: 'tenants', 
                 permission: 'Pages.Admin.Tenants', 
                 component: () => import('@/views/admin/tenants/tenants.vue') 
-            }
+            },
+            {
+                path: 'productclasses', 
+                title: 'Menu.Pages.ProductClasses', 
+                name: 'productclasses', 
+                permission: 'Pages.Admin.ProductClasses', 
+                component: () => import('@/views/business/productclasses/productclasses.vue') 
+            },
         ]
     },
     {
@@ -88,20 +95,6 @@ export const appRouter = [
                 component: () => import('@/views/business/logistics/logistics.vue') 
             },
             { 
-                path: 'logisticlines', 
-                title: 'Menu.Pages.LogisticLines', 
-                name: 'logisticlines', 
-                permission: 'Pages.Tenant.LogisticLines', 
-                component: () => import('@/views/business/logisticlines/logisticlines.vue') 
-            },
-            {
-                path: 'productclasses', 
-                title: 'Menu.Pages.ProductClasses', 
-                name: 'productclasses', 
-                permission: 'Pages.Tenant.ProductClasses', 
-                component: () => import('@/views/business/productclasses/productclasses.vue') 
-            },
-            { 
                 path: 'products', 
                 title: 'Menu.Pages.Products', 
                 name: 'products', 
@@ -114,20 +107,6 @@ export const appRouter = [
                 name: 'splitrules', 
                 permission: 'Pages.Tenant.SplitRules', 
                 component: () => import('@/views/business/splitrules/splitrules.vue') 
-            },
-            { 
-                path: 'numfreights', 
-                title: 'Menu.Pages.NumFreights', 
-                name: 'numfreights', 
-                permission: 'Pages.Tenant.NumFreights', 
-                component: () => import('@/views/business/numfreights/numfreights.vue') 
-            },
-            { 
-                path: 'weightfreights', 
-                title: 'Menu.Pages.WeightFreights', 
-                name: 'weightfreights', 
-                permission: 'Pages.Tenant.WeightFreights', 
-                component: () => import('@/views/business/weightfreights/weightfreights.vue') 
             }
         ]
     },

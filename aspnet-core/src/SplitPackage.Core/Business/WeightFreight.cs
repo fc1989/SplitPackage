@@ -8,42 +8,60 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("WeightFreights")]
-    public class WeightFreight : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
+    public class WeightFreight : FullAuditedEntity<long>, IPassivable
     {
-        public long LogisticLineId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         /// <summary>
         /// 物流线路
         /// </summary>
-        public virtual LogisticLine LogisticLineBy { get; set; }
-
-        /// <summary>
-        /// 首重
-        /// </summary>
-        public double StartingWeight { get; set; }
-
-        /// <summary>
-        /// 首重价格
-        /// </summary>
-        public double StartingPrice { get; set; }
-
-        /// <summary>
-        /// 续重重量
-        /// </summary>
-        public double StepWeight { get; set; }
-
-        /// <summary>
-        /// 续重价格
-        /// </summary>
-        public double Price { get; set; }
+        public virtual LogisticChannel LogisticChannelBy { get; set; }
 
         public bool IsActive { get; set; }
-
-        public int? TenantId { get; set; }
 
         public WeightFreight()
         {
             IsActive = true;
         }
+
+        /// <summary>
+        /// 币种(暂无用)
+        /// </summary>
+        public string Currency { get; set; }
+
+        /// <summary>
+        /// 单位(暂无用)
+        /// </summary>
+        public string Unit { get; set; }
+
+        /// <summary>
+        /// 首重/阶梯开始重量
+        /// </summary>
+        public double StartingWeight { get; set; }
+
+        /// <summary>
+        /// 阶梯结束重量
+        /// </summary>
+        public double EndWeight { get; set; }
+
+        /// <summary>
+        /// 起始费用
+        /// </summary>
+        public double StartingPrice { get; set; }
+
+        /// <summary>
+        /// 续重重量/计费单位重量
+        /// </summary>
+        public double StepWeight { get; set; }
+
+        /// <summary>
+        /// 阶梯成本价
+        /// </summary>
+        public double CostPrice { get; set; }
+
+        /// <summary>
+        /// 续重价格/阶梯销售价
+        /// </summary>
+        public double Price { get; set; }
     }
 }

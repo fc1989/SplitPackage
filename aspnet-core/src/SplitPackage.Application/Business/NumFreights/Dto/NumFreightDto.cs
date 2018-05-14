@@ -12,14 +12,20 @@ namespace SplitPackage.Business.NumFreights.Dto
     public class NumFreightDto : EntityDto<long>, IPassivable
     {
         [Required]
-        public long LogisticLineId { get; set; }
+        public long LogisticChannelId { get; set; }
 
-        public string LogisticLineName { get; set; }
-
-        public int ProductNum { get; set; }
-
-        public double PackagePrice { get; set; }
+        public string LogisticChannelName { get; set; }
 
         public bool IsActive { get; set; }
+
+        public string Currency { get; set; }
+
+        public string Unit { get; set; }
+
+        public int SplitNum { get; set; }
+
+        public double FirstPrice { get; set; }
+
+        public double CarryOnPrice { get; set; }
     }
 }

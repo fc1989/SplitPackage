@@ -11,6 +11,49 @@ namespace SplitPackage.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "ProductClasses",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClassName = table.Column<string>(maxLength: ProductClass.MaxClassNameLength),
+                    PTId = table.Column<string>(maxLength: ProductClass.MaxPTIdLength),
+                    PostTaxRate = table.Column<double>(),
+                    BCTaxRate = table.Column<double>(),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductClasses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductClasses_Users_CreatorUserId",
+                        column: x => x.CreatorUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductClasses_Users_DeleterUserId",
+                        column: x => x.DeleterUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductClasses_Users_LastModifierUserId",
+                        column: x => x.LastModifierUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.UniqueConstraint(name: "UQ_ProductClasses", columns: x => new { x.PTId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -30,7 +73,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
+                    IsActive = table.Column<bool>(nullable: false),
                     PTId = table.Column<string>(nullable: false, maxLength: Product.MaxPTIdLength)
                 },
                 constraints: table =>
@@ -73,7 +116,7 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CorporationName = table.Column<string>(maxLength: Logistic.MaxCorporationNameLength),
                     CorporationUrl = table.Column<string>(nullable: true, maxLength: Logistic.MaxCorporationUrlLength),
-                    LogisticFlag = table.Column<string>(maxLength: Logistic.MaxLogisticFlagLength),
+                    LogisticCode = table.Column<string>(maxLength: Logistic.MaxLogisticCodeLength),
                     TenantId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
@@ -82,7 +125,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true)
+                    IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,17 +154,19 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint(name: "UQ_Logistics", columns: x => new { x.TenantId, x.LogisticFlag });
+                    table.UniqueConstraint(name: "UQ_Logistics", columns: x => new { x.TenantId, x.LogisticCode });
                 });
 
             migrationBuilder.CreateTable(
-                name: "LogisticLines",
+                name: "LogisticChannels",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    LineName = table.Column<string>(maxLength: LogisticLine.MaxLineNameLength),
-                    LineCode = table.Column<string>(maxLength: LogisticLine.MaxLineCodeLength),
+                    ChannelName = table.Column<string>(maxLength: LogisticChannel.MaxChannelNameLength),
+                    AliasName = table.Column<string>(maxLength: LogisticChannel.MaxAliasNameLength, nullable: true),
+                    Type = table.Column<ChannelType>(nullable: false),
+                    Way = table.Column<ChargeWay>(nullable: false),
                     LogisticId = table.Column<long>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
@@ -130,43 +175,43 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
+                    IsActive = table.Column<bool>(nullable: false),
                     TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LogisticLines", x => x.Id);
+                    table.PrimaryKey("PK_LogisticChannels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LogisticLines_Users_CreatorUserId",
+                        name: "FK_LogisticChannels_Users_CreatorUserId",
                         column: x => x.CreatorUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_LogisticLines_Users_DeleterUserId",
+                        name: "FK_LogisticChannels_Users_DeleterUserId",
                         column: x => x.DeleterUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_LogisticLines_Users_LastModifierUserId",
+                        name: "FK_LogisticChannels_Users_LastModifierUserId",
                         column: x => x.LastModifierUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_LogisticLines_Logistics_LogisticId",
+                        name: "FK_LogisticChannels_Logistics_LogisticId",
                         column: x => x.LogisticId,
                         principalTable: "Logistics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_LogisticLines_Tenant_TenantId",
+                        name: "FK_LogisticChannels_Tenant_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint(name: "UQ_LogisticLines", columns: x => new { x.LogisticId, x.LineCode });
+                    table.UniqueConstraint(name: "UQ_LogisticChannels", columns: x => new { x.LogisticId, x.ChannelName });
                 });
 
             migrationBuilder.CreateTable(
@@ -175,9 +220,12 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductNum = table.Column<int>(),
-                    PackagePrice = table.Column<double>(),
-                    LogisticLineId = table.Column<long>(nullable: false),
+                    Currency = table.Column<string>(nullable: true, maxLength: CommonConstraintConst.MaxCurrencyLength),
+                    Unit = table.Column<string>(nullable: true, maxLength: CommonConstraintConst.MaxUnitLength),
+                    SplitNum = table.Column<double>(nullable: false),
+                    FirstPrice = table.Column<double>(nullable: false),
+                    CarryOnPrice = table.Column<double>(nullable: false),
+                    LogisticChannelId = table.Column<long>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
                     DeleterUserId = table.Column<long>(nullable: true),
@@ -185,8 +233,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
-                    TenantId = table.Column<int>(nullable: true)
+                    IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,15 +257,9 @@ namespace SplitPackage.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_NumFreights_LogisticLines_LogisticLineId",
-                        column: x => x.LogisticLineId,
-                        principalTable: "LogisticLines",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_NumFreights_Tenant_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
+                        name: "FK_NumFreights_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -233,7 +274,7 @@ namespace SplitPackage.Migrations
                     MaxWeight = table.Column<double>(),
                     MaxTax = table.Column<double>(),
                     MaxPrice = table.Column<double>(),
-                    LogisticLineId = table.Column<long>(nullable: false),
+                    LogisticChannelId = table.Column<long>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
                     DeleterUserId = table.Column<long>(nullable: true),
@@ -241,7 +282,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
+                    IsActive = table.Column<bool>(nullable: false),
                     TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -266,9 +307,9 @@ namespace SplitPackage.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SplitRules_LogisticLines_LogisticLineId",
-                        column: x => x.LogisticLineId,
-                        principalTable: "LogisticLines",
+                        name: "FK_SplitRules_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -307,11 +348,15 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Currency = table.Column<string>(maxLength: CommonConstraintConst.MaxCurrencyLength),
+                    Unit = table.Column<string>(maxLength: CommonConstraintConst.MaxUnitLength),
                     StartingWeight = table.Column<double>(),
+                    EndWeight = table.Column<double>(),
                     StartingPrice = table.Column<double>(),
                     StepWeight = table.Column<double>(),
                     Price = table.Column<double>(),
-                    LogisticLineId = table.Column<long>(nullable: false),
+                    CostPrice = table.Column<double>(),
+                    LogisticChannelId = table.Column<long>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
                     DeleterUserId = table.Column<long>(nullable: true),
@@ -319,8 +364,7 @@ namespace SplitPackage.Migrations
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(defaultValue: true),
-                    TenantId = table.Column<int>(nullable: true)
+                    IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -344,18 +388,54 @@ namespace SplitPackage.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_WeightFreights_LogisticLines_LogisticLineId",
-                        column: x => x.LogisticLineId,
-                        principalTable: "LogisticLines",
+                        name: "FK_WeightFreights_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tenant_LogisticChannel",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TenantId = table.Column<int>(nullable: false),
+                    LogisticChannelId = table.Column<long>(nullable: false),
+                    LogisticChannelChange = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantLogisticChannel", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WeightFreights_Tenant_TenantId",
+                        name: "FK_TenantLogisticChannel_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TenantLogisticChannel_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductClasses_CreatorUserId",
+                table: "ProductClasses",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductClasses_DeleterUserId",
+                table: "ProductClasses",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductClasses_LastModifierUserId",
+                table: "ProductClasses",
+                column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CreatorUserId",
@@ -398,28 +478,28 @@ namespace SplitPackage.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogisticLines_CreatorUserId",
-                table: "LogisticLines",
+                name: "IX_LogisticChannels_CreatorUserId",
+                table: "LogisticChannels",
                 column: "CreatorUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogisticLines_DeleterUserId",
-                table: "LogisticLines",
+                name: "IX_LogisticChannels_DeleterUserId",
+                table: "LogisticChannels",
                 column: "DeleterUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogisticLines_LastModifierUserId",
-                table: "LogisticLines",
+                name: "IX_LogisticChannels_LastModifierUserId",
+                table: "LogisticChannels",
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogisticLines_LogisticId",
-                table: "LogisticLines",
+                name: "IX_LogisticChannels_LogisticId",
+                table: "LogisticChannels",
                 column: "LogisticId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogisticLines_TenantId",
-                table: "LogisticLines",
+                name: "IX_LogisticChannels_TenantId",
+                table: "LogisticChannels",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
@@ -438,14 +518,9 @@ namespace SplitPackage.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NumFreights_LogisticLineId",
+                name: "IX_NumFreights_LogisticChannelId",
                 table: "NumFreights",
-                column: "LogisticLineId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NumFreights_TenantId",
-                table: "NumFreights",
-                column: "TenantId");
+                column: "LogisticChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SplitRules_CreatorUserId",
@@ -463,9 +538,9 @@ namespace SplitPackage.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SplitRules_LogisticLineId",
+                name: "IX_SplitRules_LogisticChannelId",
                 table: "SplitRules",
-                column: "LogisticLineId");
+                column: "LogisticChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SplitRules_TenantId",
@@ -493,24 +568,20 @@ namespace SplitPackage.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WeightFreights_LogisticLineId",
+                name: "IX_WeightFreights_LogisticChannelId",
                 table: "WeightFreights",
-                column: "LogisticLineId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WeightFreights_TenantId",
-                table: "WeightFreights",
-                column: "TenantId");
+                column: "LogisticChannelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(name: "SplitRule_ProductClass");
+            migrationBuilder.DropTable(name: "Tenant_LogisticChannel");
             migrationBuilder.DropTable(name: "SplitRules");
             migrationBuilder.DropTable(name: "NumFreights");
             migrationBuilder.DropTable(name: "WeightFreights");
             migrationBuilder.DropTable(name: "Products");
-            migrationBuilder.DropTable(name: "LogisticLines");
+            migrationBuilder.DropTable(name: "LogisticChannels");
             migrationBuilder.DropTable(name: "Logistics");
         }
     }

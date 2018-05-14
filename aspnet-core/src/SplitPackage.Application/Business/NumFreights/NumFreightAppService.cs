@@ -18,31 +18,16 @@ namespace SplitPackage.Business.NumFreights
 
         }
 
-        public override async Task<PagedResultDto<NumFreightDto>> GetAll(PagedResultRequestDto input)
+        protected override IQueryable<NumFreight> CreateFilteredQuery(PagedResultRequestDto input)
         {
-            CheckGetAllPermission();
+            return base.CreateFilteredQuery(input).Include(p=>p.LogisticChannelBy);
+        }
 
-            var query = CreateFilteredQuery(input);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = ApplySorting(query, input);
-            query = ApplyPaging(query, input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p => p.LogisticLineBy));
-
-            return new PagedResultDto<NumFreightDto>(
-                totalCount,
-                entities.Select(o => new NumFreightDto()
-                {
-                    Id = o.Id,
-                    LogisticLineId = o.LogisticLineId,
-                    LogisticLineName = o.LogisticLineBy.LineName,
-                    ProductNum = o.ProductNum,
-                    PackagePrice = o.PackagePrice,
-                    IsActive = o.IsActive
-                }).ToList()
-            );
+        protected override NumFreightDto MapToEntityDto(NumFreight entity)
+        {
+            var result = base.MapToEntityDto(entity);
+            result.LogisticChannelName = entity.LogisticChannelBy.ChannelName;
+            return result;
         }
     }
 }

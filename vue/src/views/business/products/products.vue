@@ -120,7 +120,10 @@ export default {
         declareTaxrate: [{ type: "number" }]
       },
       columnsetting: {
-        needAction: false,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t("Products.ProductName"),
@@ -159,58 +162,6 @@ export default {
                   disabled: true
                 }
               });
-            }
-          },
-          {
-            title: this.$t("Public.Actions"),
-            key: "action",
-            width: 150,
-            render: (h, params) => {
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: async () => {
-                        _this.$refs.simplepage.editModel = params.row;
-                        _this.$refs.simplepage.showEditModal = true;
-                      }
-                    }
-                  },
-                  this.$t("Public.Edit")
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: async () => {
-                        this.$Modal.confirm({
-                          title: this.$t(""),
-                          content:
-                            this.$t("Public.Delete") + this.$t(this.title),
-                          okText: this.$t("Public.Yes"),
-                          cancelText: this.$t("Public.No"),
-                          onOk: async () => {
-                            await _this.api.Delete(params.row.id);
-                          }
-                        });
-                      }
-                    }
-                  },
-                  this.$t("Public.Delete")
-                )
-              ]);
             }
           }
         ]

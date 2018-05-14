@@ -9,15 +9,16 @@ using System.Text;
 namespace SplitPackage.Business.NumFreights.Dto
 {
     [AutoMap(typeof(NumFreight))]
-    public class UpdateNumFreightDto : EntityDto<long>, IPassivable
+    public class UpdateNumFreightDto : EntityDto<long>
     {
-        [Required]
-        public long LogisticLineId { get; set; }
+        public string Currency { get; set; }
 
-        public int ProductNum { get; set; }
+        public string Unit { get; set; }
 
-        public double PackagePrice { get; set; }
+        public int SplitNum { get; set; }
 
-        public bool IsActive { get; set; }
+        public double FirstPrice { get; set; }
+
+        public double CarryOnPrice { get; set; }
     }
 }

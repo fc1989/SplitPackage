@@ -8,32 +8,42 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("NumFreights")]
-    public class NumFreight : FullAuditedEntity<long>, IPassivable,IMayHaveTenant
+    public class NumFreight : FullAuditedEntity<long>, IPassivable
     {
-        /// <summary>
-        /// 物流线路
-        /// </summary>
-        public virtual LogisticLine LogisticLineBy { get; set; }
+        public virtual LogisticChannel LogisticChannelBy { get; set; }
 
-        public long LogisticLineId { get; set; }
-
-        /// <summary>
-        /// 包裹商品数
-        /// </summary>
-        public int ProductNum { get; set; }
-
-        /// <summary>
-        /// 包裹价格
-        /// </summary>
-        public double PackagePrice { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public bool IsActive { get; set; }
-
-        public int? TenantId { get; set; }
 
         public NumFreight()
         {
             IsActive = true;
         }
+
+        /// <summary>
+        /// 币种(暂无用)
+        /// </summary>
+        public string Currency { get; set; }
+
+        /// <summary>
+        /// 单位(暂无用)
+        /// </summary>
+        public string Unit { get; set; }
+
+        /// <summary>
+        /// 打包数量
+        /// </summary>
+        public int SplitNum { get; set; }
+
+        /// <summary>
+        /// 首件价格
+        /// </summary>
+        public double FirstPrice { get; set; }
+
+        /// <summary>
+        /// 续件价格
+        /// </summary>
+        public double CarryOnPrice { get; set; }
     }
 }

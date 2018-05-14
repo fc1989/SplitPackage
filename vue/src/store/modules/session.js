@@ -1,10 +1,18 @@
 import util from '@/libs/util';
+import Cookies from 'js-cookie';
+
 const session={
     namespaced: true,
     state:{
         application:null,
         user:null,
-        tenant:null
+        tenant:null,
+        tenantId:null
+    },
+    mutations:{
+        setTenantId (state) {
+            state.tenantId = Cookies.get("Abp.TenantId") === undefined ? null : Cookies.get("Abp.TenantId");
+        }
     },
     actions:{
         async init({state}){

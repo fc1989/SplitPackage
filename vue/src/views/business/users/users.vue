@@ -111,7 +111,10 @@ export default {
         emailAddress: [{ required: true, trigger: "blur" }, { type: "email" }]
       },
       columnsetting: {
-        needAction: true,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t("Public.UserName"),

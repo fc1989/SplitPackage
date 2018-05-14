@@ -1,6 +1,5 @@
 import {otherRouter, appRouter} from '@/router/router';
 import Util from '@/libs/util';
-import Cookies from 'js-cookie';
 import Vue from 'vue';
 
 const app = {
@@ -10,7 +9,6 @@ const app = {
         isFullScreen: false,
         openedSubmenuArr: ['administration'], // 要展开的菜单数组
         menuTheme: 'dark', // 主题
-
         themeColor: '',
         initSignalR: false,
         pageOpenedList: [{
@@ -33,7 +31,8 @@ const app = {
         ],
         tagsList: [...otherRouter.children],
         messageCount: 0,
-        dontCache: [] 
+        dontCache: [],
+        enumInformation:{}
     },
     mutations: {
         initSignalR(state){
@@ -62,7 +61,6 @@ const app = {
                     }                   
                 }                
             });
-            
             state.menuList = menuList;
         },
         changeMenuTheme (state, theme) {
@@ -160,6 +158,16 @@ const app = {
         },
         setMessageCount (state, count) {
             state.messageCount = count;
+        },
+        setLogisticChannel(state,information){
+            state.enumInformation.channelType = {};
+            for(var item in information.channelType){
+                state.enumInformation.channelType[information.channelType[item].value] = information.channelType[item].label;
+            }
+            state.enumInformation.chargeWay = {};          
+            for(var item in information.chargeWay){
+                state.enumInformation.chargeWay[information.chargeWay[item].value] = information.chargeWay[item].label;
+            }
         },
         increateTag (state, tagObj) {
             if (!Util.oneOf(tagObj.name, state.dontCache)) {

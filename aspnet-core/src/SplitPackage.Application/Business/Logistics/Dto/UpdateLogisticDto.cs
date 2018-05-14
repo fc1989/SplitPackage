@@ -18,10 +18,6 @@ namespace SplitPackage.Business.Logistics.Dto
         [StringLength(Logistic.MaxCorporationUrlLength)]
         public string CorporationUrl { get; set; }
 
-        [Required]
-        [StringLength(Logistic.MaxLogisticFlagLength)]
-        public string LogisticFlag { get; set; }
-
         public bool IsActive { get; set; }
     }
 }

@@ -19,8 +19,10 @@ namespace SplitPackage.Business.Logistics.Dto
         public string CorporationUrl { get; set; }
 
         [Required]
-        [StringLength(Logistic.MaxLogisticFlagLength)]
-        public string LogisticFlag { get; set; }
+        [StringLength(Logistic.MaxLogisticCodeLength)]
+        public string LogisticCode { get; set; }
+
+        public int? TenantId { get; set; }
 
         public bool IsActive { get; set; }
     }

@@ -431,6 +431,7 @@ namespace SplitPackage.Split
                     default:
                         optimal = splitResults.OrderBy(t => t.Item2 ? 0 : 1)
                             .ThenBy(t => t.Item1.CalculateLogisticsAndTaxCost())
+                            .ThenBy(t => t.Item1.OrderList.Count)
                             .FirstOrDefault();
                         break;
                 }

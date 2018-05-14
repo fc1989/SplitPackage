@@ -12,7 +12,7 @@ namespace SplitPackage.Business
     {
         public const int MaxCorporationNameLength = 50;
         public const int MaxCorporationUrlLength = 200;
-        public const int MaxLogisticFlagLength = 50;
+        public const int MaxLogisticCodeLength = 50;
 
         /// <summary>
         /// 企业名称
@@ -25,15 +25,15 @@ namespace SplitPackage.Business
         public string CorporationUrl { get; set; }
 
         /// <summary>
-        /// 物流标识
+        /// 物流代码
         /// </summary>
-        public string LogisticFlag { get; set; }
+        public string LogisticCode { get; set; }
 
         public bool IsActive { get; set; }
 
         public int? TenantId { get; set; }
 
-        public virtual ICollection<LogisticLine> LogisticLines { get; set; }
+        public virtual ICollection<LogisticChannel> LogisticChannels { get; set; }
 
         public Logistic()
         {

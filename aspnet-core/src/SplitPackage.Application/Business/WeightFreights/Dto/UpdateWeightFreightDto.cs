@@ -9,19 +9,22 @@ using System.Text;
 namespace SplitPackage.Business.WeightFreights.Dto
 {
     [AutoMap(typeof(WeightFreight))]
-    public class UpdateWeightFreightDto : EntityDto<long>, IPassivable
+    public class UpdateWeightFreightDto : EntityDto<long>
     {
-        [Required]
-        public long LogisticLineId { get; set; }
+        public string Currency { get; set; }
+
+        public string Unit { get; set; }
 
         public double StartingWeight { get; set; }
+
+        public double EndWeight { get; set; }
 
         public double StartingPrice { get; set; }
 
         public double StepWeight { get; set; }
 
-        public double Price { get; set; }
+        public double CostPrice { get; set; }
 
-        public bool IsActive { get; set; }
+        public double Price { get; set; }
     }
 }

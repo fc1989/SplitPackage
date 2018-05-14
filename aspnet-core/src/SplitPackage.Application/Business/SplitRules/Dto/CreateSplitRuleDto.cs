@@ -10,7 +10,7 @@ namespace SplitPackage.Business.SplitRules.Dto
     public class CreateSplitRuleDto : EntityDto<long>
     {
         [Required]
-        public long LogisticLineId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public int MaxPackage { get; set; }
 

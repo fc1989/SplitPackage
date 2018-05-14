@@ -32,7 +32,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
                 b.Property(p => p.CorporationName).IsRequired().HasMaxLength(Logistic.MaxCorporationNameLength);
                 b.Property(p => p.CorporationUrl).HasMaxLength(Logistic.MaxCorporationUrlLength);
-                b.Property(p => p.LogisticFlag).IsRequired().HasMaxLength(Logistic.MaxLogisticFlagLength);
+                b.Property(p => p.LogisticCode).IsRequired().HasMaxLength(Logistic.MaxLogisticCodeLength);
                 b.Property(p => p.CreatorUserId);
                 b.Property(p => p.DeleterUserId);
                 b.Property(p => p.DeletionTime);
@@ -41,15 +41,17 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
                 b.HasKey(p => p.Id);
-                b.HasIndex(o => o.LogisticFlag).IsUnique();
+                b.HasIndex(o => o.LogisticCode).IsUnique();
                 b.ToTable("Logistics");
             });
 
-            modelBuilder.Entity<LogisticLine>(b =>
+            modelBuilder.Entity<LogisticChannel>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p => p.LineName).IsRequired().HasMaxLength(LogisticLine.MaxLineNameLength);
-                b.Property(p => p.LineCode).IsRequired().HasMaxLength(LogisticLine.MaxLineCodeLength);
+                b.Property(p => p.ChannelName).IsRequired().HasMaxLength(LogisticChannel.MaxChannelNameLength);
+                b.Property(p => p.AliasName).HasMaxLength(LogisticChannel.MaxAliasNameLength);
+                b.Property(p => p.Type).IsRequired();
+                b.Property(p => p.Way).IsRequired();
                 b.Property(p => p.IsActive);
                 b.Property(p => p.LogisticId).IsRequired();
                 b.Property(p => p.CreatorUserId);
@@ -61,17 +63,20 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.LastModifierUserId);
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
-                b.HasIndex(o => new { o.LogisticId, o.LineCode }).IsUnique();
-                b.ToTable("LogisticLines");
-                b.HasOne(p => p.LogisticBy).WithMany(p => p.LogisticLines).HasForeignKey(p => p.LogisticId);
+                b.HasIndex(o => new { o.LogisticId}).IsUnique();
+                b.ToTable("LogisticChannels");
+                b.HasOne(p => p.LogisticBy).WithMany(p => p.LogisticChannels).HasForeignKey(p => p.LogisticId);
             });
 
             modelBuilder.Entity<NumFreight>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p => p.LogisticLineId).IsRequired();
-                b.Property(p => p.ProductNum);
-                b.Property(p => p.PackagePrice);
+                b.Property(p => p.LogisticChannelId).IsRequired();
+                b.Property(p => p.Currency).HasMaxLength(CommonConstraintConst.MaxCurrencyLength);
+                b.Property(p => p.Unit).HasMaxLength(CommonConstraintConst.MaxUnitLength);
+                b.Property(p => p.SplitNum);
+                b.Property(p => p.FirstPrice);
+                b.Property(p => p.CarryOnPrice);
                 b.Property(p => p.IsActive);
                 b.Property(p => p.CreatorUserId);
                 b.Property(p => p.DeleterUserId);
@@ -80,10 +85,9 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
-                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("NumFreights");
-                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.NumFreights).HasForeignKey(p => p.LogisticLineId);
+                b.HasOne(p => p.LogisticChannelBy).WithMany(p => p.NumFreights).HasForeignKey(p => p.LogisticChannelId);
             });
 
             modelBuilder.Entity<Product>(b =>
@@ -112,7 +116,7 @@ namespace SplitPackage.Migrations
             modelBuilder.Entity<SplitRule>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p => p.LogisticLineId).IsRequired();
+                b.Property(p => p.LogisticChannelId).IsRequired();
                 b.Property(p => p.MaxPackage);
                 b.Property(p => p.MaxWeight);
                 b.Property(p => p.MaxTax);
@@ -128,7 +132,7 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("SplitRules");
-                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticLineId);
+                b.HasOne(p => p.LogisticChannelBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticChannelId);
             });
 
             modelBuilder.Entity<SplitRuleProductClass>(b =>
@@ -147,11 +151,15 @@ namespace SplitPackage.Migrations
             modelBuilder.Entity<WeightFreight>(b =>
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
-                b.Property(p => p.LogisticLineId).IsRequired();
+                b.Property(p => p.LogisticChannelId).IsRequired();
+                b.Property(p => p.Currency).HasMaxLength(CommonConstraintConst.MaxCurrencyLength);
+                b.Property(p => p.Unit).HasMaxLength(CommonConstraintConst.MaxUnitLength);
                 b.Property(p => p.StartingWeight);
+                b.Property(p => p.EndWeight);
                 b.Property(p => p.StartingPrice);
                 b.Property(p => p.StepWeight);
                 b.Property(p => p.Price);
+                b.Property(p => p.CostPrice);
                 b.Property(p => p.IsActive);
                 b.Property(p => p.CreatorUserId);
                 b.Property(p => p.DeleterUserId);
@@ -160,10 +168,20 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.IsDeleted);
                 b.Property(p => p.LastModificationTime);
                 b.Property(p => p.LastModifierUserId);
-                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("WeightFreights");
-                b.HasOne(p => p.LogisticLineBy).WithMany(p => p.WeightFreights).HasForeignKey(p => p.LogisticLineId);
+                b.HasOne(p => p.LogisticChannelBy).WithMany(p => p.WeightFreights).HasForeignKey(p => p.LogisticChannelId);
+            });
+
+            modelBuilder.Entity<TenantLogisticChannel>(b=> {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.TenantId).IsRequired();
+                b.Property(p => p.LogisticChannelId).IsRequired();
+                b.Property(p => p.LogisticChannelChange);
+                b.HasKey(p => p.Id);
+                b.ToTable("Tenant_LogisticChannel");
+                b.HasOne(p => p.TenantBy).WithMany().HasForeignKey(p => p.TenantId);
+                b.HasOne(p => p.LogisticChannelBy).WithMany().HasForeignKey(p => p.LogisticChannelId);
             });
 #pragma warning restore 612, 618
         }

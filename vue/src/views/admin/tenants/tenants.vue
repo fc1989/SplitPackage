@@ -73,7 +73,6 @@ export default {
         name: [{ required: true }]
       },
       columnsetting: {
-        needAction: false,
         columns: [
           {
             title: this.$t("Tenants.TenancyName"),

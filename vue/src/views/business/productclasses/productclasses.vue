@@ -83,7 +83,10 @@ export default {
         bcTaxRate: [{ type: "number" }]
       },
       columnsetting: {
-        needAction: true,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t("ProductClasses.ClassName"),

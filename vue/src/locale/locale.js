@@ -30,7 +30,10 @@ export default {
       'UserName': 'UserName',
       'Exit_full_screen': 'Exit full screen',
       'Full_screen': 'Full screen',
-      'CreationTime': 'CreationTime'
+      'CreationTime': 'CreationTime',
+      'UnPower': 'No right to do',
+      'Currency': 'Currency',
+      'Unit': 'Unit',
     },
     'Menu': {
       'Modules': {
@@ -43,7 +46,7 @@ export default {
         'Roles': 'Roles',
         'Tenants': 'Tenants',
         'Users': 'Users',
-        'LogisticLines': 'LogisticLines',
+        'LogisticChannels': 'LogisticChannels',
         'Logistics': 'Logistics',
         'NumFreights': 'NumFreights',
         'ProductClasses': 'ProductClasses',
@@ -90,18 +93,23 @@ export default {
       'Please_enter_your_password_again': 'Please enter your password again',
       'Delete_user': 'Delete user'
     },
-    'LogisticLines': {
-      'LineName': 'LineName',
-      'LineCode': 'LineCode'
+    'LogisticChannels': {
+      'ChannelName': 'ChannelName',
+      'AliasName': 'AliasName',
+      'Type': 'ChannelType',
+      'Way': 'ChargeWay',
+      'WeightChargeRule': 'WeightChargeRule',
+      'NumChargeRule': 'NumChargeRule'
     },
     'Logistics': {
       'CorporationName': 'CorporationName',
       'CorporationUrl': 'CorporationUrl',
-      'LogisticFlag': 'LogisticFlag'
+      'LogisticCode': 'LogisticCode'
     },
     'NumFreights': {
-      'PackagePrice': 'PackagePrice',
-      'ProductNum': 'ProductNum'
+      'SplitNum': 'SplitNum',
+      'FirstPrice': 'FirstPrice',
+      'CarryOnPrice': 'CarryOnPrice'
     },
     'ProductClasses': {
       'ClassName': 'ClassName',
@@ -131,8 +139,10 @@ export default {
     },
     'WeightFreights': {
       'StartingWeight': 'StartingWeight',
+      'EndWeight': 'EndWeight',
       'StartingPrice': 'StartingPrice',
       'StepWeight': 'StepWeight',
+      'CostPrice': 'CostPrice',
       'Price': 'Price'
     }
   },
@@ -167,7 +177,10 @@ export default {
       'UserName': '用户名',
       'Exit_full_screen': '退出全屏',
       'Full_screen': '全屏',
-      'CreationTime': '创建时间'
+      'CreationTime': '创建时间',
+      'UnPower': '无权操作',
+      'Currency': '币种',
+      'Unit': '单位',
     },
     'Menu': {
       'Modules': {
@@ -180,7 +193,7 @@ export default {
         'Roles': '角色',
         'Tenants': '租户',
         'Users': '用户',
-        'LogisticLines': '物流线路',
+        'LogisticChannels': '物流渠道',
         'Logistics': '物流商',
         'NumFreights': '数量运费',
         'ProductClasses': '商品类别',
@@ -227,18 +240,23 @@ export default {
       'Please_enter_your_password_again': '请再次输入密码',
       'Delete_user': '删除用户'
     },
-    'LogisticLines': {
-      'LineName': '线路名',
-      'LineCode': '线路代码'
+    'LogisticChannels': {
+      'ChannelName': '渠道名称',
+      'AliasName': '渠道别名',
+      'Type': '渠道类型',
+      'Way': '收费方式',
+      'WeightChargeRule': '按重收费规则',
+      'NumChargeRule': '计件收费规则'
     },
     'Logistics': {
       'CorporationName': '企业名称',
       'CorporationUrl': '网址',
-      'LogisticFlag': '唯一标识'
+      'LogisticCode': '物流代码'
     },
     'NumFreights': {
-      'PackagePrice': '打包价格',
-      'ProductNum': '打包数量'
+      'SplitNum': '打包数量',
+      'FirstPrice': '首件价格',
+      'CarryOnPrice': '续件价格'
     },
     'ProductClasses': {
       'ClassName': '类别名',
@@ -267,10 +285,12 @@ export default {
       'MinNum': '最小数量'
     },
     'WeightFreights': {
-      'StartingWeight': '开始重量',
-      'StartingPrice': '开始价格',
-      'StepWeight': '递增重量',
-      'Price': '递增价格'
+      'StartingWeight': '阶梯开始重量',
+      'EndWeight': '阶梯结束重量',
+      'StartingPrice': '起始费用',
+      'StepWeight': '计费单位重量',
+      'CostPrice': '阶梯成本价',
+      'Price': '阶梯销售价'
     }
   }
 }

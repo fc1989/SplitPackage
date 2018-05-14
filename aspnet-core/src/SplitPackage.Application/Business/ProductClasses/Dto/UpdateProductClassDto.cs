@@ -9,8 +9,8 @@ using System.Text;
 
 namespace SplitPackage.Business.ProductClasses.Dto
 {
-    [AutoMapFrom(typeof(ProductClass))]
-    public class ProductClassDto : EntityDto<long>, IPassivable
+    [AutoMap(typeof(ProductClass))]
+    public class UpdateProductClassDto : EntityDto<long>, IPassivable
     {
         [Required]
         [StringLength(ProductClass.MaxClassNameLength)]

@@ -157,15 +157,15 @@ namespace SplitPackage.Tests
         {
             await UsingDbContextAsync(async context =>
             {
-                var logistic = await context.Logistics.FirstOrDefaultAsync(s => s.LogisticFlag == "AOLAU EXPRESS" && s.TenantId == null);
+                var logistic = await context.Logistics.FirstOrDefaultAsync(s => s.LogisticCode == "AOLAU EXPRESS" && s.TenantId == null);
                 await EntityValid(logistic);
                 Assert.Equal("http://www.aol-au.com", logistic.CorporationUrl);
-                var line = await context.LogisticLines.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticId == logistic.Id && s.LineCode == "通达速递奶粉专线");
+                var line = await context.LogisticChannels.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticId == logistic.Id);
                 await EntityValid(line);
-                var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticLineId == line.Id && s.StartingWeight == 1000 &&
+                var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id && s.StartingWeight == 1000 &&
                 s.StartingPrice == 5 && s.StepWeight == 100 && s.Price == 0.5);
                 await EntityValid(wf);
-                var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticLineId == line.Id &&
+                var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticChannelId == line.Id &&
                 s.MaxPackage == 3 &&
                 s.MaxWeight == 40000 &&
                 s.MaxTax == 10000 &&

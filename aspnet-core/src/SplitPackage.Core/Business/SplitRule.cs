@@ -10,12 +10,12 @@ namespace SplitPackage.Business
     [Table("SplitRules")]
     public class SplitRule : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
-        public long LogisticLineId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         /// <summary>
         /// 物流线路
         /// </summary>
-        public virtual LogisticLine LogisticLineBy { get; set; }
+        public virtual LogisticChannel LogisticChannelBy { get; set; }
 
         /// <summary>
         /// 包裹最大数量

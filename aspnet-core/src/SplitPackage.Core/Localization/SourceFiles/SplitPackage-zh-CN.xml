@@ -7,9 +7,13 @@
     <text name="Products" value="商品"/>
     <text name="ProductClasses" value="商品类别"/>
     <text name="Logistics" value="物流商"/>
-    <text name="LogisticLines" value="物流线路"/>
+    <text name="LogisticChannels" value="物流渠道"/>
     <text name="SplitRules" value="打包规则"/>
     <text name="WeightFreights" value="重量运费"/>
     <text name="NumFreights" value="数量运费"/>
+    <text name="UnPower" value="无权处理"></text>
+
+    <text name="ChargeByWeight" value="计重"></text>
+    <text name="ChargeByNum" value="计件"></text>
   </texts>
 </localizationDictionary>

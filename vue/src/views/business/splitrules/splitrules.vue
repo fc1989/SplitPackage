@@ -21,9 +21,9 @@
                   <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
                       <Input-number v-model.number="slotProps.createModel.maxPrice" style="width:100%"></Input-number>
                   </FormItem>
-                  <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
+                  <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
                       <Select
-                          v-model="slotProps.createModel.logisticLineId"
+                          v-model="slotProps.createModel.logisticChannelId"
                           clearable
                           filterable
                           remote
@@ -57,9 +57,9 @@
                   <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
                       <Input-number v-model.number="slotProps.editModel.maxPrice" style="width:100%"></Input-number>
                   </FormItem>
-                  <FormItem :label="$t('Menu.Pages.LogisticLines')" prop="logisticLineId">
+                  <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
                       <Select
-                          v-model="slotProps.editModel.logisticLineId"
+                          v-model="slotProps.editModel.logisticChannelId"
                           disabled
                           :label="label"
                           filterable
@@ -88,7 +88,7 @@
 import simplePage from "../../../components/simplepage.vue";
 import ruleItems from './ruleitems'
 import SplitRuleApi from "@/api/splitRule";
-import LogisticLineApi from "@/api/logisticline";
+import LogisticChannelApi from "@/api/logisticchannel";
 
 export default {
   components: {
@@ -100,7 +100,7 @@ export default {
       if (query !== "") {
         let _this = this;
         this.loading2 = true;
-        LogisticLineApi.Query(query, null).then(function(req){
+        LogisticChannelApi.Query(query, null).then(function(req){
           _this.options = req.data.result;
           _this.loading2 = false;
         });
@@ -129,21 +129,24 @@ export default {
       createFormat: cf,
       api: SplitRuleApi,
       newSplitRuleRule: {
-        logisticLineId: [{ required: true }],
+        logisticChannelId: [{ required: true }],
         maxPackage: [{ required: true }],
         maxWeight: [{ required: true }],
         maxTax: [{ required: true }],
         maxPrice: [{ required: true }]
       },
       splitRuleRule: {
-        logisticLineId: [{ required: true }],
+        logisticChannelId: [{ required: true }],
         maxPackage: [{ required: true }],
         maxWeight: [{ required: true }],
         maxTax: [{ required: true }],
         maxPrice: [{ required: true }]
       },
       columnsetting: {
-        needAction: false,
+        actionOption: {
+            edit: true,
+            delete: true
+        },
         columns: [
           {
             title: this.$t('SplitRules.MaxPackage'),
@@ -162,8 +165,8 @@ export default {
             key: "maxPrice"
           },
           {
-            title: this.$t('Menu.Pages.LogisticLines'),
-            key: "logisticLineName"
+            title: this.$t('Menu.Pages.LogisticChannels'),
+            key: "logisticChannelName"
           },
           {
             title: this.$t('Public.IsActive'),
@@ -194,9 +197,9 @@ export default {
                     },
                     on: {
                       click: async () => {
-                        let req = await LogisticLineApi.Query(
+                        let req = await LogisticChannelApi.Query(
                           "",
-                          [params.row.logisticLineId]
+                          [params.row.logisticChannelId]
                         );
                         if(req.data.result.length){
                             _this.options = req.data.result;

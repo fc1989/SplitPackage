@@ -31,7 +31,7 @@ namespace SplitPackage.Business.SplitRules
                         MaxNum = oi.MaxNum,
                         MinNum = oi.MinNum
                     })))
-                 .ForMember(dest => dest.LogisticLineName, opt => opt.MapFrom(src => src.LogisticLineBy.LineName))
+                 .ForMember(dest => dest.LogisticChannelName, opt => opt.MapFrom(src => src.LogisticChannelBy.ChannelName))
                  .ForMember(dest => dest.RuleItems, opt => opt.MapFrom(src => src.ProductClasses.Select(o=> SRMapper.Map<RuleItemDto>(o))));
             cfg.CreateMap<UpdateSplitRuleDto, SplitRule>();
         }).CreateMapper();
@@ -52,7 +52,7 @@ namespace SplitPackage.Business.SplitRules
             query = ApplySorting(query, input);
             query = ApplyPaging(query, input);
 
-            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.LogisticLineBy).Include(p=>p.ProductClasses));
+            var entities = await AsyncQueryableExecuter.ToListAsync(query.Include(p=>p.LogisticChannelBy).Include(p=>p.ProductClasses));
 
             return new PagedResultDto<SplitRuleDto>(
                 totalCount,

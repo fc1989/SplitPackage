@@ -19,11 +19,13 @@
                 </span>
             </Row>
             <Row class="margin-top-10 searchable-table-con1">
-              <Table :columns="columns" border :data="tableData"></Table>
-              <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+              <Table :row-class-name="tableRowClassMethod" :columns="columns" border :data="tableData"></Table>
+              <div style="text-align: right">
+                <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+              </div>
             </Row>
         </Card>
-        <Modal v-model="showModal" :title="$t('Public.Create')" :width="modalWidth">
+        <Modal v-model="showModal" :title="$t('Public.Create') + $t(title)" :width="modalWidth">
             <div>
                 <Form ref="newForm" label-position="top" :rules="newRule" :model="createModel">
                     <slot name="newform" v-bind:createModel="createModel"></slot>
@@ -34,9 +36,9 @@
                 <Button @click="create" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
-        <Modal v-model="showEditModal" :title="$t('Public.Edit')" :width="modalWidth">
+        <Modal v-model="showEditModal" :title="$t('Public.Edit') + $t(title)" :width="modalWidth">
             <div>
-                <Form ref="productForm" label-position="top" :rules="editRule" :model="editModel">
+                <Form ref="editForm" label-position="top" :rules="editRule" :model="editModel">
                     <slot name="editform" v-bind:editModel="editModel"></slot>
                 </Form>
             </div>
@@ -49,6 +51,56 @@
 </template>
 
 <script>
+const rowActionRender = (h, params, vm, actionOption) => {
+  var buttonArray = [];
+  if(actionOption.edit && ((typeof actionOption.edit) == "boolean" ? actionOption.edit: actionOption.edit(params.row, vm))){
+    buttonArray.push(h("Button",
+      {
+        props: {
+          type: "primary",
+          size: "small"
+        },
+        style: {
+          marginRight: "5px"
+        },
+        on: {
+          click: () => {
+            vm.editModel = params.row;
+            vm.showEditModal = true;
+          }
+        }
+      },
+      vm.$t('Public.Edit')
+    ));
+  }
+  if(actionOption.delete && ((typeof actionOption.delete) == "boolean" ? actionOption.delete: actionOption.delete(params.row, vm))){
+    buttonArray.push(h("Button",
+      {
+        props: {
+          type: "error",
+          size: "small"
+        },
+        on: {
+          click: async () => {
+            vm.$Modal.confirm({
+              title: vm.$t(''),
+              content: vm.$t('Public.Delete') + vm.$t(vm.title),
+              okText: vm.$t('Public.Yes'),
+              cancelText: vm.$t('Public.No'),
+              onOk: async () => {
+                await vm.api.Delete(params.row.id);
+                await vm.getpage();
+              }
+            });
+          }
+        }
+      },
+      vm.$t('Public.Delete')
+    ));
+  }
+  return h("div", buttonArray);
+};
+
 export default {
   props: {
     title: {
@@ -75,6 +127,16 @@ export default {
     showSearchFilter: {
       type: Boolean,
       default: false
+    },
+    ignorePower:{
+      type: Boolean,
+      default: false
+    },
+    tableRowClassMethod:{
+      type: Function,
+      default: function(){
+        return '';
+      }
     }
   },
   methods: {
@@ -90,7 +152,15 @@ export default {
     },
     async edit() {
       var _this = this;
-      this.$refs.productForm.validate(async val => {
+      if(!_this.ignorePower && 'tenantId' in _this.editModel && _this.editModel.tenantId != this.$store.state.session.tenantId)
+      {
+        this.$Modal.error({
+          title: 'error',
+          content: _this.$t('Public.UnPower')
+        });
+        return;
+      }
+      this.$refs.editForm.validate(async val => {
         if (val) {
           await _this.api.Update(_this.editModel);
           _this.showEditModal = false;
@@ -137,59 +207,14 @@ export default {
     }
   },
   data() {
+    let _this = this;
     var cm = {};
-    if (this.columnsetting.needAction) {
+    if (this.columnsetting.actionOption) {
       this.columnsetting.columns.push({
         title: this.$t('Public.Actions'),
         key: "action",
         width: 150,
-        render: (h, params) => {
-          return h("div", [
-            h(
-              "Button",
-              {
-                props: {
-                  type: "primary",
-                  size: "small"
-                },
-                style: {
-                  marginRight: "5px"
-                },
-                on: {
-                  click: () => {
-                    this.editModel = params.row;
-                    this.showEditModal = true;
-                  }
-                }
-              },
-              this.$t('Public.Edit')
-            ),
-            h(
-              "Button",
-              {
-                props: {
-                  type: "error",
-                  size: "small"
-                },
-                on: {
-                  click: async () => {
-                    this.$Modal.confirm({
-                      title: this.$t(''),
-                      content: this.$t('Public.Delete') + this.$t(this.title),
-                      okText: this.$t('Public.Yes'),
-                      cancelText: this.$t('Public.No'),
-                      onOk: async () => {
-                        await this.api.Delete(params.row.id);
-                        await this.getpage();
-                      }
-                    });
-                  }
-                }
-              },
-              this.$t('Public.Delete')
-            )
-          ]);
-        }
+        render: (h, params) => rowActionRender(h, params, _this,this.columnsetting.actionOption)
       });
     }
     if(this.createFormat){

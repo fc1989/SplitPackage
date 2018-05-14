@@ -12,9 +12,9 @@ namespace SplitPackage.Business.SplitRules.Dto
     public class SplitRuleDto : EntityDto<long>, IPassivable
     {
         [Required]
-        public long LogisticLineId { get; set; }
+        public long LogisticChannelId { get; set; }
 
-        public string LogisticLineName { get; set; }
+        public string LogisticChannelName { get; set; }
 
         public int MaxPackage { get; set; }
 

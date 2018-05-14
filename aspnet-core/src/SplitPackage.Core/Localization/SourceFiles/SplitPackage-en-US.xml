@@ -84,5 +84,9 @@
 	  <text name="UserDetails">User details</text>
 	  <text name="UserRoles">User roles</text>
 	  <text name="ConfirmPassword">Confirm password</text>
+
+    <text name="UnPower">No right to do</text>
+    <text name="ChargeByWeight">ChargeByWeight</text>
+    <text name="ChargeByNum">ChargeByNum</text>
   </texts>
 </localizationDictionary>

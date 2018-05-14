@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SplitPackage.Dto
 {
-    public class OptionDto
+    public class OptionDto<T>
     {
-        public string Value { get; set; }
+        public T Value { get; set; }
 
         public string Label { get; set; }
     }
