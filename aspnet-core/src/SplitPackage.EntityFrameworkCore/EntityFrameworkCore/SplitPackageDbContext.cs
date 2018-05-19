@@ -23,6 +23,10 @@ namespace SplitPackage.EntityFrameworkCore
         public DbSet<SplitRuleProductClass> SplitRuleProductClass { get; set; }
         public DbSet<WeightFreight> WeightFreights { get; set; }
         public DbSet<TenantLogisticChannel> TenantLogisticChannel { get; set; }
+        public DbSet<LogisticRelated> LogisticRelated { get; set; }
+        public DbSet<LogisticRelatedItem> LogisticRelatedItem { get; set; }
+        public DbSet<ProductSort> ProductSort { get; set; }
+        public DbSet<ProductClass> ProductClass { get; set; }
 
         public SplitPackageDbContext(DbContextOptions<SplitPackageDbContext> options)
             : base(options)

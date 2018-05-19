@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace SplitPackage.Split
 {
+    /// <summary>
+    /// 混合打包规则
+    /// </summary>
     public class ProductMixedRuleEntity : IProductRuleEntity
     {
         public int MRId { get; set; }
@@ -46,6 +49,12 @@ namespace SplitPackage.Split
             return ProductRuleType.Mixed;
         }
 
+        /// <summary>
+        /// 循环拆解商品项
+        /// </summary>
+        /// <param name="productList"></param>
+        /// <param name="withTax"></param>
+        /// <returns>可拆解出的子订单,未能拆解的商品</returns>
         public Tuple<SplitedOrder, List<ProductEntity>> Split(List<ProductEntity> productList, bool withTax)
         {
             var result = new SplitedOrder();
@@ -89,6 +98,11 @@ namespace SplitPackage.Split
             return ptids.Any(ptid => CanSupportPTId(ptid));
         }
 
+        /// <summary>
+        /// 是否包含ptid规则项
+        /// </summary>
+        /// <param name="ptid"></param>
+        /// <returns></returns>
         public bool CanSupportPTId(int ptid)
         {
             return ruleItemDic.ContainsKey(ptid);
@@ -106,7 +120,6 @@ namespace SplitPackage.Split
             {
                 var splitRuleProduct = SplitRuleProduct(productEntity.OrderInfo.Where(p => p.Quantity > 0).ToList());
                 var restProductList = splitRuleProduct.Item2;
-
                 foreach (var kv in splitRuleProduct.Item1)
                 {
                     var products = kv.Value;
@@ -115,7 +128,6 @@ namespace SplitPackage.Split
                         restProductList.AddRange(products);
                         continue;
                     }
-
                     var ruleItem = ruleItemLevelDic[kv.Key];
                     var quantityLimit = Math.Min(ruleItem.MaxQuantity, this.LimitedQuantity - subOrder.CalculateTotalQuantity());
                     var weightLimit = this.LimitedWeight - subOrder.CalculateTotalWeight();
@@ -130,10 +142,18 @@ namespace SplitPackage.Split
                     break;
                 }
             }
-
             return subOrder.ProList.Count > 0 ? subOrder : null;
         }
 
+        /// <summary>
+        /// 进行该类商品进行拆解
+        /// </summary>
+        /// <param name="products">商品列表</param>
+        /// <param name="quantityLimit">最大数量</param>
+        /// <param name="weightLimit">最大重量</param>
+        /// <param name="priceLimit">最大价值</param>
+        /// <param name="minQuantity">最小数量</param>
+        /// <returns></returns>
         private Tuple<List<Product>, List<Product>> SplitProducts(List<Product> products, int quantityLimit, int weightLimit, decimal priceLimit, int minQuantity)
         {
             SubOrder subOrder = CreateSubOrder();
@@ -170,7 +190,14 @@ namespace SplitPackage.Split
             }
         }
 
-
+        /// <summary>
+        /// 拆单规则限制
+        /// </summary>
+        /// <param name="product">商品信息</param>
+        /// <param name="quantityLimit">剩余最大数量</param>
+        /// <param name="weightLimit">剩余最大重量</param>
+        /// <param name="priceLimit">剩余最大价值</param>
+        /// <returns></returns>
         private Tuple<Product, Product> SplitProduct(Product product, int quantityLimit, int weightLimit, decimal priceLimit/*, int minQuantity*/)
         {
             var splitProduct = product.Clone();
@@ -191,11 +218,15 @@ namespace SplitPackage.Split
             return result;
         }
 
+        /// <summary>
+        /// 根据商品的ptid和levelname来做商品归类
+        /// </summary>
+        /// <param name="productList">商品信息列表</param>
+        /// <returns>ptid+level,符合第一个输出的商品归类,不符合的商品归类</returns>
         private Tuple<Dictionary<Tuple<int, string>, List<Product>>, List<Product>> SplitRuleProduct(List<Product> productList)
         {
             var ruleProductDic = new Dictionary<Tuple<int, string>, List<Product>>();
             var restProductList = new List<Product>();
-
             productList.ForEach(p =>
             {
                 var ruleItemTuple = FindRuleItem(p);
@@ -212,10 +243,14 @@ namespace SplitPackage.Split
                     restProductList.Add(p);
                 }
             });
-
             return Tuple.Create(ruleProductDic, restProductList);
         }
 
+        /// <summary>
+        /// 获取商品具体的打包规则细项,涉及到levelname对于单价范围的特殊配置(和默认配置或者的关系)
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         private Tuple<Tuple<int, string>, RuleItem> FindRuleItem(Product product)
         {
             var key = Tuple.Create(product.PTId.Value, string.Empty);
@@ -224,7 +259,6 @@ namespace SplitPackage.Split
             {
                 return Tuple.Create(key, value);
             }
-
             var level = Spliter.TheSubLevelDic[product.PTId.Value].SubLevelItems.FirstOrDefault(l => product.ProPrice >= (decimal)l.BaselineFloor && product.ProPrice <= (decimal)l.BaselineUpper);
             if (level != null)
             {
@@ -234,7 +268,6 @@ namespace SplitPackage.Split
                     return Tuple.Create(key, value);
                 }
             }
-
             return null;
         }
 

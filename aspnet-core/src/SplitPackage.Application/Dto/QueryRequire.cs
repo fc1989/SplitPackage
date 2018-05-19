@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SplitPackage.Business.ProductClasses.Dto
+namespace SplitPackage.Business.Dto
 {
     public class QueryRequire<T> where T :struct
     {

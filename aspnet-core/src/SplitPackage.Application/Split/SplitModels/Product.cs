@@ -61,6 +61,10 @@ namespace SplitPackage.Split.SplitModels
             return result;
         }
 
+        /// <summary>
+        /// 获取该商品项总价值
+        /// </summary>
+        /// <returns></returns>
         public decimal CalculateTotalPrice()
         {
             return this.ProPrice * this.Quantity;

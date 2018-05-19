@@ -4,11 +4,13 @@ using Abp.Domain.Entities;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace SplitPackage.Business.ProductClasses.Dto
+namespace SplitPackage.Business.ProductSorts.Dto
 {
     [AutoMap(typeof(ProductClass))]
     public class CreateProductClassDto : EntityDto<long>
     {
+        public long ProductSortId { get; set; }
+
         [Required]
         [StringLength(ProductClass.MaxClassNameLength)]
         public string ClassName { get; set; }

@@ -1,3 +1,3 @@
 <template>
-  <h1>欢迎登陆拆单业务系统</h1>
+  <h1>{{$t('Public.Welcome')}}</h1>
 </template>

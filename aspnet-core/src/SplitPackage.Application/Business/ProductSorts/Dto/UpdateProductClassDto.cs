@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace SplitPackage.Business.ProductClasses.Dto
+namespace SplitPackage.Business.ProductSorts.Dto
 {
     [AutoMap(typeof(ProductClass))]
     public class UpdateProductClassDto : EntityDto<long>, IPassivable

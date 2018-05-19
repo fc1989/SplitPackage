@@ -219,6 +219,13 @@ namespace SplitPackage.Split
             return result;
         }
 
+        /// <summary>
+        /// 根据给予的组合规则进行拆单操作
+        /// </summary>
+        /// <param name="productList">订单商品明细</param>
+        /// <param name="rules">按层面整合的符合规则</param>
+        /// <param name="withTax">是否收税</param>
+        /// <returns>可拆解的订单,未能拆解的订单</returns>
         private Tuple<SplitedOrder, List<ProductEntity>> Split(List<ProductEntity> productList, List<List<IProductRuleEntity>> rules, bool withTax)
         {
             var result = new SplitedOrder();
@@ -237,13 +244,11 @@ namespace SplitPackage.Split
                         {
                             // 拆不出来，此规则不适用 || 全拆完了
                             break;
-
                         }
                         restProductList = so.Item2;
                     }
                 }
             }
-
             result.OrderList.ForEach(o => o.LogisticsCost = this.CalculateFreight(o.CalculateTotalWeight()));
             return Tuple.Create(result, restProductList);
         }

@@ -24,7 +24,6 @@
     <text name="Name" value="Name" />
     <text name="Surname" value="Surname" />
     <text name="EmailAddress" value="Email address" />
-    <text name="Tenants" value="Tenants" />
     <text name="SavedSuccessfully" value="Saved successfully" />
     <text name="CreateNewTenant" value="Create new tenant" />
     <text name="AdminEmailAddress" value="Admin email address" />
@@ -41,7 +40,6 @@
     <text name="Logout" value="Logout" />
     <text name="RegisterFormUserNameInvalidMessage">Please don't enter an email address for username.</text>
     <text name="DatabaseConnectionString" value="Database connection string" />
-    <text name="Users" value="Users" />
     <text name="IsActive" value="Is active" />
     <text name="FullName" value="Full name" />
     <text name="CreateNewUser" value="Create new user" />
@@ -57,7 +55,6 @@
     <text name="Back">Back</text>
     <text name="SuccessfullyRegistered">Successfully registered</text>
     <text name="WaitingForEmailActivation">Your email address should be activated</text>
-    <text name="Roles">Roles</text>
     <text name="DisplayName">Display Name</text>
     <text name="Edit">Edit</text>
     <text name="Delete">Delete</text>
@@ -85,6 +82,18 @@
 	  <text name="UserRoles">User roles</text>
 	  <text name="ConfirmPassword">Confirm password</text>
 
+    <text name="Users" value="Users" />
+    <text name="Roles">Roles</text>
+    <text name="Tenants" value="Tenants" />
+    <text name="Products" value="Products"></text>
+    <text name="ProductSorts" value="ProductSorts"></text>
+    <text name="Logistics" value="Logistics"></text>
+    <text name="LogisticChannels" value="LogisticChannels"></text>
+    <text name="SplitRules" value="SplitRules"></text>
+    <text name="WeightFreights" value="WeightFreights"></text>
+    <text name="NumFreights" value="NumFreights"></text>
+    <text name="LogisticRelateds" values="LogisticRelateds"></text>
+    
     <text name="UnPower">No right to do</text>
     <text name="ChargeByWeight">ChargeByWeight</text>
     <text name="ChargeByNum">ChargeByNum</text>

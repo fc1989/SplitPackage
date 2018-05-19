@@ -8,16 +8,21 @@
                     <Icon type="android-more-vertical"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                    <DropdownItem name='Refresh'>{{$t('Public.Refresh')}}</DropdownItem>
-                    <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
+                    <slot name="headActionOptions">
+                        <DropdownItem name='Refresh'>{{$t('Public.Refresh')}}</DropdownItem>
+                        <DropdownItem name='Create'>{{$t('Public.Create')}}</DropdownItem>
+                    </slot>
+                    <slot name="appendHeadActionOptions"></slot>
                 </DropdownMenu>
             </Dropdown>
             <Row v-if="showSearchFilter">
                 <slot name="search" v-bind:searchData="searchData"></slot>
-                <span style="margin: 0 10px;">
-                  <Button @click="getpage" type="primary" icon="search">{{$t('Public.Search')}}</Button>
-                  <slot name="appendBtn"></slot>
-                </span>
+                <slot name="searchBtn">
+                    <span style="margin: 0 10px;">
+                        <Button @click="getpage" type="primary" icon="search">{{$t('Public.Search')}}</Button>
+                        <slot name="appendSearchBtn"></slot>
+                    </span>
+                </slot>
             </Row>
             <Row class="margin-top-10 searchable-table-con1">
               <Table :row-class-name="tableRowClassMethod" :columns="columns" border :data="tableData"></Table>
@@ -26,32 +31,22 @@
               </div>
             </Row>
         </Card>
-        <Modal v-model="showModal" :title="$t('Public.Create') + $t(title)" :width="modalWidth">
+        <Modal v-model="modalState.showModal" :title="modalState.title" :width="modalWidth">
             <div>
-                <Form ref="newForm" label-position="top" :rules="newRule" :model="createModel">
-                    <slot name="newform" v-bind:createModel="createModel"></slot>
+                <Form ref="modalForm" label-position="top" :rules="rule" :model="modalState.model">
+                    <slot name="modalForm" v-bind:model="modalState.model"></slot>
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="showModal=false">{{$t('Public.Cancel')}}</Button>
-                <Button @click="create" type="primary">{{$t('Public.Save')}}</Button>
-            </div>
-        </Modal>
-        <Modal v-model="showEditModal" :title="$t('Public.Edit') + $t(title)" :width="modalWidth">
-            <div>
-                <Form ref="editForm" label-position="top" :rules="editRule" :model="editModel">
-                    <slot name="editform" v-bind:editModel="editModel"></slot>
-                </Form>
-            </div>
-            <div slot="footer">
-                <Button @click="showEditModal=false">{{$t('Public.Cancel')}}</Button>
-                <Button @click="edit" type="primary">{{$t('Public.Save')}}</Button>
+                <Button @click="modalState.showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
     </div>
 </template>
 
 <script>
+
 const rowActionRender = (h, params, vm, actionOption) => {
   var buttonArray = [];
   if(actionOption.edit && ((typeof actionOption.edit) == "boolean" ? actionOption.edit: actionOption.edit(params.row, vm))){
@@ -65,9 +60,12 @@ const rowActionRender = (h, params, vm, actionOption) => {
           marginRight: "5px"
         },
         on: {
-          click: () => {
-            vm.editModel = params.row;
-            vm.showEditModal = true;
+          click: async () => {
+            vm.modalState.model = await vm.getEditModel(params.row);
+            vm.modalState.state = "edit";
+            vm.modalState.showModal = true;
+            vm.modalState.title = vm.$t('Public.Edit') + vm.$t(vm.title);
+            vm.$parent.$emit('set-modalState','edit');
           }
         }
       },
@@ -88,9 +86,10 @@ const rowActionRender = (h, params, vm, actionOption) => {
               content: vm.$t('Public.Delete') + vm.$t(vm.title),
               okText: vm.$t('Public.Yes'),
               cancelText: vm.$t('Public.No'),
-              onOk: async () => {
-                await vm.api.Delete(params.row.id);
-                await vm.getpage();
+              onOk: () => {
+                  vm.$parent.$emit('on-deleteRow', params.row.id,function(){
+                      vm.getpage();
+                  });
               }
             });
           }
@@ -110,17 +109,20 @@ export default {
     columnsetting: {
       type: Object
     },
-    api: {
+    rule: {
       type: Object
     },
-    newRule: {
-      type: Object
+    getCreateModel: {
+      type: Function,
+      default: function(){
+          return {};
+      }
     },
-    editRule: {
-      type: Object
-    },
-    createFormat: {
-      type: Function
+    getEditModel: {
+      type: Function,
+      default: function(row){
+          return row;
+      }
     },
     modalWidth: {
       type: [Number, String]
@@ -128,6 +130,15 @@ export default {
     showSearchFilter: {
       type: Boolean,
       default: false
+    },
+    searchPage:{
+        type: Function,
+        default: function(filter){
+            return {
+                totalCount: 0,
+                items: []
+            }
+        }
     },
     ignorePower:{
       type: Boolean,
@@ -141,31 +152,23 @@ export default {
     }
   },
   methods: {
-    async create() {
+    async save() {
       var _this = this;
-      this.$refs.newForm.validate(async val => {
-        if (val) {
-          await _this.api.Create(_this.createModel);
-          _this.showModal = false;
-          await _this.getpage();
+      this.$refs.modalForm.validate(async val => {
+        if(!_this.ignorePower && _this.modalState.state === 'edit' 
+            && 'tenantId' in _this.modalState.model && _this.modalState.model.tenantId != this.$store.state.session.tenantId)
+        {
+            this.$Modal.error({
+                title: 'error',
+                content: _this.$t('Public.UnPower')
+            });
+            return;
         }
-      });
-    },
-    async edit() {
-      var _this = this;
-      if(!_this.ignorePower && 'tenantId' in _this.editModel && _this.editModel.tenantId != this.$store.state.session.tenantId)
-      {
-        this.$Modal.error({
-          title: 'error',
-          content: _this.$t('Public.UnPower')
-        });
-        return;
-      }
-      this.$refs.editForm.validate(async val => {
         if (val) {
-          await _this.api.Update(_this.editModel);
-          _this.showEditModal = false;
-          await _this.getpage();
+            _this.$parent.$emit(_this.modalState.state === 'create' ? 'on-createRow' : 'on-editRow',_this.modalState.model,function(){
+                _this.modalState.showModal = false;
+                _this.getpage();
+            })
         }
       });
     },
@@ -187,52 +190,51 @@ export default {
           page[key] = this.searchData[key];
         }
       }
-      let rep = await this.api.Search({ params: page });
+      let result = await this.searchPage({ params: page });
       this.state.tableData = [];
-      this.state.tableData.push(...rep.data.result.items);
-      this.state.totalCount = rep.data.result.totalCount;
+      this.state.tableData.push(...result.items);
+      this.state.totalCount = result.totalCount;
     },
-    handleClickActionsDropdown(name) {
+    async handleClickActionsDropdown(name) {
       if (name === "Create") {
-        if(this.createFormat){
-          this.createModel = this.createFormat();
-          this.$refs.newForm.resetFields();
-        }
-        else{
-          this.createModel = {};
-        }
-        this.showModal = true;
+        this.modalState.model = await this.getCreateModel();
+        this.$refs.modalForm.resetFields();
+        this.modalState.state = 'create';
+        this.modalState.title = this.$t('Public.Create') + this.$t(this.title)
+        this.modalState.showModal = true;
+        this.$parent.$emit('set-modalState','create');
       } else if (name === "Refresh") {
         this.getpage();
+      }
+      else{
+          this.$emit('on-ClickActionsDropdown', name);
       }
     }
   },
   data() {
     let _this = this;
-    var cm = {};
     if (this.columnsetting.actionOption) {
       this.columnsetting.columns.push({
         title: this.$t('Public.Actions'),
         key: "action",
         width: 150,
-        render: (h, params) => rowActionRender(h, params, _this,this.columnsetting.actionOption)
+        render: (h, params) => rowActionRender(h, params, this, this.columnsetting.actionOption)
       });
     }
-    if(this.createFormat){
-      cm = this.createFormat();
-    } 
     return {
       columns: this.columnsetting.columns,
       searchData: {},
-      editModel: {},
-      createModel: cm,
-      showModal: false,
-      showEditModal: false,
       state: {
         tableData: [],
         totalCount: 0,
         pageSize: 10,
         currentPage: 1
+      },
+      modalState: {
+        showModal: false,
+        model: {},
+        title: null,
+        state: null
       }
     };
   },

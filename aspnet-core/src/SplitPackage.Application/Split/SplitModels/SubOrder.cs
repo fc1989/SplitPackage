@@ -73,6 +73,10 @@ namespace SplitPackage.Split.SplitModels
             return this.TotalWeight = this.ProList.Sum(p => p.Weight * p.Quantity);
         }
 
+        /// <summary>
+        /// 计算该子订单的总价值
+        /// </summary>
+        /// <returns></returns>
         public decimal CalculateTotalPrice()
         {
             return this.TotalPrice = this.ProList.Sum(p => p.CalculateTotalPrice());

@@ -41,6 +41,74 @@ namespace SplitPackage.Split
                 LogHelper.Logger.Info("Product list is null", new ArgumentException("Product list is null"));
                 return Tuple.Create(false, "Product list is null");
             }
+            //商品价格
+            if (request.ProList.Any(o => o.ProPrice <= 0))
+            {
+                return Tuple.Create(false, "商品价格必须大于0");
+            }
+            //商品重量
+            if (request.ProList.Any(o => o.Weight <= 0))
+            {
+                return Tuple.Create(false, "商品重量必须大于0");
+            }
+            //商品数量
+            if (request.ProList.Any(o => o.Quantity <= 0))
+            {
+                return Tuple.Create(false, "商品数量必须大于0");
+            }
+            //sku或ptid
+            if (request is SplitWithExpRequest1)
+            {
+                if (request.ProList.Any(o => !o.PTId.HasValue))
+                {
+                    return Tuple.Create(false, "缺少PTId");
+                }
+                var unDeployPTIds = request.ProList.Where(o => !this.spliter.GetProductConfig().Products.Any(oi => oi.PTId.Equals(o.PTId))).Select(o => o.PTId.Value).ToList();
+                if (unDeployPTIds.Count > 0)
+                {
+                    return Tuple.Create(false, string.Format("不存在PTId:{0}", string.Join(",", unDeployPTIds.Distinct())));
+                }
+            }
+            else
+            {
+                if (request.ProList.Any(o => string.IsNullOrEmpty(o.SkuNo)))
+                {
+                    return Tuple.Create(false, "缺少SkuNo");
+                }
+                var unDeploySkuNoes = request.ProList.Where(o => !this.spliter.GetProductConfig().Products.Any(oi => oi.SKUNo.Trim().Equals(o.SkuNo))).Select(o => o.SkuNo).ToList();
+                if (unDeploySkuNoes.Count > 0)
+                {
+                    return Tuple.Create(false, string.Format("不存在SkuNo:{0}", string.Join(",", unDeploySkuNoes.Distinct())));
+                }
+            }
+            //指定物流判断
+            if (request is SplitWithExpRequest)
+            {
+                SplitWithExpRequest swr = (request as SplitWithExpRequest);
+                string key = Logistic.GetLogisticName(swr.LogisticsName, swr.GradeName);
+                if (key.Equals(Logistic.GetLogisticName(string.Empty, string.Empty)))
+                {
+                    return Tuple.Create(false, "请提供指定物流商");
+                }
+                if (!this.spliter.GetLogisticcDic().ContainsKey(key))
+                {
+                    return Tuple.Create(false, string.Format("不存在{0}的规则", key));
+                }
+            }
+            else if (request is SplitWithExpRequest1)
+            {
+                List<string> requestLogistics = (request as SplitWithExpRequest1).logistics;
+                if (requestLogistics == null || requestLogistics.Count == 0)
+                {
+                    return Tuple.Create(false, "请提供指定物流商");
+                }
+                var logisticsIds = requestLogistics.Distinct();
+                var unDeploylogisticsIds = logisticsIds.Where(o => !this.spliter.GetLogisticsList().Any(oi => oi.Name.Trim().Equals(o))).ToList();
+                if (unDeploylogisticsIds.Count > 0)
+                {
+                    return Tuple.Create(false, string.Format("指定物流商:{0}不存在", string.Join(",", unDeploylogisticsIds)));
+                }
+            }
             return Tuple.Create(true, string.Empty);
         }
 
@@ -51,7 +119,7 @@ namespace SplitPackage.Split
             {
                 return Tuple.Create<string, SplitedOrder>(validResult.Item2, null);
             }
-            return Tuple.Create( string.Empty, this.spliter.Split(request.OrderId, request.ProList, request.TotalQuantity, request.Type));
+            return Tuple.Create(string.Empty, this.spliter.Split(request.OrderId, request.ProList, request.TotalQuantity, request.Type));
         }
 
         public Tuple<string, SplitedOrder> SplitWithOrganization(SplitWithExpRequest request)
@@ -71,40 +139,6 @@ namespace SplitPackage.Split
             {
                 return Tuple.Create<string, SplitedOrder>(validResult.Item2, null);
             }
-            if (request.ProList.Any(o => o.Weight <= 0))
-            {
-                return Tuple.Create<string, SplitedOrder>("货品列表的重量必须大于0", null);
-            }
-            if (request.ProList.Any(o => !o.PTId.HasValue))
-            {
-                return Tuple.Create<string, SplitedOrder>("货品列表必须提供PTId", null);
-            }
-            var unDeployPTIds = request.ProList.Where(o => !this.spliter.GetProductConfig().Products.Any(oi => oi.PTId.Equals(o.PTId))).Select(o => o.PTId.Value).ToList();
-            if (unDeployPTIds.Count > 0)
-            {
-                return Tuple.Create<string, SplitedOrder>(string.Format("未经允许的PTId:{0}", string.Join(",", unDeployPTIds)), null);
-            }
-            if (request.logistics == null || request.logistics.Count == 0)
-            {
-                return Tuple.Create<string, SplitedOrder>("需要提供物流信息", null);
-            }
-            var logisticsIds = request.logistics.Distinct();
-            var logistics = this.spliter.GetLogisticsList().Where(o => logisticsIds.Contains(o.Name));
-            if (logistics.Count() != logisticsIds.Count())
-            {
-                string errorStr = string.Format("指定物流Id:{0}不存在", string.Join(",", logisticsIds.Where(o => !logistics.Any(oi => oi.ID == o))));
-                return Tuple.Create<string, SplitedOrder>(errorStr, null);
-            }
-            //List<RuleEntity> rules = new List<RuleEntity>();
-            //foreach (var item in logistics)
-            //{
-            //    Logistic l = this.spliter.GetLogisticcDic()[Logistic.GetLogisticName(item.Name, "标准型")];
-            //    if (l == null || l.RuleSequenceDic == null)
-            //    {
-            //        return Tuple.Create<string, SplitedOrder>(string.Format("物流Id:{0}下没有标准型拆单规则", item.ID),null);
-            //    }
-            //    rules.AddRange(l.RuleSequenceDic.Values);
-            //}
             LogHelper.Logger.Info("Call Spliter.SplitWithOrganization(): " + request);
             SplitedOrder result = this.spliter.SplitWithOrganization1(request.OrderId.ToString(), request.ProList, request.TotalQuantity, request.logistics);
             return Tuple.Create(string.Empty, result);
@@ -115,10 +149,10 @@ namespace SplitPackage.Split
             if (!"admin".Equals(userName))
             {
                 LogHelper.Logger.Info("UserName不合法", new ArgumentException("UserName不合法"));
-                return Tuple.Create<string, List<LogisticsModel>>( "用户信息认证失败", null);
+                return Tuple.Create<string, List<LogisticsModel>>("用户信息认证失败", null);
             }
             LogHelper.Logger.Info("Call Spliter.GetLogisticsList(): " + "UserName=" + userName);
-            return Tuple.Create( string.Empty, this.spliter.GetLogisticsList());
+            return Tuple.Create(string.Empty, this.spliter.GetLogisticsList());
         }
     }
 }

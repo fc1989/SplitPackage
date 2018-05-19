@@ -1,6 +1,7 @@
 export default {
   'en-US': {
     'Public': {
+      'Welcome': 'welcome to SplitPackage',
       'Actions': 'Actions',
       'Switching': 'Switching',
       'Refresh': 'Refresh',
@@ -34,6 +35,7 @@ export default {
       'UnPower': 'No right to do',
       'Currency': 'Currency',
       'Unit': 'Unit',
+      'Import': 'Import'
     },
     'Menu': {
       'Modules': {
@@ -49,10 +51,12 @@ export default {
         'LogisticChannels': 'LogisticChannels',
         'Logistics': 'Logistics',
         'NumFreights': 'NumFreights',
-        'ProductClasses': 'ProductClasses',
+        'ProductSorts': 'ProductSorts',
         'Products': 'Products',
         'SplitRules': 'SplitRules',
-        'WeightFreights': 'WeightFreights'
+        'WeightFreights': 'WeightFreights',
+        'LogisticRelateds': 'LogisticRelateds',
+        'ProductClasses': 'ProductClasses'
       }
     },
     'Login': {
@@ -102,14 +106,20 @@ export default {
       'NumChargeRule': 'NumChargeRule'
     },
     'Logistics': {
-      'CorporationName': 'CorporationName',
+      'CorporationName': 'Logistics',
       'CorporationUrl': 'CorporationUrl',
-      'LogisticCode': 'LogisticCode'
+      'LogisticCode': 'LogisticCode',
+      'Source': 'Source',
+      'Myself': 'Myself',
+      'FilterPoint': 'Please enter the logistics provider'
     },
     'NumFreights': {
       'SplitNum': 'SplitNum',
       'FirstPrice': 'FirstPrice',
       'CarryOnPrice': 'CarryOnPrice'
+    },
+    'ProductSorts':{
+      'SortName':'SortName'
     },
     'ProductClasses': {
       'ClassName': 'ClassName',
@@ -144,10 +154,14 @@ export default {
       'StepWeight': 'StepWeight',
       'CostPrice': 'CostPrice',
       'Price': 'Price'
+    },
+    'LogisticRelateds': {
+      'RelatedName': 'RelatedName'
     }
   },
   'zh-CN': {
     'Public': {
+      'Welcome': '欢迎登陆拆单系统',
       'Actions': '操作',
       'Switching': '切换',
       'Refresh': '刷新',
@@ -181,6 +195,7 @@ export default {
       'UnPower': '无权操作',
       'Currency': '币种',
       'Unit': '单位',
+      'Import': '导入'
     },
     'Menu': {
       'Modules': {
@@ -196,10 +211,12 @@ export default {
         'LogisticChannels': '物流渠道',
         'Logistics': '物流商',
         'NumFreights': '数量运费',
-        'ProductClasses': '商品类别',
+        'ProductSorts': '商品分类',
         'Products': '商品',
         'SplitRules': '拆单规则',
-        'WeightFreights': '重量运费'
+        'WeightFreights': '重量运费',
+        'LogisticRelateds': '关联物流商',
+        'ProductClasses': '商品类别'
       }
     },
     'Login': {
@@ -249,14 +266,20 @@ export default {
       'NumChargeRule': '计件收费规则'
     },
     'Logistics': {
-      'CorporationName': '企业名称',
+      'CorporationName': '物流公司',
       'CorporationUrl': '网址',
-      'LogisticCode': '物流代码'
+      'LogisticCode': '物流代码',
+      'Source': '来源',
+      'Myself': '自建',
+      'FilterPoint': '请输入物流商'
     },
     'NumFreights': {
       'SplitNum': '打包数量',
       'FirstPrice': '首件价格',
       'CarryOnPrice': '续件价格'
+    },
+    'ProductSorts':{
+      'SortName':'分类名'
     },
     'ProductClasses': {
       'ClassName': '类别名',
@@ -291,6 +314,9 @@ export default {
       'StepWeight': '计费单位重量',
       'CostPrice': '阶梯成本价',
       'Price': '阶梯销售价'
+    },
+    'LogisticRelateds': {
+      'RelatedName': '关系名'
     }
   }
 }

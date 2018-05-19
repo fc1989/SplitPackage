@@ -4,8 +4,8 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization;
+using SplitPackage.Business.Dto;
 using SplitPackage.Business.Logistics.Dto;
-using SplitPackage.Business.ProductClasses.Dto;
 using SplitPackage.Business.Products.Dto;
 using SplitPackage.Dto;
 using System;
@@ -21,15 +21,14 @@ namespace SplitPackage.Business.Logistics
     public class LogisticAppService : AsyncCrudAppService<Logistic, LogisticDto, long, LogisticSearchFilter, CreateLogisticDto, UpdateLogisticDto>, ILogisticAppService
     {
         private readonly IRepository<LogisticChannel, long> _logisticChannelRepository;
-
         private readonly IRepository<TenantLogisticChannel, long> _tenantLogisticChannelRepository;
 
         public LogisticAppService(IRepository<Logistic, long> repository,
             IRepository<LogisticChannel, long> logisticChannelRepository,
             IRepository<TenantLogisticChannel, long> tenantLogisticChannelRepository) : base(repository)
         {
-            _logisticChannelRepository = logisticChannelRepository;
-            _tenantLogisticChannelRepository = tenantLogisticChannelRepository;
+           this._logisticChannelRepository = logisticChannelRepository;
+           this._tenantLogisticChannelRepository = tenantLogisticChannelRepository;
         }
 
         protected override IQueryable<Logistic> CreateFilteredQuery(LogisticSearchFilter input)
@@ -42,7 +41,7 @@ namespace SplitPackage.Business.Logistics
                         from tb1 in left.DefaultIfEmpty()
                         join tl in _tenantLogisticChannelRepository.GetAll().IgnoreQueryFilters() on tb1.Id equals tl.LogisticChannelId into left1
                         from tb in left1.DefaultIfEmpty()
-                        where l.TenantId == AbpSession.TenantId.Value || tb.TenantId == AbpSession.TenantId.Value
+                        where !l.IsDeleted && (l.TenantId == AbpSession.TenantId.Value || tb.TenantId == AbpSession.TenantId.Value)
                         select l;
             }
             var filter = input.GenerateFilter();

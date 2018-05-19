@@ -178,10 +178,51 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.TenantId).IsRequired();
                 b.Property(p => p.LogisticChannelId).IsRequired();
                 b.Property(p => p.LogisticChannelChange);
+                b.Property(p => p.AliasName);
+                b.Property(p => p.Way);
                 b.HasKey(p => p.Id);
                 b.ToTable("Tenant_LogisticChannel");
                 b.HasOne(p => p.TenantBy).WithMany().HasForeignKey(p => p.TenantId);
                 b.HasOne(p => p.LogisticChannelBy).WithMany().HasForeignKey(p => p.LogisticChannelId);
+            });
+
+            modelBuilder.Entity<LogisticRelated>(b => {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.TenantId);
+                b.Property(p => p.RelatedName).HasMaxLength(LogisticRelated.MaxRelatedNameLength);
+                b.HasKey(p => p.Id);
+                b.ToTable("LogisticRelateds");
+                b.HasMany(p => p.Items).WithOne().HasForeignKey(p => p.LogisticRelatedId);
+            });
+
+            modelBuilder.Entity<LogisticRelatedItem>(b => {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.LogisticRelatedId).IsRequired();
+                b.Property(p => p.LogisticId).IsRequired();
+                b.HasKey(p => p.Id);
+                b.ToTable("LogisticRelatedItems");
+                b.HasOne(p => p.LogisticBy).WithMany().HasForeignKey(p => p.LogisticId);
+                b.HasOne(p => p.LogisticRelatedBy).WithMany().HasForeignKey(p => p.LogisticId);
+            });
+
+            modelBuilder.Entity<ProductSort>(b => {
+                b.ToTable("ProductSorts");
+                b.HasKey(p => p.Id);
+                b.Property(p => p.SortName);
+                b.Property(p=>p.IsActive);
+                b.HasMany(p => p.Items).WithOne().HasForeignKey(p => p.ProductSortId);
+            });
+
+            modelBuilder.Entity<ProductClass>(b => {
+                b.ToTable("ProductClasses");
+                b.HasKey(p => p.Id);
+                b.Property(p => p.ClassName);
+                b.Property(p => p.PTId);
+                b.Property(p => p.PostTaxRate);
+                b.Property(p => p.BCTaxRate);
+                b.Property(p => p.IsActive);
+                b.Property(p => p.ProductSortId);
+                b.HasOne(p => p.ProductSortBy).WithMany().HasForeignKey(p => p.ProductSortId);
             });
 #pragma warning restore 612, 618
         }

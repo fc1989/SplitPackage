@@ -4,7 +4,7 @@
     {
         public const string Pages_Admin_Tenants = "Pages.Admin.Tenants";
 
-        public const string Pages_Admin_ProductClasses = "Pages.Admin.ProductClasses";
+        public const string Pages_Admin_ProductSorts = "Pages.Admin.ProductSorts";
 
         public const string Pages_Tenant_Users = "Pages.Tenant.Users";
 
@@ -21,5 +21,7 @@
         public const string Pages_Tenant_WeightFreights = "Pages.Tenant.WeightFreights";
 
         public const string Pages_Tenant_NumFreights = "Pages.Tenant.NumFreights";
+
+        public const string Pages_Tenant_LogisticRelateds = "Pages.Tenant.LogisticRelateds";
     }
 }

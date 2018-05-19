@@ -11,7 +11,7 @@ const session={
     },
     mutations:{
         setTenantId (state) {
-            state.tenantId = Cookies.get("Abp.TenantId") === undefined ? null : Cookies.get("Abp.TenantId");
+            state.tenantId = Cookies.get("Abp.TenantId") === undefined ? null : Number.parseInt(Cookies.get("Abp.TenantId"));
         }
     },
     actions:{

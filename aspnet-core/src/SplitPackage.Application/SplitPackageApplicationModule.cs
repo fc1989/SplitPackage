@@ -5,7 +5,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using SplitPackage.Authorization;
 using SplitPackage.Business;
+using SplitPackage.Business.LogisticChannels.Dto;
+using SplitPackage.Business.NumFreights.Dto;
 using SplitPackage.Business.Products.Dto;
+using SplitPackage.Business.WeightFreights.Dto;
 using SplitPackage.Split;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +16,7 @@ using System.Linq;
 namespace SplitPackage
 {
     [DependsOn(
-        typeof(SplitPackageCoreModule), 
+        typeof(SplitPackageCoreModule),
         typeof(AbpAutoMapperModule))]
     public class SplitPackageApplicationModule : AbpModule
     {

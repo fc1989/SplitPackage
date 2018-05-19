@@ -25,5 +25,11 @@ export default {
     },
     GetOptions(){
         return Util.ajax.get('/api/services/app/PublicInformation/GetLogisticChannelsOptions');
+    },
+    GetImportState(){
+        return Util.ajax.get('/api/services/app/LogisticChannel/GetImportState');
+    },
+    CustomerImport(arrayKey){
+        return Util.ajax.post('/api/services/app/LogisticChannel/CustomerImport',arrayKey);
     }
 }

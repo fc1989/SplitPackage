@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace SplitPackage.Business.ProductClasses.Dto
+namespace SplitPackage.Business.ProductSorts.Dto
 {
     [AutoMapFrom(typeof(ProductClass))]
     public class ProductClassDto : EntityDto<long>, IPassivable
     {
+        public string SortName { get; set; }
+
         [Required]
         [StringLength(ProductClass.MaxClassNameLength)]
         public string ClassName { get; set; }

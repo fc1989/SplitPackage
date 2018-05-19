@@ -9,7 +9,7 @@ namespace SplitPackage.Authorization
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
             context.CreatePermission(PermissionNames.Pages_Admin_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
-            context.CreatePermission(PermissionNames.Pages_Admin_ProductClasses, L("ProductClasses"), multiTenancySides: MultiTenancySides.Host);
+            context.CreatePermission(PermissionNames.Pages_Admin_ProductSorts, L("ProductSorts"), multiTenancySides: MultiTenancySides.Host);
 
             context.CreatePermission(PermissionNames.Pages_Tenant_Users, L("Users"));
             context.CreatePermission(PermissionNames.Pages_Tenant_Roles, L("Roles"));
@@ -19,6 +19,7 @@ namespace SplitPackage.Authorization
             context.CreatePermission(PermissionNames.Pages_Tenant_SplitRules, L("SplitRules"));
             context.CreatePermission(PermissionNames.Pages_Tenant_WeightFreights, L("WeightFreights"));
             context.CreatePermission(PermissionNames.Pages_Tenant_NumFreights, L("NumFreights"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_LogisticRelateds, L("LogisticRelateds"));
         }
 
         private static ILocalizableString L(string name)

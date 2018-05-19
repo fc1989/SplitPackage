@@ -162,8 +162,15 @@ namespace SplitPackage.Tests
                 Assert.Equal("http://www.aol-au.com", logistic.CorporationUrl);
                 var line = await context.LogisticChannels.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticId == logistic.Id);
                 await EntityValid(line);
-                var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id && s.StartingWeight == 1000 &&
-                s.StartingPrice == 5 && s.StepWeight == 100 && s.Price == 0.5);
+                var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id &&
+                    s.Currency == "RMB" &&
+                    s.Unit == "g" &&
+                    s.StartingWeight == 1000 &&
+                    s.EndWeight == 20000 &&
+                    s.StepWeight == 100 &&
+                    s.CostPrice == 5 &&
+                    s.Price == 5
+                );
                 await EntityValid(wf);
                 var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticChannelId == line.Id &&
                 s.MaxPackage == 3 &&
