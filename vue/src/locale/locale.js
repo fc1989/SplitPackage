@@ -137,6 +137,7 @@ export default {
       'Delete_product': 'Delete product'
     },
     'SplitRules': {
+      'RuleName': 'RuleName',
       'MinPackage': 'MinPackage',
       'MaxPackage': 'MaxPackage',
       'MaxWeight': 'MaxWeight',
@@ -297,6 +298,7 @@ export default {
       'Delete_product': '删除商品'
     },
     'SplitRules': {
+      'RuleName': '规则名',
       'MinPackage': '最小打包数',
       'MaxPackage': '最大打包数',
       'MaxWeight': '最大重量',

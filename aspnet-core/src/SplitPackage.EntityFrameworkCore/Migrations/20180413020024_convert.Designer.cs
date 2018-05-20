@@ -117,6 +117,7 @@ namespace SplitPackage.Migrations
             {
                 b.Property(p => p.Id).ValueGeneratedOnAdd();
                 b.Property(p => p.LogisticChannelId).IsRequired();
+                b.Property(p => p.RuleName);
                 b.Property(p => p.MaxPackage);
                 b.Property(p => p.MaxWeight);
                 b.Property(p => p.MaxTax);

@@ -356,32 +356,6 @@ namespace SplitPackage.Business.LogisticChannels
                 return true;
         }
 
-        public async Task<List<OptionDto<string>>> Query(QueryRequire<long> req)
-        {
-            Expression<Func<LogisticChannel, bool>> filter;
-            if (!string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
-            {
-                filter = o => o.ChannelName.StartsWith(req.Flag) && o.LogisticBy.TenantId == AbpSession.TenantId;
-            }
-            else if (string.IsNullOrEmpty(req.Flag) && (req.Ids != null || req.Ids.Count > 0))
-            {
-                filter = o => req.Ids.Contains(o.Id);
-            }
-            else if (string.IsNullOrEmpty(req.Flag) && (req.Ids == null || req.Ids.Count == 0))
-            {
-                filter = o => true;
-            }
-            else
-            {
-                filter = o => o.ChannelName.StartsWith(req.Flag) || req.Ids.Contains(o.Id);
-            }
-            return await this._lcRepository.GetAll().Where(filter).Take(20).Select(o => new OptionDto<string>
-            {
-                Value = o.Id.ToString(),
-                Label = string.Format("{0}", o.ChannelName)
-            }).ToListAsync();
-        }
-
         public async Task<ImportStateDto> GetImportState()
         {
             ImportStateDto result = null;
@@ -398,6 +372,27 @@ namespace SplitPackage.Business.LogisticChannels
                 ImportLogisticChannel = this._tlcRepository.GetAllList(o => o.TenantId == tenantId).Select(o => o.LogisticChannelId).ToList()
             };
             return await Task.FromResult(result);
+        }
+
+        public async Task<List<Option>> GetOptional()
+        {
+            var tenantId = AbpSession.TenantId;
+            var query = from lc in this._lcRepository.GetAll().IgnoreQueryFilters()
+                        join tlc in this._tlcRepository.GetAll() on lc.Id equals tlc.LogisticChannelId into tlc1
+                        from tlcleft in tlc1.DefaultIfEmpty()
+                        where lc.TenantId == tenantId || tlcleft.TenantId == tenantId
+                        select lc;
+            query.Include(p => p.LogisticBy);
+            return await Task.FromResult(query.GroupBy(o => o.LogisticBy).Select(o => new Option()
+            {
+                Value = o.Key.Id.ToString(),
+                label = o.Key.CorporationName,
+                Children = o.Select(oi => new Option()
+                {
+                    Value = oi.Id.ToString(),
+                    label = oi.ChannelName,
+                }).ToList()
+            }).ToList());
         }
     }
 }

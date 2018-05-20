@@ -1,91 +1,44 @@
 <template>
-    <simplePage ref="simplepage" :title="title" 
+    <simplePage ref="simplepage"
+        :title="title" 
         :columnsetting="columnsetting" 
-        :api="api"
-        :newRule="newSplitRuleRule"
-        :editRule="splitRuleRule"
-        :createFormat="createFormat"
-        :modalWidth="800">
-        <template slot="newform" slot-scope="slotProps">
-            <Tabs value="detail">
-                <TabPane :label="$t('Public.Details')" name="detail">
-                  <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
-                      <Input-number v-model.number="slotProps.createModel.maxPackage" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
-                      <Input-number v-model.number="slotProps.createModel.maxWeight" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
-                      <Input-number v-model.number="slotProps.createModel.maxTax" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
-                      <Input-number v-model.number="slotProps.createModel.maxPrice" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
-                      <Select
-                          v-model="slotProps.createModel.logisticChannelId"
-                          clearable
-                          filterable
-                          remote
-                          :remote-method="remoteLLMethod"
-                          :loading="loading2">
-                          <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
-                      </Select>
-                  </FormItem>
-                </TabPane>
-                <TabPane 
-                  :label="$t('Menu.Pages.ProductClasses')" 
-                  name="productClass" 
-                  :disabled="false" 
-                  style="overflow: auto;max-height: 400px;">
-                  <rule-items v-model="slotProps.createModel.ruleItems"></rule-items>
-                </TabPane>
-            </Tabs>
+        :rule="rule"
+        showSearchFilter
+        :searchPage="getPage"
+        :getCreateModel="getCreateModel"
+        :getEditModel="getEditModel">
+        <template slot="search" slot-scope="slotProps">
+          <Input v-model="slotProps.searchData.logisticName" :maxlength="50" :placeholder="$t('Menu.Pages.Logistics')" style="width:150px"></Input>
+          <Input v-model="slotProps.searchData.channelName" :maxlength="50" :placeholder="$t('Menu.Pages.LogisticChannels')" style="width:150px"></Input>
+          <Input v-model="slotProps.searchData.ptid" :maxlength="50" :placeholder="'PTId'" style="width:150px"></Input>
         </template>
-        <template slot="editform" slot-scope="slotProps">
-            <Tabs value="detail">
-                <TabPane :label="$t('Public.Details')" name="detail">
-                  <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
-                      <Input-number v-model.number="slotProps.editModel.maxPackage" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
-                      <Input-number v-model.number="slotProps.editModel.maxWeight" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
-                      <Input-number v-model.number="slotProps.editModel.maxTax" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
-                      <Input-number v-model.number="slotProps.editModel.maxPrice" style="width:100%"></Input-number>
-                  </FormItem>
-                  <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
-                      <Select
-                          v-model="slotProps.editModel.logisticChannelId"
-                          disabled
-                          :label="label"
-                          filterable
-                          remote
-                          :remote-method="remoteLLMethod"
-                          :loading="loading2">
-                          <Option v-for="(option) in options" :value="option.value" :key="option.value">{{option.label}}</Option>
-                      </Select>
-                  </FormItem>
-                  <FormItem>
-                      <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
-                  </FormItem>
-                </TabPane>
-                <TabPane 
-                  :label="$t('Menu.Pages.ProductClasses')" 
-                  name="productClass" 
-                  :disabled="false" 
-                  style="overflow: auto;max-height: 400px;">
-                  <rule-items v-model="slotProps.editModel.ruleItems"></rule-items>
-                </TabPane>
-            </Tabs>
+        <template slot="modalForm" slot-scope="slotProps">
+          <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
+            <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+          </FormItem>
+          <FormItem :label="$t('SplitRules.RuleName')" prop="ruleName">
+              <Input v-model="slotProps.model.ruleName" style="width:100%"></Input>
+          </FormItem>
+          <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
+              <Input-number v-model.number="slotProps.model.maxPackage" style="width:100%"></Input-number>
+          </FormItem>
+          <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
+              <Input-number v-model.number="slotProps.model.maxWeight" style="width:100%"></Input-number>
+          </FormItem>
+          <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
+              <Input-number v-model.number="slotProps.model.maxTax" style="width:100%"></Input-number>
+          </FormItem>
+          <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
+              <Input-number v-model.number="slotProps.model.maxPrice" style="width:100%"></Input-number>
+          </FormItem>
+            <FormItem v-if="showSpecified">
+                <Checkbox v-model="slotProps.model.isActive">{{$t('Public.IsActive')}}</Checkbox>
+            </FormItem>
         </template>
     </simplePage>
 </template>
 <script>
-import simplePage from "../../../components/simplepage.vue";
+import simplePage from "../../../components/simplepagev1.vue";
 import ruleItems from './ruleitems'
 import SplitRuleApi from "@/api/splitRule";
 import LogisticChannelApi from "@/api/logisticchannel";
@@ -96,47 +49,50 @@ export default {
     ruleItems
   },
   methods:{
-    remoteLLMethod(query) {
-      if (query !== "") {
-        let _this = this;
-        this.loading2 = true;
-        LogisticChannelApi.Query(query, null).then(function(req){
-          _this.options = req.data.result;
-          _this.loading2 = false;
-        });
-      } else {
-        this.options = null;
-      }
-    }
-  },
-  data() {
-    var _this = this;
-    const cf = function() {
-      _this.options = [];
+    async getPage(filter){
+        var rep = await SplitRuleApi.Search(filter);
+        return rep.data.result;
+    },
+    getCreateModel(){
+      this.cascaderValue = [];
       return {
         maxPackage: 0,
         maxWeight: 0,
         maxTax: 0,
-        maxPrice: 0,
-        ruleItems: []
+        maxPrice: 0
       };
+    },
+    async getEditModel(row){
+      var req = await SplitRuleApi.Get(row.id);
+      var result = req.data.result;
+      var lId = "";
+      var lcId = result.logisticChannelId.toString();
+      for(var item in this.cascaderData){
+        var array = this.cascaderData[item].children.filter(vl => {
+          vl.value === lcId;
+        });
+        if(array.length > 0)
+        {
+          lId = item.value.toString();
+          break;          
+        }
+      }
+      this.cascaderValue = [lId,lcId];
+      return result;
+    }
+  },
+  data() {
+    var _this = this;
+    const validateLogisticChannelId = (rule, value, callback) => {
+      if (_this.cascaderValue.length == 0) {
+        callback(new Error("logisticChannelId is required"));
+      }
+      callback();
     };
     return {
       title: "Menu.Pages.SplitRules",
-      label: null,
-      loading2: false,
-      options: [],
-      createFormat: cf,
-      api: SplitRuleApi,
-      newSplitRuleRule: {
-        logisticChannelId: [{ required: true }],
-        maxPackage: [{ required: true }],
-        maxWeight: [{ required: true }],
-        maxTax: [{ required: true }],
-        maxPrice: [{ required: true }]
-      },
-      splitRuleRule: {
-        logisticChannelId: [{ required: true }],
+      rule: {
+        logisticChannelId: [{ required: true, validator:validateLogisticChannelId }],
         maxPackage: [{ required: true }],
         maxWeight: [{ required: true }],
         maxTax: [{ required: true }],
@@ -148,6 +104,30 @@ export default {
             delete: true
         },
         columns: [
+          {
+              type: 'expand',
+              width: 20,
+              render: (h, params) => {
+                  return h(ruleItems, {
+                      props: {
+                          splitRuleId: params.row.id,
+                          splitRuleName: params.row.ruleName
+                      }
+                  })
+              }
+          },
+          {
+            title: this.$t('Menu.Pages.Logistics'),
+            key: "logisticName"
+          },
+          {
+            title: this.$t('Menu.Pages.LogisticChannels'),
+            key: "logisticChannelName"
+          },
+          {
+            title: this.$t('SplitRules.RuleName'),
+            key: "ruleName"
+          },
           {
             title: this.$t('SplitRules.MaxPackage'),
             key: "maxPackage"
@@ -165,10 +145,6 @@ export default {
             key: "maxPrice"
           },
           {
-            title: this.$t('Menu.Pages.LogisticChannels'),
-            key: "logisticChannelName"
-          },
-          {
             title: this.$t('Public.IsActive'),
             render: (h, params) => {
               return h("Checkbox", {
@@ -178,74 +154,53 @@ export default {
                 }
               });
             }
-          },
-          {
-            title: this.$t("Public.Actions"),
-            key: "action",
-            width: 150,
-            render: (h, params) => {
-              return h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      size: "small"
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: async () => {
-                        let req = await LogisticChannelApi.Query(
-                          "",
-                          [params.row.logisticChannelId]
-                        );
-                        if(req.data.result.length){
-                            _this.options = req.data.result;
-                            _this.label = req.data.result[0].label;
-                        }
-                        else{
-                            _this.options = [];
-                            _this.label = "";
-                        }
-                        _this.$refs.simplepage.editModel = params.row;
-                        _this.$refs.simplepage.showEditModal = true;
-                      }
-                    }
-                  },
-                  this.$t("Public.Edit")
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error",
-                      size: "small"
-                    },
-                    on: {
-                      click: async () => {
-                        this.$Modal.confirm({
-                          title: this.$t(""),
-                          content:
-                            this.$t("Public.Delete") + this.$t(this.title),
-                          okText: this.$t("Public.Yes"),
-                          cancelText: this.$t("Public.No"),
-                          onOk: async () => {
-                            await _this.api.Delete(params.row.id);
-                          }
-                        });
-                      }
-                    }
-                  },
-                  this.$t("Public.Delete")
-                )
-              ]);
-            }
           }
         ]
-      }
+      },
+      showSpecified: null,
+      cascaderData: [],
+      cascaderValue: []
     };
+  },
+  mounted(){
+      var _this = this;
+      this.$on('on-deleteRow',(id,callback) => {
+        SplitRuleApi.Delete(id).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-createRow',(model,callback) =>{
+        model.logisticChannelId = _this.cascaderValue[1];
+        SplitRuleApi.Create(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-editRow',(model,callback) =>{
+        model.logisticChannelId = _this.cascaderValue[1];
+        SplitRuleApi.Update(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('set-modalState',state => {
+        _this.showSpecified = state === 'edit';
+      });
+  },
+  async created(){
+    var _this = this;
+    LogisticChannelApi.GetOptional().then(req => {
+      _this.cascaderData = req.data.result.map(function(vl, index, arr){
+        return {
+          value: vl.value,
+          label: vl.label,
+          children: vl.children.map(function(vl1, index1, arr1){
+            return {
+              value: vl1.value,
+              label: vl1.label,
+            };
+          })
+        };
+      });
+    });
   }
 };
 </script>

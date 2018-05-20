@@ -10,12 +10,19 @@ namespace SplitPackage.Business
     [Table("SplitRules")]
     public class SplitRule : FullAuditedEntity<long>, IPassivable, IMayHaveTenant
     {
+        public const int MaxRuleNameLength = 50;
+
         public long LogisticChannelId { get; set; }
 
         /// <summary>
-        /// 物流线路
+        /// 物流渠道
         /// </summary>
         public virtual LogisticChannel LogisticChannelBy { get; set; }
+
+        /// <summary>
+        /// 规则名
+        /// </summary>
+        public string RuleName { get; set; }
 
         /// <summary>
         /// 包裹最大数量
@@ -33,7 +40,7 @@ namespace SplitPackage.Business
         public double MaxTax { get; set; }
 
         /// <summary>
-        /// 价格限制
+        /// 价值限制
         /// </summary>
         public double MaxPrice { get; set; }
 

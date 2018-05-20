@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,16 +6,13 @@ using System.Text;
 
 namespace SplitPackage.Business.SplitRules.Dto
 {
-    [AutoMapFrom(typeof(SplitRuleProductClass))]
-    public class RuleItemDto: EntityDto<long>
+    public class SplitRuleSearchFilter : PagedResultRequestDto
     {
-        public string RuleName { get; set; }
+        public string LogisticName { get; set; }
+
+        public string ChannelName { get; set; }
 
         [JsonProperty("ptid")]
         public string PTId { get; set; }
-
-        public int MaxNum { get; set; }
-
-        public int MinNum { get; set; }
     }
 }

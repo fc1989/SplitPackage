@@ -14,10 +14,10 @@
                   <Input v-model="modalState.model.ptid" :maxlength="50"></Input>
               </FormItem>
               <FormItem :label="$t('ProductClasses.PostTaxRate')" prop="postTaxRate">
-                  <InputNumber v-model="modalState.model.postTaxRate" style="width:100%"></InputNumber>
+                  <InputNumber v-model.number="modalState.model.postTaxRate" style="width:100%"></InputNumber>
               </FormItem>
               <FormItem :label="$t('ProductClasses.BCTaxRate')" prop="bcTaxRate">
-                  <InputNumber v-model="modalState.model.bcTaxRate" style="width:100%"></InputNumber>
+                  <InputNumber v-model.number="modalState.model.bcTaxRate" style="width:100%"></InputNumber>
               </FormItem>
               <FormItem v-if="modalState.state == 'edit'">
                   <Checkbox v-model="modalState.model.isActive">{{$t('Public.IsActive')}}</Checkbox>

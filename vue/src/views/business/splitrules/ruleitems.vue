@@ -1,247 +1,256 @@
 <template>
     <div>
-        <Table :ref="refs" :columns="columnsList" :data="thisTableData" border disabled-hover></Table>
+        <div>
+            <Table :columns="columns" :data="tableData" border disabled-hover></Table>
+            <Page :total="totalCount" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+        </div>
+        <Modal v-model="modalState.showModal" :title="modalState.title">
+            <div>
+                <Form ref="modalForm" :rules="modalState.rule" :model="modalState.model" :label-width="70">
+                    <FormItem :label="$t('SplitRules.RuleName')">
+                        {{splitRuleName}}
+                    </FormItem>
+                    <FormItem :label="$t('Menu.Pages.ProductClasses')" prop="productClassId">
+                        <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+                    </FormItem>
+                    <FormItem :label="$t('SplitRules.MaxNum')" prop="maxNum">
+                        <InputNumber v-model.number="modalState.model.maxNum"></InputNumber>
+                    </FormItem>
+                    <FormItem :label="$t('SplitRules.MinNum')" prop="minNum">
+                        <InputNumber v-model.number="modalState.model.minNum"></InputNumber>
+                    </FormItem>
+                </Form>
+            </div>
+            <div slot="footer">
+                <Button @click="modalState.showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button v-if="modalState.actionState!='detail'" @click="modalMethod" type="primary">{{$t('Public.Save')}}</Button>
+            </div>
+        </Modal>
     </div>
 </template>
 
 <script>
 import ProductClassApi from "@/api/productclass";
+import SplitRuleItemApi from "@/api/splitruleitem";
 
-const labelRender = (h,value) => {
-    return h("span", value);
-};
-const generalRender = (h, param, vm) => {
-    if(!param.row.editting){
-        return labelRender(h, param.row[param.column.key]);
+const addHeaderRender = (h, param, vm, showAddIcon, clickAction) => {
+    var array = [];
+    if(showAddIcon){
+        array.push(h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}));
     }
-    else{
-        return h("Input", {
-            props: {
-                type: "text",
-                value: param.row[param.column.key]
-            },
-            on: {
-                "on-blur" (event) {
-                    let key = param.column.key;
-                    vm.thisTableData[param.index][key] = event.target.value;
-                    event.stopPropagation();
-                }
-            }
-        });
-    }
-};
-const dropdownRender = (h, param, vm, labelName) =>{
-    if(!param.row.editting){
-        return labelRender(h, param.row[labelName]);
-    }
-    else{
-        return h(
-            "Select",
-            {
-                props: {
-                    label: vm.thisTableData[param.index][labelName],
-                    value: vm.thisTableData[param.index][param.column.key],
-                    filterable: true,
-                    remote: true,
-                    "remote-method": vm.remoteLLMethod,
-                    loading: vm.loading,
-                    labelInValue: true
-                },
-                on: {
-                    "on-change"(vl,e) {
-                        let key = param.column.key;
-                        vm.thisTableData[param.index][key] = vl.value;
-                        vm.thisTableData[param.index][labelName] = vl.label;
-                        vm.$emit("input", vm.thisTableData);
-                    }
-                }
-            },
-            vm.options.map(function(op) {
-                return h("Option", {
-                    props: {
-                        value: op.value,
-                        label: op.label,
-                        key: param.index + ":" + op.value
-                    }
-                });
-            })
-        );
-    }
-};
-const addHeaderRender = (h, param, vm) => {
+    array.push(h("span", param.column.title));
     return h("div",
         {
             on: {
-                click: async () => {
-                    if(vm.thisTableData.find(function(vl){ return vl.editting == true;})){
-                        return false;
-                    }
-                    var newObj = {
-                        id: 0,
-                        productClassId: null,
-                        productClassName: null,
-                        maxNum: 0,
-                        minNum: 0,
-                        editting: true,
-                        saving: false
-                    };
-                    vm.thisTableData.push(newObj);
-                    vm.$emit("input", vm.thisTableData);
-                    // vm.$emit("on-change", vm.handleBackdata(vm.thisTableData));
+                click: async () =>{
+                    clickAction(vm);
                 }
             }
         },
-        [h("Icon", { props: {type:"android-add"}}),
-        h("strong", param.column.title)]
+        array
     );
 };
-const actionRender = (h, param, vm) => {
-    return h("div", [
-        h("Button",
-            {
-                props: {
-                    type: param.row.editting ? "success" : "primary",
-                    loading: param.row.saving,
-                    size: "small"
-                },
-                style: {
-                    margin: "0 5px"
-                },
-                on: {
-                    click: () => {
-                        if (!param.row.editting) {
-                            vm.thisTableData[param.index].editting = true;
-                            vm.thisTableData = JSON.parse(JSON.stringify(vm.thisTableData));
-                        } else {
-                            vm.thisTableData[param.index].saving = true;
-                            vm.thisTableData = JSON.parse(JSON.stringify(vm.thisTableData));
-                            let edittingRow = vm.thisTableData[param.index];
-                            edittingRow.editting = false;
-                            edittingRow.saving = false;
-                            vm.thisTableData = JSON.parse(JSON.stringify(vm.thisTableData));
-                            vm.$emit("input", vm.thisTableData);
-                            // vm.$emit("on-change", vm.handleBackdata(vm.thisTableData), param.index);
-                        }
-                    }
-                }
-            },
-            param.row.editting ? vm.$t("Public.Save"): vm.$t("Public.Edit")
-        ),
-        h("Poptip",
-            {
-                props: {
-                    confirm: true,
-                    title: vm.$t('SplitRules.DeleteTip'),
-                    transfer: true
-                },
-                on: {
-                    "on-ok": () => {
-                        vm.thisTableData.splice(param.index, 1);
-                        vm.$emit("input", vm.thisTableData);
-                        // vm.$emit("on-delete", vm.handleBackdata(vm.thisTableData), param.index);
-                    }
-                }
-            },
-            [
-                h("Button",
+const rowActionRender = (h, params, vm) => {
+    var array = [];
+    array.push(h("Button",
+    {
+        props: {
+            type: "primary",
+            size: "small"
+        },
+        style: {
+            marginRight: "5px"
+        },
+        on: {
+            click: () => {
+                var productSortId = "";
+                var ptid = params.row.ptid;
+                for(var item in vm.cascaderData){
+                    var array1 = vm.cascaderData[item].children.filter(vl => {
+                        return vl.value === ptid;
+                    });
+                    if(array1.length > 0)
                     {
-                        style: {
-                            margin: "0 5px"
-                        },
-                        props: {
-                            type: "error",
-                            placement: "top",
-                            size: "small"
-                        }
-                    },
-                    vm.$t("Public.Delete")
-                )
-            ]
-        )
-    ]);
+                        productSortId = vm.cascaderData[item].value;
+                        break;          
+                    }
+                }
+                vm.cascaderValue = [productSortId,ptid];
+                vm.modalState.actionState = "edit";
+                vm.modalState.model = params.row;
+                vm.modalState.showModal = true;
+                vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
+            }
+        }
+    },vm.$t('Public.Edit')));
+    array.push(h("Button",
+    {
+        props: {
+            type: "info",
+            size: "small"
+        },
+        style: {
+            marginRight: "5px"
+        },
+        on: {
+            click: () => {
+                SplitRuleItemApi.Get(params.row.id).then(req=>{
+                    vm.modalState.actionState = "detail";
+                    vm.modalState.model = req.data.result;
+                    vm.modalState.showModal = true;
+                    vm.modalState.title = vm.$t('Menu.Pages.LogisticChannels')+vm.$t('Public.Details');
+                });
+            }
+        }
+    },vm.$t('Public.Details')));
+    return h("div", array);
 };
 
 export default {
-  name: "ruleItems",
-  props: {
-    refs: String,
-    value: Array
-  },
-  data() {
-    var _this = this;
-    return {
-      columnsList: [
-        {
-          title: _this.$t("SplitRules.Index"),
-          type: "index",
-          align: "center",
-          renderHeader: (h,param) => { return addHeaderRender(h, param, _this);}
-        },
-        {
-          title: _this.$t("Menu.Pages.ProductClasses"),
-          align: "center",
-          key: "productClassId",
-          render: (h,param) => { return dropdownRender(h, param, _this, "productClassName");}
-        },
-        {
-          title: _this.$t("SplitRules.MaxNum"),
-          align: "center",
-          key: "maxNum",
-          render: (h,param) => { return generalRender(h, param, _this);}
-        },
-        {
-          title: _this.$t("SplitRules.MinNum"),
-          align: "center",
-          key: "minNum",
-          render: (h,param) => { return generalRender(h, param, _this);}
-        },
-        {
-          title: _this.$t("Public.Actions"),
-          align: "center",
-          width: 190,
-          key: "action",
-          render: (h, param) => { return actionRender(h, param, _this);}
-        }
-      ],
-      thisTableData: [],
-      loading: false,
-      options: []
-    };
-  },
-  methods: {
-    handleBackdata(data) {
-      let clonedData = JSON.parse(JSON.stringify(data));
-      clonedData.forEach(item => {
-        delete item.editting;
-        delete item.saving;
-      });
-      return clonedData;
+    props: {
+        splitRuleId: Number,
+        splitRuleName: String
     },
-    remoteLLMethod(query) {
-      let _this = this;
-      if (query !== "" && query !==null) {
-        _this.loading = true;
-        ProductClassApi.Query(query, null).then(function(req) {
-          _this.options = req.data.result;
-          _this.loading = false;
-        });
-      } else {
-        _this.options = [];
-      }
-    }
-  },
-  watch: {
-    value (data) {
-        this.thisTableData = data.map(function(v){
-            if(v.editting === undefined){
-                v.editting = false;
+    data() {
+        var _this = this;
+        const validateProductClass = (rule, value, callback) => {
+            if (_this.cascaderValue.length < 1) {
+                callback(new Error("ProductClass is required"));
             }
-            if(v.saving === undefined){
-                v.saving = false;
-            }
-            return v;
+            callback();
+        };
+        return {
+            columns: [
+                {
+                    title: this.$t('SplitRules.RuleName'),
+                    renderHeader: (h, params) => { 
+                        return addHeaderRender(h, params, _this, !_this.isImport,function(vm){
+                            vm.cascaderValue = [];
+                            vm.modalState.model = {
+                                maxNum: 0,
+                                minNum: 0
+                            };
+                            vm.modalState.showModal = true;
+                            vm.modalState.actionState = "create";
+                            vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
+                        }); 
+                    },
+                    render: (h)=>{
+                        return h('span',this.splitRuleName);
+                    }
+                },
+                {
+                    title: _this.$t("Menu.Pages.ProductClasses"),
+                    align: "center",
+                    key: "ptid",
+                },
+                {
+                    title: _this.$t("SplitRules.MaxNum"),
+                    align: "center",
+                    key: "maxNum",
+                },
+                {
+                    title: _this.$t("SplitRules.MinNum"),
+                    align: "center",
+                    key: "minNum",
+                },
+                {
+                    title: _this.$t("Public.Actions"),
+                    align: "center",
+                    width: 190,
+                    key: "action",
+                    render: (h, param) => { return rowActionRender(h, param, _this);}
+                }
+            ],
+            state: {
+                tableData: [],
+                totalCount: 0,
+                pageSize: 5,
+                currentPage: 1
+            },
+            modalState: {
+                model: {},
+                rule: {
+                    productClassId: [{required: true, validator: validateProductClass}],
+                    maxNum: [{required: true,}],
+                    minNum: [{required: true,}],
+                },
+                title: null,
+                showModal: false,
+                actionState: null,
+            },
+            cascaderData: [],
+            cascaderValue: []
+        };
+    },
+    methods: {
+        pageChange(page) {
+            this.state.currentPage = page;
+            this.getpage();
+        },
+        pagesizeChange(pagesize) {
+            this.state.pageSize = pagesize;
+            this.getpage();
+        },
+        async getpage() {
+            let page = {
+                maxResultCount: this.state.pageSize,
+                skipCount: (this.state.currentPage - 1) * this.state.pageSize,
+                splitRuleId: this.splitRuleId
+            };
+            let rep = await SplitRuleItemApi.Search({ params: page });
+            this.state.tableData = [];
+            this.state.tableData.push(...rep.data.result.items);
+            this.state.totalCount = rep.data.result.totalCount;
+        },
+        modalMethod(){
+            this.$refs.modalForm.validate(async val => {
+                if (val) {
+                    this.modalState.model.ptid = this.cascaderValue[1];
+                    this.modalState.model.splitRuleId = this.splitRuleId;
+                    if(this.modalState.model.id){
+                        await SplitRuleItemApi.Update(this.modalState.model);
+                    }
+                    else{
+                        await SplitRuleItemApi.Create(this.modalState.model);
+                    }
+                    this.modalState.showModal = false;
+                    this.getpage();
+                }
+            });
+        }
+    },
+    computed: {
+        tableData() {
+            return this.state.tableData;
+        },
+        totalCount() {
+            return this.state.totalCount;
+        },
+        currentPage() {
+            return this.state.currentPage;
+        },
+        pageSize() {
+            return this.state.pageSize;
+        }
+    },
+    created() {
+        var _this = this;
+        this.getpage();
+        ProductClassApi.GetOptional().then(req => {
+            _this.cascaderData = req.data.result.map(function(vl, index, arr){
+                return {
+                    value: vl.value,
+                    label: vl.label,
+                    children: vl.children.map(function(vl1, index1, arr1){
+                        return {
+                        value: vl1.value,
+                        label: vl1.label,
+                        };
+                    })
+                };
+            });
         });
     }
-  }
 };
 </script>

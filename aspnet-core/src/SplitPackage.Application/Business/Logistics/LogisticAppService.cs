@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace SplitPackage.Business.Logistics
 {
     [AbpAuthorize(PermissionNames.Pages_Tenant_Logistics)]
-    public class LogisticAppService : AsyncCrudAppService<Logistic, LogisticDto, long, LogisticSearchFilter, CreateLogisticDto, UpdateLogisticDto>, ILogisticAppService
+    public class LogisticAppService : AsyncCrudAppService<Logistic, LogisticDto, long, LogisticSearchFilter, CreateLogisticDto, UpdateLogisticDto>
     {
         private readonly IRepository<LogisticChannel, long> _logisticChannelRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tenantLogisticChannelRepository;

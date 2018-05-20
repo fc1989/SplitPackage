@@ -16,8 +16,5 @@ export default {
     },
     Verify(flag){
         return Util.ajax.post('/api/services/app/Logistic/Verify',qs.stringify({flag:flag}));
-    },
-    Query(flag,ids){
-        return Util.ajax.post('/api/services/app/Logistic/Query',{flag:flag,ids:ids});
     }
 }

@@ -34,7 +34,7 @@ export default {
     async getPage(filter){
         var rep = await ProductSortApi.Search(filter);
         return rep.data.result;
-    },
+    }
   },
   data() {
     return {
@@ -100,6 +100,6 @@ export default {
       this.$on('set-modalState',state => {
         _this.showSpecified = state === 'edit';
       });
-  },
+  }
 };
 </script>

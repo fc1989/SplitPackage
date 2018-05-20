@@ -12,5 +12,8 @@ export default {
     },
     Delete(id){
         return Util.ajax.delete('/api/services/app/SplitRule/Delete?Id='+id)
+    },
+    Get(id){
+        return Util.ajax.get('/api/services/app/SplitRule/Get?Id=' + id);
     }
 }

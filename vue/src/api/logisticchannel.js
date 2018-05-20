@@ -17,9 +17,6 @@ export default {
     Verify(data){
         return Util.ajax.post('/api/services/app/LogisticChannel/Verify',data);
     },
-    Query(flag,ids){
-        return Util.ajax.post('/api/services/app/LogisticChannel/Query',{flag:flag,ids:ids});
-    },
     Get(id){
         return Util.ajax.get('/api/services/app/LogisticChannel/Get?Id=' + id);
     },
@@ -31,5 +28,8 @@ export default {
     },
     CustomerImport(arrayKey){
         return Util.ajax.post('/api/services/app/LogisticChannel/CustomerImport',arrayKey);
+    },
+    GetOptional(){
+        return Util.ajax.get('/api/services/app/LogisticChannel/GetOptional');
     }
 }

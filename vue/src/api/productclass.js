@@ -17,7 +17,7 @@ export default {
     Verify(ptid){
         return Util.ajax.post('/api/services/app/ProductClass/Verify',qs.stringify({ptid:ptid}));
     },
-    Query(flag,ids){
-        return Util.ajax.post('/api/services/app/ProductClass/Query',{flag:flag,ids:ids});
+    GetOptional(){
+        return Util.ajax.get('/api/services/app/ProductClass/GetOptional');
     }
 }

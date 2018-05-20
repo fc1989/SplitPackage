@@ -10,4 +10,13 @@ namespace SplitPackage.Dto
 
         public string Label { get; set; }
     }
+
+    public class Option
+    {
+        public string Value { get; set; }
+
+        public string label { get; set; }
+
+        public IList<Option> Children { get; set; }
+    }
 }

@@ -7,11 +7,9 @@ using System.Text;
 
 namespace SplitPackage.Business.SplitRules.Dto
 {
-    [AutoMapFrom(typeof(SplitRuleProductClass))]
-    public class RuleItemDto: EntityDto<long>
+    [AutoMapTo(typeof(SplitRuleProductClass))]
+    public class UpdateRuleItemDto : EntityDto<long>
     {
-        public string RuleName { get; set; }
-
         [JsonProperty("ptid")]
         public string PTId { get; set; }
 

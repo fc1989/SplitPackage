@@ -227,6 +227,7 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RuleName = table.Column<string>(nullable: true, maxLength: SplitRule.MaxRuleNameLength),
                     MaxPackage = table.Column<int>(),
                     MaxWeight = table.Column<double>(),
                     MaxTax = table.Column<double>(),

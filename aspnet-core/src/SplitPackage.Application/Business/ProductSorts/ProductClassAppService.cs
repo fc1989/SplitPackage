@@ -56,5 +56,23 @@ namespace SplitPackage.Business.ProductSorts
                 Label = string.Format("{0}[{1}]", o.ClassName, o.PTId)
             }).ToListAsync();
         }
+
+        [AbpAllowAnonymous]
+        public async Task<List<Option>> GetOptional()
+        {
+            var tenantId = AbpSession.TenantId;
+            var query = this.Repository.GetAll().Where(o=> o.IsActive);
+            query.Include(p => p.ProductSortBy);
+            return await Task.FromResult(query.GroupBy(o => o.ProductSortBy).Select(o => new Option()
+            {
+                Value = o.Key.Id.ToString(),
+                label = o.Key.SortName,
+                Children = o.Select(oi => new Option()
+                {
+                    Value = oi.PTId,
+                    label = oi.ClassName,
+                }).ToList()
+            }).ToList());
+        }
     }
 }

@@ -12,6 +12,8 @@ namespace SplitPackage.Business.SplitRules.Dto
         [Required]
         public long LogisticChannelId { get; set; }
 
+        public string RuleName { get; set; }
+
         public int MaxPackage { get; set; }
 
         public double MaxWeight { get; set; }
@@ -19,7 +21,5 @@ namespace SplitPackage.Business.SplitRules.Dto
         public double MaxTax { get; set; }
 
         public double MaxPrice { get; set; }
-
-        public IEnumerable<RuleItemDto> RuleItems { get; set; }
     }
 }

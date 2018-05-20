@@ -243,58 +243,59 @@
             };
             return  {
                 modalWidth: 750,
-                columns: [{
-                    title: this.$t('LogisticChannels.ChannelName'),
-                    key: "channelName",
-                    renderHeader: (h, params) => { 
-                        return addHeaderRender(h, params, _this, !_this.isImport,function(vm){
-                        vm.modalState.model = {
-                            logisticId: vm.logisticId,
-                            logisticName: vm.logisticName,
-                            weightChargeRules: [],
-                            numChargeRules: [],
-                            type: 0,
-                            way: 0
-                        };
-                        vm.modalState.showModal = true;
-                        vm.modalState.actionState = "create";
-                        vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
-                    }); }
-                },
-                {
-                    title: this.$t('LogisticChannels.AliasName'),
-                    key: 'aliasName'
-                },
-                {
-                    title: this.$t('LogisticChannels.Type'),
-                    key: 'type',
-                    render: (h,params) => {
-                        return h("span", _this.modalState.channelType[params.row.type])
-                    }
-                },
-                {
-                    title: this.$t('LogisticChannels.Way'),
-                    key: "way",
-                    render: (h,params) => {
-                        return h("span", _this.modalState.chargeWay[params.row.way]);
-                    }
-                },
-                {
-                    title: this.$t('Public.IsActive'),
-                    render: (h, params) => {
-                        return h("Checkbox", {
-                            props: {
-                                value: params.row.isActive,
-                                disabled: true
-                            }
-                        });
-                    }
-                },
-                {
-                    title: this.$t("Public.Actions"),
-                    type: 'action',
-                    render: (h,params) => rowActionRender(h, params, _this)
-                }],
+                columns: [
+                    {
+                        title: this.$t('LogisticChannels.ChannelName'),
+                        key: "channelName",
+                        renderHeader: (h, params) => { 
+                            return addHeaderRender(h, params, _this, !_this.isImport,function(vm){
+                            vm.modalState.model = {
+                                logisticId: vm.logisticId,
+                                logisticName: vm.logisticName,
+                                weightChargeRules: [],
+                                numChargeRules: [],
+                                type: 0,
+                                way: 0
+                            };
+                            vm.modalState.showModal = true;
+                            vm.modalState.actionState = "create";
+                            vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
+                        }); }
+                    },
+                    {
+                        title: this.$t('LogisticChannels.AliasName'),
+                        key: 'aliasName'
+                    },
+                    {
+                        title: this.$t('LogisticChannels.Type'),
+                        key: 'type',
+                        render: (h,params) => {
+                            return h("span", _this.modalState.channelType[params.row.type])
+                        }
+                    },
+                    {
+                        title: this.$t('LogisticChannels.Way'),
+                        key: "way",
+                        render: (h,params) => {
+                            return h("span", _this.modalState.chargeWay[params.row.way]);
+                        }
+                    },
+                    {
+                        title: this.$t('Public.IsActive'),
+                        render: (h, params) => {
+                            return h("Checkbox", {
+                                props: {
+                                    value: params.row.isActive,
+                                    disabled: true
+                                }
+                            });
+                        }
+                    },
+                    {
+                        title: this.$t("Public.Actions"),
+                        type: 'action',
+                        render: (h,params) => rowActionRender(h, params, _this)
+                    }],
                 state: {
                     tableData: [],
                     totalCount: 0,
