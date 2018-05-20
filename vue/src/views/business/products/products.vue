@@ -1,70 +1,45 @@
 <template>
-    <simplePage ref="simplepage" :title="title" 
+    <simplePage ref="simplepage"
+        :title="title" 
         :columnsetting="columnsetting" 
-        :api="api"
-        :newRule="newProductRule"
-        :editRule="productRule"
-        :createFormat="createFormat"
-        showSearchFilter>
+        :rule="rule"
+        showSearchFilter
+        :getCreateModel="getCreateModel"
+        :getEditModel="getEditModel"
+        :searchPage="getPage">
         <template slot="search" slot-scope="slotProps">
             <Input v-model="slotProps.searchData.productName" :maxlength="50" :placeholder="$t('Products.ProductName')" style="width:150px"></Input>
             <Input v-model="slotProps.searchData.sku" :maxlength="50" :placeholder="$t('Products.Sku')" style="width:150px"></Input>
             <Input v-model="slotProps.searchData.brand" :maxlength="50" :placeholder="$t('Products.Brand')" style="width:150px"></Input>
             <Input v-model="slotProps.searchData.ptid" :maxlength="50" :placeholder="$t('Menu.Pages.ProductClasses')" style="width:150px"></Input>
         </template>
-        <template slot="newform" slot-scope="slotProps">
+        <template slot="modalForm" slot-scope="slotProps">
             <FormItem :label="$t('Products.ProductName')" prop="productName">
-                <Input v-model="slotProps.createModel.productName" :maxlength="200" :minlength="1"></Input>
+                <Input v-model="slotProps.model.productName" :maxlength="200" :minlength="1"></Input>
             </FormItem>
             <FormItem :label="$t('Products.Sku')" prop="sku">
-                <Input v-model="slotProps.createModel.sku" :maxlength="50"></Input>
+                <Input v-model="slotProps.model.sku" :maxlength="50" :disabled="showSpecified"></Input>
             </FormItem>
             <FormItem :label="$t('Menu.Pages.ProductClasses')" prop="ptid">
-                <Input v-model="slotProps.createModel.ptid"></Input>
+                <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
             </FormItem>
             <FormItem :label="$t('Products.Brand')" prop="brand">
-                <Input v-model="slotProps.createModel.brand" :maxlength="50"></Input>
+                <Input v-model="slotProps.model.brand" :maxlength="50"></Input>
             </FormItem>
             <FormItem :label="$t('Products.Weight')" prop="weight">
-                <Input-number v-model.number="slotProps.createModel.weight" style="width:100%"></Input-number>
+                <Input-number v-model.number="slotProps.model.weight" style="width:100%"></Input-number>
             </FormItem>
             <FormItem :label="$t('Products.DeclarePrice')" prop="declarePrice">
-                <Input-number v-model.number="slotProps.createModel.declarePrice" style="width:100%"></Input-number>
+                <Input-number v-model.number="slotProps.model.declarePrice" style="width:100%"></Input-number>
             </FormItem>
             <FormItem :label="$t('Products.DeclareTaxrate')" prop="declareTaxrate">
-                <Input-number v-model.number="slotProps.createModel.declareTaxrate" style="width:100%"></Input-number>
-            </FormItem>
-        </template>
-        <template slot="editform" slot-scope="slotProps">
-            <FormItem :label="$t('Products.ProductName')" prop="productName">
-                <Input v-model="slotProps.editModel.productName" :maxlength="200" :minlength="1"></Input>
-            </FormItem>
-            <FormItem :label="$t('Products.Sku')" prop="sku">
-                <Input v-model="slotProps.editModel.sku" :maxlength="50"></Input>
-            </FormItem>
-            <FormItem :label="$t('Menu.Pages.ProductClasses')" prop="ptid">
-                <Input v-model="slotProps.editModel.ptid"></Input>
-            </FormItem>
-            <FormItem :label="$t('Products.Brand')" prop="brand">
-                <Input v-model="slotProps.editModel.brand" :maxlength="50"></Input>
-            </FormItem>
-            <FormItem :label="$t('Products.Weight')" prop="weight">
-                <Input-number v-model.number="slotProps.editModel.weight" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('Products.DeclarePrice')" prop="declarePrice">
-                <Input-number v-model.number="slotProps.editModel.declarePrice" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem :label="$t('Products.DeclareTaxrate')" prop="declareTaxrate">
-                <Input-number v-model.number="slotProps.editModel.declareTaxrate" style="width:100%"></Input-number>
-            </FormItem>
-            <FormItem>
-                <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
+                <Input-number v-model.number="slotProps.model.declareTaxrate" style="width:100%"></Input-number>
             </FormItem>
         </template>
     </simplePage>
 </template>
 <script>
-import simplePage from "../../../components/simplepage.vue";
+import simplePage from "../../../components/simplepagev1.vue";
 import ProductClassApi from "@/api/productclass";
 import ProductApi from "@/api/product";
 
@@ -72,24 +47,54 @@ export default {
   components: {
     simplePage
   },
-  data() {
-    var _this = this;
-    const cf = function() {
-      _this.options = [];
+
+  methods:{
+    async getPage(filter){
+        var rep = await ProductApi.Search(filter);
+        return rep.data.result;
+    },
+    getCreateModel(){
+      this.cascaderValue = [];
       return {
-        productName: null,
-        sku: null,
-        brand: null,
         weight: 0,
         declarePrice: 0,
-        declareTaxrate: 0,
-        ptid: null
+        declareTaxrate: 0
       };
+    },
+    getEditModel(row){
+      var productSortId = "";
+      var ptid = row.ptid;
+      for(var item in this.cascaderData){
+          var array1 = this.cascaderData[item].children.filter(vl => {
+              return vl.value === ptid;
+          });
+          if(array1.length > 0)
+          {
+              productSortId = this.cascaderData[item].value;
+              break;          
+          }
+      }
+      this.cascaderValue = [productSortId,ptid];
+      return row;
+    }
+  },
+  data() {
+    var _this = this;
+    const validateProductClass = (rule, value, callback) => {
+        if (_this.cascaderValue.length < 1) {
+            callback(new Error("ProductClass is required"));
+        }
+        callback();
     };
     const validateSku = (rule, value, callback) => {
       if (!value) {
         callback(new Error("sku is required"));
       } else {
+        if(_this.showSpecified)
+        {
+          callback();
+          return;
+        }
         ProductApi.Verify(value).then(function(rep) {
           if (rep.data.result) {
             callback();
@@ -101,21 +106,11 @@ export default {
     };
     return {
       title: "Menu.Pages.Products",
-      createFormat: cf,
-      api: ProductApi,
-      newProductRule: {
+      rule: {
         productName: [{ required: true }],
         sku: [{ required: true, validator: validateSku }],
         weight: [{ type: "number" }],
-        ptid: [{required: true}],
-        declarePrice: [{ type: "number" }],
-        declareTaxrate: [{ type: "number" }]
-      },
-      productRule: {
-        productName: [{ required: true }],
-        productNo: [{ required: true }],
-        weight: [{ type: "number" }],
-        ptid: [{required: true}],
+        ptid: [{required: true,validator: validateProductClass}],
         declarePrice: [{ type: "number" }],
         declareTaxrate: [{ type: "number" }]
       },
@@ -165,8 +160,51 @@ export default {
             }
           }
         ]
-      }
+      },
+      showSpecified: null,
+      cascaderData: [],
+      cascaderValue: []
     };
+  },
+  mounted(){
+      var _this = this;
+      this.$on('on-deleteRow',(id,callback) => {
+        ProductApi.Delete(id).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-createRow',(model,callback) =>{
+        model.ptid = _this.cascaderValue[1];
+        ProductApi.Create(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-editRow',(model,callback) =>{
+        model.ptid = _this.cascaderValue[1];
+        ProductApi.Update(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('set-modalState',state => {
+        _this.showSpecified = state === 'edit';
+      });
+  },
+  created() {
+      var _this = this;
+      ProductClassApi.GetOptional().then(req => {
+          _this.cascaderData = req.data.result.map(function(vl, index, arr){
+              return {
+                  value: vl.value,
+                  label: vl.label,
+                  children: vl.children.map(function(vl1, index1, arr1){
+                      return {
+                      value: vl1.value,
+                      label: vl1.label,
+                      };
+                  })
+              };
+          });
+      });
   }
 };
 </script>
