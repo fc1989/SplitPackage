@@ -64,7 +64,6 @@ namespace SplitPackage.Tests
             UsingDbContext(context =>
             {
                 NormalizeDbContext(context);
-                new DefaultProductCreator(context).Create();
             });
 
             LoginAsDefaultTenantAdmin();

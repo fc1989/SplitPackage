@@ -234,46 +234,15 @@ namespace SplitPackage.Migrations
                     MaxPrice = table.Column<double>(),
                     LogisticChannelId = table.Column<long>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
-                    CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    IsActive = table.Column<bool>(nullable: false),
-                    TenantId = table.Column<int>(nullable: true)
+                    IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SplitRules", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SplitRules_Users_CreatorUserId",
-                        column: x => x.CreatorUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SplitRules_Users_DeleterUserId",
-                        column: x => x.DeleterUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SplitRules_Users_LastModifierUserId",
-                        column: x => x.LastModifierUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_SplitRules_LogisticChannels_LogisticChannelId",
                         column: x => x.LogisticChannelId,
                         principalTable: "LogisticChannels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SplitRules_Tenant_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -554,29 +523,9 @@ namespace SplitPackage.Migrations
                 column: "LogisticChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SplitRules_CreatorUserId",
-                table: "SplitRules",
-                column: "CreatorUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SplitRules_DeleterUserId",
-                table: "SplitRules",
-                column: "DeleterUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SplitRules_LastModifierUserId",
-                table: "SplitRules",
-                column: "LastModifierUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SplitRules_LogisticChannelId",
                 table: "SplitRules",
                 column: "LogisticChannelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SplitRules_TenantId",
-                table: "SplitRules",
-                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SplitRuleProductClass_SplitRuleId",

@@ -123,14 +123,8 @@ namespace SplitPackage.Migrations
                 b.Property(p => p.MaxTax);
                 b.Property(p => p.MaxPrice);
                 b.Property(p => p.IsActive);
-                b.Property(p => p.CreatorUserId);
-                b.Property(p => p.DeleterUserId);
-                b.Property(p => p.DeletionTime);
+                b.Property(p => p.CreationTime);
                 b.Property(p => p.IsActive);
-                b.Property(p => p.IsDeleted);
-                b.Property(p => p.LastModificationTime);
-                b.Property(p => p.LastModifierUserId);
-                b.Property(p => p.TenantId);
                 b.HasKey(p => p.Id);
                 b.ToTable("SplitRules");
                 b.HasOne(p => p.LogisticChannelBy).WithMany(p => p.SplitRules).HasForeignKey(p => p.LogisticChannelId);

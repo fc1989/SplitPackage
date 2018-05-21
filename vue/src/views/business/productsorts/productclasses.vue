@@ -199,7 +199,7 @@ export default {
           let page = {
               maxResultCount: this.state.pageSize,
               skipCount: (this.state.currentPage - 1) * this.state.pageSize,
-              logisticId: this.logisticId
+              productSortId: this.productSortId
           };
           let rep = await ProductClassApi.Search({ params: page });
           this.state.tableData = [];

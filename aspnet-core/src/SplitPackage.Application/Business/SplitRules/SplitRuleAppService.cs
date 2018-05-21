@@ -20,15 +20,18 @@ namespace SplitPackage.Business.SplitRules
         private readonly IRepository<Logistic, long> _lRepository;
         private readonly IRepository<LogisticChannel, long> _lcRepository;
         private readonly IRepository<SplitRuleProductClass, long> _srpRepository;
+        private readonly IRepository<TenantLogisticChannel, long> _tlcRepository;
 
         public SplitRuleAppService(IRepository<SplitRule, long> repository, 
             IRepository<SplitRuleProductClass, long> srpRepository,
             IRepository<Logistic, long> lRepository,
-            IRepository<LogisticChannel, long> lcRepository) : base(repository)
+            IRepository<LogisticChannel, long> lcRepository,
+            IRepository<TenantLogisticChannel, long> tlcRepository) : base(repository)
         {
             this._srpRepository = srpRepository;
             this._lRepository = lRepository;
             this._lcRepository = lcRepository;
+            this._tlcRepository = tlcRepository;
         }
 
         protected override IQueryable<SplitRule> CreateFilteredQuery(SplitRuleSearchFilter input)
@@ -54,24 +57,16 @@ namespace SplitPackage.Business.SplitRules
             }
             var query = from l in lQuery
                         join lc in lcQuery on l.Id equals lc.LogisticId
+                        join tlc in this._tlcRepository.GetAll() on lc.Id equals tlc.LogisticChannelId into tlc1
+                        from tlcleft in tlc1.DefaultIfEmpty()
                         join sr in this.Repository.GetAll() on lc.Id equals sr.LogisticChannelId
-                        where sr.TenantId == tenantId
+                        where lc.TenantId == tenantId || tlcleft.TenantId == tenantId
                         select sr;
             if (!string.IsNullOrEmpty(input.PTId))
             {
                 query = query.Where(o=>o.ProductClasses.Any(oi=>oi.PTId.StartsWith(input.PTId)));
             }
             return query.Include(p => p.LogisticChannelBy).ThenInclude((LogisticChannel p) => p.LogisticBy);
-        }
-
-        public override async Task<SplitRuleDto> Create(CreateSplitRuleDto input)
-        {
-            CheckCreatePermission();
-
-            var entity = MapToEntity(input);
-            entity.TenantId = AbpSession.TenantId;
-            await this.Repository.InsertAsync(entity);
-            return MapToEntityDto(entity);
         }
     }
 }

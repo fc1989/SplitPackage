@@ -172,13 +172,13 @@ namespace SplitPackage.Tests
                     s.Price == 5
                 );
                 await EntityValid(wf);
-                var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticChannelId == line.Id &&
+                var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id &&
                 s.MaxPackage == 3 &&
                 s.MaxWeight == 40000 &&
                 s.MaxTax == 10000 &&
                 s.MaxPrice == 10000);
                 await EntityValid(sr);
-                var srpcs = context.SplitRuleProductClass.Where(o => o.SplitRuleId == sr.Id && sr.TenantId == null);
+                var srpcs = context.SplitRuleProductClass.Where(o => o.SplitRuleId == sr.Id);
                 Assert.Equal(4, srpcs.Count());
                 foreach (var item in srpcs)
                 {

@@ -1,4 +1,6 @@
-﻿namespace SplitPackage.EntityFrameworkCore.Seed.Host
+﻿using SplitPackage.EntityFrameworkCore.Seed.Business;
+
+namespace SplitPackage.EntityFrameworkCore.Seed.Host
 {
     public class InitialHostDbBuilder
     {

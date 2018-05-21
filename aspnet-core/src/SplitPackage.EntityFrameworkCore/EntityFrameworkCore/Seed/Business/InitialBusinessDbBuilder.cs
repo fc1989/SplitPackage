@@ -17,7 +17,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
         public void Create()
         {
             new DefaultLogisticCreator(_context).Create();
-            _context.SaveChanges();
+            new DefaultProductSortCreator(_context).Create();
         }
     }
 }

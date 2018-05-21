@@ -17,6 +17,11 @@ namespace SplitPackage.EntityFrameworkCore
 
         public bool SkipDbSeed { get; set; }
 
+        public SplitPackageEntityFrameworkModule()
+        {
+            this.SkipDbSeed = true;
+        }
+
         public override void PreInitialize()
         {
             if (!SkipDbContextRegistration)
