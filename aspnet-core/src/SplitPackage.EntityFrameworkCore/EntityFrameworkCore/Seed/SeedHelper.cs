@@ -27,6 +27,8 @@ namespace SplitPackage.EntityFrameworkCore.Seed
 
             //Default Business Data seed
             new InitialBusinessDbBuilder(context).Create();
+
+            new InitialTenantBuilder(context).Create();
         }
 
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)

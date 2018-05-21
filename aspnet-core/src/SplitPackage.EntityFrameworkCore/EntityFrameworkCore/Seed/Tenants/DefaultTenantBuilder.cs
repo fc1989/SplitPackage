@@ -17,24 +17,28 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Tenants
 
         public void Create()
         {
+            if (_context.Tenants.Any())
+            {
+                return;
+            }
             CreateDefaultTenant();
         }
 
         private void CreateDefaultTenant()
         {
             // Default tenant
-
-            var defaultTenant = _context.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.TenancyName == AbpTenantBase.DefaultTenantName);
-            if (defaultTenant == null)
+            string[] tenants = new string[] { "AstraeaAssistant", "Auz", "Iautao", "Phoenix" };
+            foreach (var item in tenants)
             {
-                defaultTenant = new Tenant(AbpTenantBase.DefaultTenantName, AbpTenantBase.DefaultTenantName);
+                var tenant = new Tenant(item, item);
                 var defaultEdition = _context.Editions.IgnoreQueryFilters().FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);
                 if (defaultEdition != null)
                 {
-                    defaultTenant.EditionId = defaultEdition.Id;
+                    tenant.EditionId = defaultEdition.Id;
                 }
-                _context.Tenants.Add(defaultTenant);
+                _context.Tenants.Add(tenant);
                 _context.SaveChanges();
+                new TenantRoleAndUserBuilder(_context,tenant.Id).Create();
             }
         }
     }
