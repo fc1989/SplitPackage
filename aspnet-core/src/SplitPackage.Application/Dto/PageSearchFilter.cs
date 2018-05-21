@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SplitPackage.Dto
 {
-    public class PageSearchFilter<T> : PagedResultRequestDto where T : class
+    public abstract class PageSearchFilter<T> : PagedResultRequestDto where T : class
     {
         public Expression<Func<T, bool>> GenerateFilter()
         {

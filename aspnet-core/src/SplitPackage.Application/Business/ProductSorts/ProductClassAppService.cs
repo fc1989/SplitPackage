@@ -18,11 +18,16 @@ namespace SplitPackage.Business.ProductSorts
 {
 
     [AbpAuthorize(PermissionNames.Pages_Admin_ProductSorts)]
-    public class ProductClassAppService : AsyncCrudAppService<ProductClass, ProductClassDto, long, PagedResultRequestDto, CreateProductClassDto, UpdateProductClassDto>
+    public class ProductClassAppService : AsyncCrudAppService<ProductClass, ProductClassDto, long, ProductClassSearchFilter, CreateProductClassDto, UpdateProductClassDto>
     {
         public ProductClassAppService(IRepository<ProductClass, long> repository) : base(repository)
         {
 
+        }
+
+        protected override IQueryable<ProductClass> CreateFilteredQuery(ProductClassSearchFilter input)
+        {
+            return base.CreateFilteredQuery(input).Where(input.GenerateFilter());
         }
 
         public async override Task Delete(EntityDto<long> input)
