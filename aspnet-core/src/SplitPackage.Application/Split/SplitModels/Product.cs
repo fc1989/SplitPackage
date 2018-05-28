@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,8 @@ namespace SplitPackage.Split.SplitModels
         /// </summary>
         public int Weight { get; set; }
 
-        public int? PTId { get; set; }
+        [JsonProperty("ptid")]
+        public string PTId { get; set; }
 
         public int Remove(int num)
         {

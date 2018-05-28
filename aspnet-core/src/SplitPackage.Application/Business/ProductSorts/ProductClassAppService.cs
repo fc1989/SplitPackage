@@ -79,5 +79,23 @@ namespace SplitPackage.Business.ProductSorts
                 }).ToList()
             }).ToList());
         }
+
+        public async Task<bool> VerifyPTId(long productSortId, string ptid)
+        {
+            var count = await this.Repository.GetAll().Where(o => o.ProductSortId != productSortId && o.PTId == ptid).CountAsync();
+            if (count > 0)
+                return false;
+            else
+                return true;
+        }
+
+        public async Task<bool> VerifyClassName(long productSortId, string className)
+        {
+            var count = await this.Repository.GetAll().Where(o => o.ProductSortId == productSortId && o.ClassName == className).CountAsync();
+            if (count > 0)
+                return false;
+            else
+                return true;
+        }
     }
 }

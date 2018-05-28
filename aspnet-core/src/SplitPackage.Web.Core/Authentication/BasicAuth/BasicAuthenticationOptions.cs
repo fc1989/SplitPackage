@@ -7,6 +7,6 @@ namespace SplitPackage.Authentication.BasicAuth
 {
     public class BasicAuthenticationOptions : AuthenticationSchemeOptions
     {
-
+        public string SystemApiKey { get; set; }
     }
 }

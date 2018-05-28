@@ -11,7 +11,8 @@
     <text name="SplitRules" value="打包规则"/>
     <text name="WeightFreights" value="重量运费"/>
     <text name="NumFreights" value="数量运费"/>
-    <text name="LogisticRelateds" values="关联物流商"></text>
+    <text name="LogisticRelateds" value="关联物流商"></text>
+    <text name="Simulator" value ="模拟器"></text>
     
     <text name="UnPower" value="无权处理"></text>
     <text name="ChargeByWeight" value="计重"></text>

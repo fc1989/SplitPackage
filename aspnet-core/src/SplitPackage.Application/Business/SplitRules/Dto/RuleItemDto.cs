@@ -15,6 +15,8 @@ namespace SplitPackage.Business.SplitRules.Dto
         [JsonProperty("ptid")]
         public string PTId { get; set; }
 
+        public string ProductClass { get; set; }
+
         public int MaxNum { get; set; }
 
         public int MinNum { get; set; }

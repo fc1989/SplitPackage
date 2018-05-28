@@ -100,8 +100,18 @@ export default {
       },
       columnsetting: {
         actionOption: {
-            edit: true,
-            delete: true
+            edit: function(row, vm) {
+              if(row.tenantId === vm.$store.state.session.tenantId){
+                return true;
+              }
+              return false;
+            },
+            delete: function(row, vm) {
+              if(row.tenantId === vm.$store.state.session.tenantId){
+                return true;
+              }
+              return false;
+            }
         },
         columns: [
           {
@@ -111,7 +121,8 @@ export default {
                   return h(ruleItems, {
                       props: {
                           splitRuleId: params.row.id,
-                          splitRuleName: params.row.ruleName
+                          splitRuleName: params.row.ruleName,
+                          canModify: params.row.tenantId === this.$store.state.session.tenantId
                       }
                   })
               }
@@ -187,8 +198,8 @@ export default {
   },
   async created(){
     var _this = this;
-    LogisticChannelApi.GetOptional().then(req => {
-      _this.cascaderData = req.data.result.map(function(vl, index, arr){
+    LogisticChannelApi.GetOwn().then(req => {
+        _this.cascaderData = req.data.result.map(function(vl, index, arr){
         return {
           value: vl.value,
           label: vl.label,

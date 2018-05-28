@@ -1,4 +1,5 @@
 ﻿using Abp.AutoMapper;
+using Abp.Dependency;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using AutoMapper;
@@ -30,6 +31,7 @@ namespace SplitPackage
         public override void PreInitialize()
         {
             Configuration.Authorization.Providers.Add<SplitPackageAuthorizationProvider>();
+            //IocManager.Register<ISplitService, SplitService>(DependencyLifeStyle.Transient);
         }
 
         public override void Initialize()
@@ -42,8 +44,6 @@ namespace SplitPackage
                 // Scan the assembly for classes which inherit from AutoMapper.Profile
                 cfg => cfg.AddProfiles(thisAssembly)
             );
-
-            IocManager.Resolve<ISplitService>().Initialize(System.IO.Path.Combine(this._env.ContentRootPath, "SplitPackageRules"));
         }
     }
 }

@@ -31,5 +31,8 @@ export default {
     },
     GetOptional(){
         return Util.ajax.get('/api/services/app/LogisticChannel/GetOptional');
+    },
+    GetOwn(){
+        return Util.ajax.get('/api/services/app/LogisticChannel/GetOwn');
     }
 }

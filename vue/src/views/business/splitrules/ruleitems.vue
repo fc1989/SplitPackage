@@ -33,9 +33,9 @@
 import ProductClassApi from "@/api/productclass";
 import SplitRuleItemApi from "@/api/splitruleitem";
 
-const addHeaderRender = (h, param, vm, showAddIcon, clickAction) => {
+const addHeaderRender = (h, param, vm, clickAction) => {
     var array = [];
-    if(showAddIcon){
+    if(vm.canModify){
         array.push(h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}));
     }
     array.push(h("span", param.column.title));
@@ -52,64 +52,68 @@ const addHeaderRender = (h, param, vm, showAddIcon, clickAction) => {
 };
 const rowActionRender = (h, params, vm) => {
     var array = [];
-    array.push(h("Button",
-    {
-        props: {
-            type: "primary",
-            size: "small"
-        },
-        style: {
-            marginRight: "5px"
-        },
-        on: {
-            click: () => {
-                var productSortId = "";
-                var ptid = params.row.ptid;
-                for(var item in vm.cascaderData){
-                    var array1 = vm.cascaderData[item].children.filter(vl => {
-                        return vl.value === ptid;
-                    });
-                    if(array1.length > 0)
-                    {
-                        productSortId = vm.cascaderData[item].value;
-                        break;          
+    if(vm.canModify){
+        array.push(h("Button",
+        {
+            props: {
+                type: "primary",
+                size: "small"
+            },
+            style: {
+                marginRight: "5px"
+            },
+            on: {
+                click: () => {
+                    var productSortId = "";
+                    var ptid = params.row.ptid;
+                    for(var item in vm.cascaderData){
+                        var array1 = vm.cascaderData[item].children.filter(vl => {
+                            return vl.value === ptid;
+                        });
+                        if(array1.length > 0)
+                        {
+                            productSortId = vm.cascaderData[item].value;
+                            break;          
+                        }
                     }
-                }
-                vm.cascaderValue = [productSortId,ptid];
-                vm.modalState.actionState = "edit";
-                vm.modalState.model = params.row;
-                vm.modalState.showModal = true;
-                vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
-            }
-        }
-    },vm.$t('Public.Edit')));
-    array.push(h("Button",
-    {
-        props: {
-            type: "info",
-            size: "small"
-        },
-        style: {
-            marginRight: "5px"
-        },
-        on: {
-            click: () => {
-                SplitRuleItemApi.Get(params.row.id).then(req=>{
-                    vm.modalState.actionState = "detail";
-                    vm.modalState.model = req.data.result;
+                    vm.cascaderValue = [productSortId,ptid];
+                    vm.modalState.actionState = "edit";
+                    vm.modalState.model = params.row;
                     vm.modalState.showModal = true;
-                    vm.modalState.title = vm.$t('Menu.Pages.LogisticChannels')+vm.$t('Public.Details');
-                });
+                    vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
+                }
             }
-        }
-    },vm.$t('Public.Details')));
+        },vm.$t('Public.Edit')));
+        array.push(h("Button",{
+            props: {
+                type: "error",
+                size: "small"
+            },
+            on: {
+                click: async () => {
+                    vm.$Modal.confirm({
+                    title: vm.$t(''),
+                    content: vm.$t('Public.Delete') + vm.$t(vm.title),
+                    okText: vm.$t('Public.Yes'),
+                    cancelText: vm.$t('Public.No'),
+                    onOk: () => {
+                        SplitRuleItemApi.Delete(params.row.id).then(req => {
+                            vm.getpage();
+                        });
+                    }});
+                }
+            }
+        },
+        vm.$t('Public.Delete')));
+    }
     return h("div", array);
 };
 
 export default {
     props: {
         splitRuleId: Number,
-        splitRuleName: String
+        splitRuleName: String,
+        canModify: Boolean
     },
     data() {
         var _this = this;
@@ -124,7 +128,7 @@ export default {
                 {
                     title: this.$t('SplitRules.RuleName'),
                     renderHeader: (h, params) => { 
-                        return addHeaderRender(h, params, _this, !_this.isImport,function(vm){
+                        return addHeaderRender(h, params, _this, function(vm){
                             vm.cascaderValue = [];
                             vm.modalState.model = {
                                 maxNum: 0,
@@ -142,7 +146,7 @@ export default {
                 {
                     title: _this.$t("Menu.Pages.ProductClasses"),
                     align: "center",
-                    key: "ptid",
+                    key: "productClass",
                 },
                 {
                     title: _this.$t("SplitRules.MaxNum"),

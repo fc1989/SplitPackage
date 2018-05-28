@@ -4,7 +4,9 @@
         :columnsetting="columnsetting" 
         :rule="rule"
         showSearchFilter
-        :searchPage="getPage">
+        :searchPage="getPage"
+        :getEditModel="getEditModel"
+        :defaultSorting="'Id'">
         <template slot="search" slot-scope="slotProps">
           <Input v-model="slotProps.searchData.sortName" :maxlength="50" :placeholder="$t('ProductSorts.SortName')" style="width:150px"></Input>
           <Input v-model="slotProps.searchData.className" :maxlength="50" :placeholder="$t('ProductClasses.ClassName')" style="width:150px"></Input>
@@ -14,7 +16,7 @@
             <FormItem :label="$t('ProductSorts.SortName')" prop="sortName">
                 <Input v-model="slotProps.model.sortName" :maxlength="50" :minlength="1"></Input>
             </FormItem>
-            <FormItem v-if="showSpecified">
+            <FormItem v-if="isedit">
                 <Checkbox v-model="slotProps.model.isActive">{{$t('Public.IsActive')}}</Checkbox>
             </FormItem>
         </template>
@@ -34,13 +36,35 @@ export default {
     async getPage(filter){
         var rep = await ProductSortApi.Search(filter);
         return rep.data.result;
+    },
+    getEditModel(row){
+      this.oldSortName = row.sortName;
+      return row;
     }
   },
   data() {
+    var _this = this;
+    const validateSortName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("sortName is required"));
+      } else {
+        if(_this.isedit && _this.oldSortName == value){
+          callback();
+          return;
+        }
+        ProductSortApi.Verify(value).then(function(rep) {
+          if (rep.data.result) {
+            callback();
+          } else {
+            callback("sortName is exit");
+          }
+        });
+      }
+    };
     return {
       title: "Menu.Pages.ProductSorts",
       rule: {
-          sortName: [{ required: true }]
+          sortName: [{ required: true, validator: validateSortName }]
       },
       columnsetting: {
         actionOption: {
@@ -62,7 +86,8 @@ export default {
           },
           {
             title: this.$t("ProductSorts.SortName"),
-            key: "sortName"
+            key: "sortName",
+            sortable: 'custom'
           },
           {
             title: this.$t("Public.IsActive"),
@@ -77,7 +102,8 @@ export default {
           }
         ]
       },
-      showSpecified: null
+      isedit: null,
+      oldSortName: null
     };
   },
   mounted(){
@@ -98,7 +124,7 @@ export default {
         });
       });
       this.$on('set-modalState',state => {
-        _this.showSpecified = state === 'edit';
+        _this.isedit = state === 'edit';
       });
   }
 };

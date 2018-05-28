@@ -69,15 +69,30 @@ namespace SplitPackage.Authentication.BasicAuth
             string tenancyName = parts[0];
             string apiKey = parts[1];
 
-            var tenants = await _tenantRepository.GetAllListAsync(o=>o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive);
-            if (tenants.Count == 0)
+            string userId = "";
+            string tenantId = "";
+            if (!string.IsNullOrEmpty(tenancyName))
             {
+                var tenants = await _tenantRepository.GetAllListAsync(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive);
+                if (tenants.Count == 0)
+                {
+                    return AuthenticateResult.Fail("Invalid tenancyname or apikey");
+                }
+                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
+                tenantId = tenants[0].Id.ToString();
+                userId = user.Id.ToString();
+            }
+            else if (apiKey.Equals(Options.SystemApiKey))
+            {
+                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == null);
+                userId = user.Id.ToString();
+            }
+            else {
                 return AuthenticateResult.Fail("Invalid tenancyname or apikey");
             }
-            var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
             var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(AbpClaimTypes.TenantId, tenants[0].Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(AbpClaimTypes.TenantId, tenantId),
                 new Claim(AbpClaimTypes.UserName, "admin")
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);

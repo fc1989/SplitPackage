@@ -10,7 +10,7 @@ namespace SplitPackage.Split
     {
 
         // 货号/条码
-        public int PTId { get; set; }
+        public string PTId { get; set; }
 
         public String TypeName { get; set; }
         /// <summary>
@@ -172,7 +172,7 @@ namespace SplitPackage.Split
         public void CalculateTax(SubOrder subOrder)
         {
             subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold)
-                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId.Value].PostTaxRate)
+                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId].PostTaxRate)
                 : 0;
             //price <= this.TaxThreshold ? 0 : price * this.TaxRate / 100;
         }

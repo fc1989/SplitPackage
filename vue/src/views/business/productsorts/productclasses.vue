@@ -58,6 +58,8 @@ const rowActionRender = (h, params, vm) => {
         },
         on: {
             click: () => {
+              vm.oldPTId = params.row.ptid;
+              vm.oldClassName = params.row.className;
               vm.modalState.actionState = "edit";
               vm.modalState.model = params.row;
               vm.modalState.showModal = true;
@@ -97,10 +99,44 @@ export default {
   },
   data() {
     var _this = this;
+    const validatePTId = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("ptid is required"));
+      } else {
+        if(_this.modalState.actionState === "edit" && _this.oldPTId == value){
+          callback();
+          return;
+        }
+        ProductClassApi.VerifyPTId(_this.productSortId, value).then(function(rep) {
+          if (rep.data.result) {
+            callback();
+          } else {
+            callback("ptid is exit");
+          }
+        });
+      }
+    };
+    const validateClassName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("className is required"));
+      } else {
+        if(_this.modalState.actionState === "edit" && _this.oldClassName == value){
+          callback();
+          return;
+        }
+        ProductClassApi.VerifyClassName(_this.productSortId, value).then(function(rep) {
+          if (rep.data.result) {
+            callback();
+          } else {
+            callback("className is exit");
+          }
+        });
+      }
+    };
     return {
       rule: {
-        className: [{ required: true }],
-        ptid: [{ required: true }],
+        className: [{ required: true, validator: validateClassName }],
+        ptid: [{ required: true, validator: validatePTId }],
         postTaxRate: [{ type: "number" }],
         bcTaxRate: [{ type: "number" }]
       },
@@ -169,7 +205,9 @@ export default {
           title: null,
           showModal: false,
           actionState: null
-      }
+      },
+      oldPTId: null,
+      oldClassName: null
     };
   },
   computed: {

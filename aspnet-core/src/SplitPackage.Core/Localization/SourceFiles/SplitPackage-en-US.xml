@@ -92,7 +92,8 @@
     <text name="SplitRules" value="SplitRules"></text>
     <text name="WeightFreights" value="WeightFreights"></text>
     <text name="NumFreights" value="NumFreights"></text>
-    <text name="LogisticRelateds" values="LogisticRelateds"></text>
+    <text name="LogisticRelateds" value="LogisticRelateds"></text>
+    <text name="Simulator" value ="Simulator"></text>
     
     <text name="UnPower">No right to do</text>
     <text name="ChargeByWeight">ChargeByWeight</text>

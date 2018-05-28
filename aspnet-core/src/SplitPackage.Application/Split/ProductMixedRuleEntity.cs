@@ -26,9 +26,9 @@ namespace SplitPackage.Split
 
         public RuleEntity Rule { get; private set; }
 
-        private Dictionary<Tuple<int, string>, RuleItem> ruleItemLevelDic;
+        private Dictionary<Tuple<string, string>, RuleItem> ruleItemLevelDic;
 
-        private Dictionary<int, List<RuleItem>> ruleItemDic;
+        private Dictionary<string, List<RuleItem>> ruleItemDic;
 
         public ProductMixedRuleEntity(MixRule mixRule, RuleEntity rule)
         {
@@ -82,18 +82,18 @@ namespace SplitPackage.Split
         public void CalculateTax(SubOrder subOrder)
         {
             subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold)
-                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId.Value].PostTaxRate)
+                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId].PostTaxRate)
                 : 0;
 
             //return price <= this.TaxThreshold ? 0 : price * this.TaxRate / 100;
         }
 
-        public List<RuleItem> GetRuleItemList(int ptid)
+        public List<RuleItem> GetRuleItemList(string ptid)
         {
             return ruleItemDic.ContainsKey(ptid) ? ruleItemDic[ptid] : new List<RuleItem>();
         }
 
-        public bool CanSupportPTId(List<int> ptids)
+        public bool CanSupportPTId(List<string> ptids)
         {
             return ptids.Any(ptid => CanSupportPTId(ptid));
         }
@@ -103,7 +103,7 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="ptid"></param>
         /// <returns></returns>
-        public bool CanSupportPTId(int ptid)
+        public bool CanSupportPTId(string ptid)
         {
             return ruleItemDic.ContainsKey(ptid);
         }
@@ -223,9 +223,9 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="productList">商品信息列表</param>
         /// <returns>ptid+level,符合第一个输出的商品归类,不符合的商品归类</returns>
-        private Tuple<Dictionary<Tuple<int, string>, List<Product>>, List<Product>> SplitRuleProduct(List<Product> productList)
+        private Tuple<Dictionary<Tuple<string, string>, List<Product>>, List<Product>> SplitRuleProduct(List<Product> productList)
         {
-            var ruleProductDic = new Dictionary<Tuple<int, string>, List<Product>>();
+            var ruleProductDic = new Dictionary<Tuple<string, string>, List<Product>>();
             var restProductList = new List<Product>();
             productList.ForEach(p =>
             {
@@ -251,18 +251,18 @@ namespace SplitPackage.Split
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private Tuple<Tuple<int, string>, RuleItem> FindRuleItem(Product product)
+        private Tuple<Tuple<string, string>, RuleItem> FindRuleItem(Product product)
         {
-            var key = Tuple.Create(product.PTId.Value, string.Empty);
+            var key = Tuple.Create(product.PTId, string.Empty);
             RuleItem value;
             if (ruleItemLevelDic.TryGetValue(key, out value))
             {
                 return Tuple.Create(key, value);
             }
-            var level = Spliter.TheSubLevelDic[product.PTId.Value].SubLevelItems.FirstOrDefault(l => product.ProPrice >= (decimal)l.BaselineFloor && product.ProPrice <= (decimal)l.BaselineUpper);
+            var level = Spliter.TheSubLevelDic[product.PTId].SubLevelItems.FirstOrDefault(l => product.ProPrice >= (decimal)l.BaselineFloor && product.ProPrice <= (decimal)l.BaselineUpper);
             if (level != null)
             {
-                key = Tuple.Create(product.PTId.Value, level.Name);
+                key = Tuple.Create(product.PTId, level.Name);
                 if (ruleItemLevelDic.TryGetValue(key, out value))
                 {
                     return Tuple.Create(key, value);

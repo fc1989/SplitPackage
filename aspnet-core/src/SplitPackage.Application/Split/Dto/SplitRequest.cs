@@ -9,15 +9,14 @@ namespace SplitPackage.Split.Dto
         /// </summary>
         public int Type { get; set; }
 
-        public override string ToString()
-        {
-            return "SplitRequest{" +
-                "UserName=" + this.UserName +
-                ", OrderId=" + this.OrderId +
-                ", ProList=(Count=" + this.ProList.Count + ")[" + string.Join(", ", this.ProList) + "]" +
-                ", TotalQuantity=" + this.TotalQuantity +
-                ", Type=" + this.Type +
-                "}";
-        }
+        //public override string ToString()
+        //{
+        //    return "SplitRequest{" +
+        //        "OrderId=" + this.OrderId +
+        //        ", ProList=(Count=" + this.ProList.Count + ")[" + string.Join(", ", this.ProList) + "]" +
+        //        ", TotalQuantity=" + this.TotalQuantity +
+        //        ", Type=" + this.Type +
+        //        "}";
+        //}
     }
 }

@@ -7,6 +7,9 @@ using System.Xml.Serialization;
 
 namespace SplitPackage.Split.RuleModels
 {
+    /// <summary>
+    /// 物流线路
+    /// </summary>
     public class PackageRule
     {
         //Id="1" SubOrganizationName="customs" StartingPrice="0" StartingWeight="0" Price="0" Priority="" 

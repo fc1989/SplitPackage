@@ -35,7 +35,10 @@ export default {
       'UnPower': 'No right to do',
       'Currency': 'Currency',
       'Unit': 'Unit',
-      'Import': 'Import'
+      'Import': 'Import',
+      'Clear': 'Clear',
+      'Index': 'Index',
+      'Add': 'Add'
     },
     'Menu': {
       'Modules': {
@@ -56,7 +59,8 @@ export default {
         'SplitRules': 'SplitRules',
         'WeightFreights': 'WeightFreights',
         'LogisticRelateds': 'LogisticRelateds',
-        'ProductClasses': 'ProductClasses'
+        'ProductClasses': 'ProductClasses',
+        'Simulator': 'Simulator'
       }
     },
     'Login': {
@@ -144,7 +148,6 @@ export default {
       'MaxTax': 'MaxTax',
       'MaxPrice': 'MaxPrice',
       'DeleteTip': 'DeleteTip',
-      'Index': 'Index',
       'MaxNum': 'MaxNum',
       'MinNum': 'MinNum'
     },
@@ -158,6 +161,31 @@ export default {
     },
     'LogisticRelateds': {
       'RelatedName': 'RelatedName'
+    },
+    'Simulator': {
+      'OrderId': 'OrderId',
+      'ProductList': 'ProductList',
+      'SplitType': 'SplitType',
+      'General': 'General',
+      'DesignatedLogistics': 'Designated Logistics',
+      'SplitPrinciple': 'SplitPrinciple',
+      'PriceFirst': 'PriceFirst',
+      'SpeedFirst':'SpeedFirst',
+      'QuanlityFirst':'QuanlityFirst',
+      'ProNo': 'ProNo',
+      'Quantity': 'Quantity',
+      'ProName': 'ProName',
+      'ProPrice': 'ProPrice',
+      'Weight': 'Weight',
+      'SplitPackage': 'SplitPackage',
+      'OrderSettings': 'OrderSettings',
+      'SplitResult': 'SplitResult',
+      'LogisticsCost': 'LogisticsCost',
+      'LogisticsUnitPrice': 'LogisticsUnitPrice',
+      'TaxCost': 'TaxCost',
+      'TotalPrice': 'TotalPrice',
+      'TotalWeight': 'TotalWeight',
+      'Url': 'Url'
     }
   },
   'zh-CN': {
@@ -196,7 +224,10 @@ export default {
       'UnPower': '无权操作',
       'Currency': '币种',
       'Unit': '单位',
-      'Import': '导入'
+      'Import': '导入',
+      'Clear': '清除',
+      'Index': '序号',
+      'Add': '添加'
     },
     'Menu': {
       'Modules': {
@@ -217,7 +248,8 @@ export default {
         'SplitRules': '拆单规则',
         'WeightFreights': '重量运费',
         'LogisticRelateds': '关联物流商',
-        'ProductClasses': '商品类别'
+        'ProductClasses': '商品类别',
+        'Simulator': '模拟器'
       }
     },
     'Login': {
@@ -305,7 +337,6 @@ export default {
       'MaxTax': '最大税费',
       'MaxPrice': '最大价值',
       'DeleteTip': '您确定要删除这条数据吗?',
-      'Index': '序号',
       'MaxNum': '最大数量',
       'MinNum': '最小数量'
     },
@@ -319,6 +350,31 @@ export default {
     },
     'LogisticRelateds': {
       'RelatedName': '关系名'
+    },
+    'Simulator': {
+      'OrderId': '订单号',
+      'ProductList': '商品详情',
+      'SplitType': '拆单类型',
+      'General': '一般',
+      'DesignatedLogistics': '指定物流',
+      'SplitPrinciple': '拆单原则',
+      'PriceFirst': '价格优先',
+      'SpeedFirst':'速度优先',
+      'QuanlityFirst':'数量优先',
+      'ProNo': '货号',
+      'Quantity': '数量',
+      'ProName': '货名',
+      'ProPrice': '单价',
+      'Weight': '单位重量',
+      'SplitPackage': '拆单',
+      'OrderSettings': '订单设置',
+      'SplitResult': '拆单结果',
+      'LogisticsCost': '物流成本',
+      'LogisticsUnitPrice': '物流单价',
+      'TaxCost': '税费成本',
+      'TotalPrice': '总价值',
+      'TotalWeight': '总重量',
+      'Url': '网址'
     }
   }
 }

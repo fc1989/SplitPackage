@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SplitPackage.Business.ProductSorts.Dto
 {
-    public class ProductSortSearchFilter : PagedResultRequestDto
+    public class ProductSortSearchFilter : PagedResultRequestDto, ISortedResultRequest
     {
         public string SortName { get; set; }
 
@@ -14,5 +14,7 @@ namespace SplitPackage.Business.ProductSorts.Dto
 
         [JsonProperty("ptid")]
         public string PTId { get; set; }
+
+        public string Sorting { get; set; }
     }
 }

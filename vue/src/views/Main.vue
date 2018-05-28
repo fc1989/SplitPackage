@@ -88,7 +88,6 @@
             changeLanguage
         },
         data () {
-		
             return {
                 shrink: false,
                 userName: '',

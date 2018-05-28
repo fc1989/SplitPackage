@@ -47,8 +47,42 @@ namespace SplitPackage.Split
         /// </summary> 
         private Dictionary<string, List<IProductRuleEntity>> pRuleDic = new Dictionary<string, List<IProductRuleEntity>>();
 
-        public Dictionary<int, ProductSingleRuleEntity> SingleRuleDic = new Dictionary<int, ProductSingleRuleEntity>();
-        public Dictionary<int, List<ProductMixedRuleEntity>> MixRuleDic = new Dictionary<int, List<ProductMixedRuleEntity>>();
+        public Dictionary<string, ProductSingleRuleEntity> SingleRuleDic = new Dictionary<string, ProductSingleRuleEntity>();
+        public Dictionary<string, List<ProductMixedRuleEntity>> MixRuleDic = new Dictionary<string, List<ProductMixedRuleEntity>>();
+
+        public RuleEntity(SplitPackage.Business.LogisticChannel logisticChannel)
+        {
+            this.LogisticsName = logisticChannel.LogisticBy.CorporationName;
+            this.RuleName = logisticChannel.ChannelName;
+            this.Rule = new PackageRule()
+            {
+                Id = (int)logisticChannel.Id,
+                SubBusinessName = logisticChannel.ChannelName,
+                StartingPrice = logisticChannel.WeightFreights.First().StartingPrice,
+                StartingWeight = logisticChannel.WeightFreights.First().StartingWeight,
+                Price = logisticChannel.WeightFreights.First().Price,
+                StepWeight = (int)logisticChannel.WeightFreights.First().StepWeight,
+                MixRule = logisticChannel.SplitRules.Select(o=>new MixRule() {
+                    MRId = (int)o.Id,
+                    LimitedQuantity = o.MaxPackage,
+                    LimitedWeight = o.MaxWeight,
+                    TaxThreshold = o.MaxTax,
+                    LimitedMaxPrice = o.MaxPrice,
+                    RuleItems = o.ProductClasses.Select(oi=>new RuleItem() {
+                        PTId = oi.PTId,
+                        MinQuantity = oi.MinNum,
+                        MaxQuantity = oi.MaxNum
+                    }).ToList()
+                }).OrderBy(o=>o.MRId).ToList()
+            };
+            this.Organization = new SplitPackageConfig()
+            {
+                OrganizationId = logisticChannel.LogisticBy.LogisticCode,
+                OrganizationName = logisticChannel.LogisticBy.CorporationName,
+                URL = logisticChannel.LogisticBy.CorporationUrl,
+            };
+            this.InitSplitRule();
+        }
 
         /// <summary>
         /// 构造函数
@@ -256,7 +290,7 @@ namespace SplitPackage.Split
         // 取得所有可能的排列
         private List<List<List<IProductRuleEntity>>> getEntities(List<ProductEntity> productList)
         {
-            var allPTIds = new HashSet<int>(productList.Select(pe => pe.PTId));
+            var allPTIds = new HashSet<string>(productList.Select(pe => pe.PTId));
             var singleRulePermutation = getPermutation(getSingleRuleEntityCombinations(allPTIds, productList)).ToList();
             var mixedRulePermutation = getPermutation(getMixedRuleEntityCombinations(allPTIds, productList)).ToList();
 
@@ -274,7 +308,7 @@ namespace SplitPackage.Split
         }
 
         // 取得单装组合
-        private List<List<IProductRuleEntity>> getSingleRuleEntityCombinations(HashSet<int> allPTIds, List<ProductEntity> productList)
+        private List<List<IProductRuleEntity>> getSingleRuleEntityCombinations(HashSet<string> allPTIds, List<ProductEntity> productList)
         {
             var ruleEntities = SingleRuleDic.Where(kv => allPTIds.Contains(kv.Key)).Select(kv => kv.Value).ToList();
             return new[]
@@ -285,7 +319,7 @@ namespace SplitPackage.Split
         }
 
         // 取得混装组合
-        private List<List<IProductRuleEntity>> getMixedRuleEntityCombinations(HashSet<int> allPTIds, List<ProductEntity> productList)
+        private List<List<IProductRuleEntity>> getMixedRuleEntityCombinations(HashSet<string> allPTIds, List<ProductEntity> productList)
         {
             var ruleEntities = MixRuleDic.Where(kv => allPTIds.Contains(kv.Key)).SelectMany(kv => kv.Value).ToList();
             return new[]

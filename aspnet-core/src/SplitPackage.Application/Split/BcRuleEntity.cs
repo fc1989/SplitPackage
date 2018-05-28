@@ -11,13 +11,13 @@ namespace SplitPackage.Split
     {
         public BcConfig BcConfig { get; private set; }
 
-        public Dictionary<int, SubLevel> SubLevelDic { get; private set; }
+        public Dictionary<string, SubLevel> SubLevelDic { get; private set; }
 
         public BcRuleEntity()
         {
         }
 
-        public void Initialize(BcConfig bcConfig, Dictionary<int, SubLevel> subLevelDic)
+        public void Initialize(BcConfig bcConfig, Dictionary<string, SubLevel> subLevelDic)
         {
             this.BcConfig = bcConfig;
             this.SubLevelDic = subLevelDic;

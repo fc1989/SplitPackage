@@ -47,16 +47,9 @@ namespace SplitPackage.Tests
             {
                 NormalizeDbContext(context);
                 new InitialHostDbBuilder(context).Create();
-                new DefaultTenantBuilder(context).Create();
                 new InitialBusinessDbBuilder(context).Create();
-            });
-
-            // Seed initial data for default tenant
-            AbpSession.TenantId = 1;
-            UsingDbContext(context =>
-            {
-                NormalizeDbContext(context);
-                new TenantRoleAndUserBuilder(context, 1).Create();
+                new DefaultTenantBuilder(context, new string[] { AbpTenantBase.DefaultTenantName, "AstraeaAssistant", "Auz", "Iautao", "Phoenix" }).Create();
+                new DefaultTenantBusinessBuilder(context).Create();
             });
 
             // Seed initial data for default Product

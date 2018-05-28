@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using SplitPackage.Configuration;
+using System;
 
 namespace SplitPackage.Web.Host.Startup
 {
@@ -17,6 +18,14 @@ namespace SplitPackage.Web.Host.Startup
         {
             _env = env;
             _appConfiguration = env.GetAppConfiguration();
+        }
+
+        public override void PreInitialize()
+        {
+            //Configuration.Caching.ConfigureAll(cache =>
+            //{
+            //    cache.DefaultSlidingExpireTime = TimeSpan.FromDays(365);
+            //});
         }
 
         public override void Initialize()

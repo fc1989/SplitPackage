@@ -29,5 +29,7 @@ namespace SplitPackage.Business.SplitRules.Dto
         public double MaxPrice { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int? TenantId { get; set; }
     }
 }

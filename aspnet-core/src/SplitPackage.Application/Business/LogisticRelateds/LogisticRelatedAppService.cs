@@ -22,7 +22,7 @@ namespace SplitPackage.Business.LogisticRelateds
 
         protected override IQueryable<LogisticRelated> CreateFilteredQuery(LogisticRelatedSearchFilter input)
         {
-            return Repository.GetAll().Include(p=>p.Items).ThenInclude((LogisticRelatedItem p)=>p.LogisticBy);
+            return Repository.GetAll().Where(o=>o.TenantId == AbpSession.TenantId).IgnoreQueryFilters().Include(p=>p.Items).ThenInclude((LogisticRelatedItem p)=>p.LogisticBy);
         }
 
         public async override Task<LogisticRelatedDto> Create(CreateLogisticRelatedDto input)

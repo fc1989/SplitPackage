@@ -15,7 +15,7 @@ namespace SplitPackage.Split.RuleModels
         /// 商品ID
         /// </summary>
         [XmlAttribute]
-        public int PTId { get; set; }
+        public string PTId { get; set; }
         /// <summary>
         /// 商品类别ID
         /// </summary>

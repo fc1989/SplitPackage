@@ -25,9 +25,9 @@
                 </slot>
             </Row>
             <Row class="margin-top-10 searchable-table-con1">
-              <Table :row-class-name="tableRowClassMethod" :columns="columns" border :data="tableData"></Table>
+              <Table @on-sort-change="pageSort" :row-class-name="tableRowClassMethod" :columns="columns" border :data="tableData"></Table>
               <div style="text-align: right">
-                <Page :total="totalCount" class="margin-top-10" @on-change="pageChange" @on-page-size-change="pagesizeChange" :page-size="pageSize" :current="currentPage"></Page>
+                <Page class="margin-top-10" :total="totalCount" @on-change="pageChange" @on-page-size-change="pagesizeChange":page-size="pageSize" :current="currentPage"></Page>
               </div>
             </Row>
         </Card>
@@ -109,6 +109,9 @@ export default {
     columnsetting: {
       type: Object
     },
+    defaultSorting:{
+      type: String
+    },
     rule: {
       type: Object
     },
@@ -180,6 +183,10 @@ export default {
       this.state.pageSize = pagesize;
       this.getpage();
     },
+    pageSort(column){
+      this.sorting = column.order === "asc" ? column.key : null;
+      this.getpage();
+    },
     async getpage() {
       let page = {
         maxResultCount: this.state.pageSize,
@@ -189,6 +196,9 @@ export default {
         for(var key in this.searchData){
           page[key] = this.searchData[key];
         }
+      }
+      if(this.sorting){
+        page["sorting"] = this.sorting;
       }
       let result = await this.searchPage({ params: page });
       this.state.tableData = [];
@@ -253,6 +263,7 @@ export default {
     }
   },
   async created() {
+    this.sorting = this.defaultSorting;
     this.getpage();
   }
 };

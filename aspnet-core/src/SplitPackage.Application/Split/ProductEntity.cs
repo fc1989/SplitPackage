@@ -26,7 +26,7 @@ namespace SplitPackage.Split
         /// <summary>
         /// 商品子类别ID
         /// </summary>
-        public int PTId { get; set; }
+        public string PTId { get; set; }
 
         /// <summary>
         /// 商品类别ID

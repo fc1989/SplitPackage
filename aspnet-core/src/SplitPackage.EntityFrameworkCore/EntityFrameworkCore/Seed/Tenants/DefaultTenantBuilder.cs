@@ -9,10 +9,12 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Tenants
     public class DefaultTenantBuilder
     {
         private readonly SplitPackageDbContext _context;
+        private readonly string[] _tenants;
 
-        public DefaultTenantBuilder(SplitPackageDbContext context)
+        public DefaultTenantBuilder(SplitPackageDbContext context,string[] tenants)
         {
-            _context = context;
+            this._context = context;
+            this._tenants = tenants;
         }
 
         public void Create()
@@ -26,9 +28,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Tenants
 
         private void CreateDefaultTenant()
         {
-            // Default tenant
-            string[] tenants = new string[] { "AstraeaAssistant", "Auz", "Iautao", "Phoenix" };
-            foreach (var item in tenants)
+            foreach (var item in this._tenants)
             {
                 var tenant = new Tenant(item, item);
                 var defaultEdition = _context.Editions.IgnoreQueryFilters().FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);

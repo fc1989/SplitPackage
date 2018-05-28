@@ -12,6 +12,9 @@
     <Compile Remove="Migrations\20180409113142_init.cs" />
     <Compile Remove="Migrations\20180411093916_init.cs" />
     <Compile Remove="Migrations\20180421043001_abc.cs" />
+    <None Include="xml\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" />

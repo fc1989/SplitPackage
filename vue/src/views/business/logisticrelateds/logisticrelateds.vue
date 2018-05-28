@@ -121,7 +121,9 @@ export default {
   async created(){
     var _this = this;
     LogisticApi.Search({
-        maxResultCount: 10000
+        params: {
+            maxResultCount: 10000
+        }
     }).then(req => {
         _this.transferState.logistics = req.data.result.items.map(function(vl, index, arr){
             return {

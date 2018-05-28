@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Newtonsoft.Json;
 using SplitPackage.MultiTenancy;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,15 @@ namespace SplitPackage.Business
         public virtual Tenant TenantBy { get; set; }
 
         public virtual LogisticChannel LogisticChannelBy { get; set; }
+
+        public ChangeInformation GetInformation()
+        {
+            if (!string.IsNullOrEmpty(this.LogisticChannelChange))
+            {
+                JsonConvert.DeserializeObject<ChangeInformation>(this.LogisticChannelChange);
+            }
+            return null;
+        }
     }
 
     public class ChangeInformation

@@ -1,25 +1,24 @@
-﻿using SplitPackage.Split;
+﻿using SplitPackage.EntityFrameworkCore.Seed.Business.RuleModels;
+using SplitPackage.Split;
 using SplitPackage.Split.Common;
 using SplitPackage.Split.Dto;
-using SplitPackage.Split.RuleModels;
 using SplitPackage.Split.SplitModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Xunit;
 
 namespace SplitPackage.Tests.Split
 {
-    /// <summary>
-    /// 海购助手
-    /// </summary>
-    public class SplitAppService_Test : SplitPackageTestBase
+    public class SplitService_CommonTest
     {
-        private readonly ISplitService _splitAppService;
+        private readonly SplitServiceOld _splitAppService;
 
-        public SplitAppService_Test()
+        public SplitService_CommonTest()
         {
-            _splitAppService = Resolve<ISplitService>();
+            _splitAppService = new SplitServiceOld();
+            _splitAppService.Initialize(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SplitRuleXml/AstraeaAssistant"));
         }
 
         [Fact]
@@ -33,7 +32,6 @@ namespace SplitPackage.Tests.Split
                 var isSpecial = item.Contains("Rule_EWEExpress Standard new.xml");
                 var request = new SplitWithExpRequest()
                 {
-                    UserName = "admin",
                     OrderId = "18040300110001",
                     ProList = new List<Product>() {
                         new Product()
@@ -54,7 +52,6 @@ namespace SplitPackage.Tests.Split
                 Assert.True(result.Item2.OrderList.Count > 0);
                 var request1 = new SplitWithExpRequest1()
                 {
-                    UserName = "admin",
                     OrderId = "18040300110001",
                     ProList = new List<Product>() {
                         new Product()
@@ -64,7 +61,7 @@ namespace SplitPackage.Tests.Split
                             ProName = isSpecial ? "Refresh Eye Drops  0.04眼药水" : "S26 Stage 3新版 1.1",
                             ProPrice = 10,
                             Weight = 10,
-                            PTId = isSpecial ? 1010703 : 1019904
+                            PTId = isSpecial ? "1010703" : "1019904"
                         }
                     },
                     TotalQuantity = 1,
@@ -81,7 +78,6 @@ namespace SplitPackage.Tests.Split
             Tuple<string, SplitedOrder> result = null;
             var request = new SplitRequest()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -119,9 +115,9 @@ namespace SplitPackage.Tests.Split
             result = this._splitAppService.Split(request);
             Assert.Equal("商品数量必须大于0", result.Item1);
             //该商品sku商品库不存在
-            request.ProList.ForEach(o => { o.SkuNo = "0000000000"; o.Quantity = 1; });
+            request.ProList.ForEach(o => { o.SkuNo = "$$$$"; o.Quantity = 1; });
             result = this._splitAppService.Split(request);
-            Assert.Equal("不存在SkuNo:0000000000", result.Item1);
+            Assert.Equal("不存在SkuNo:$$$$", result.Item1);
         }
 
         [Fact]
@@ -130,7 +126,6 @@ namespace SplitPackage.Tests.Split
             Tuple<string, SplitedOrder> result = null;
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -184,9 +179,9 @@ namespace SplitPackage.Tests.Split
             //该商品sku商品库不存在
             request.LogisticsName = "AOLAU EXPRESS";
             request.GradeName = "标准型";
-            request.ProList.ForEach(o => { o.SkuNo = "0000000000"; });
+            request.ProList.ForEach(o => { o.SkuNo = "$$$$"; });
             result = this._splitAppService.SplitWithOrganization(request);
-            Assert.Equal("不存在SkuNo:0000000000", result.Item1);
+            Assert.Equal("不存在SkuNo:$$$$", result.Item1);
         }
 
         [Fact]
@@ -195,7 +190,6 @@ namespace SplitPackage.Tests.Split
             Tuple<string, SplitedOrder> result = null;
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -206,7 +200,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "MAMIA婴幼儿奶粉二段900G二段",
                         ProPrice = 100,
                         Weight = 100,
-                        PTId = 1010703
+                        PTId = "1010703"
                     },
                     new Product()
                     {
@@ -216,7 +210,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "MAMIA婴幼儿奶粉三段900G三段",
                         ProPrice = 100,
                         Weight = 100,
-                        PTId = 1010704
+                        PTId = "1010704"
                     }
                 },
                 TotalQuantity = 1,
@@ -235,25 +229,25 @@ namespace SplitPackage.Tests.Split
             result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal("商品数量必须大于0", result.Item1);
             //指定物流商不存在
-            request.ProList.ForEach(o=>o.Quantity = 1);
+            request.ProList.ForEach(o => o.Quantity = 1);
             request.logistics = new List<string> { };
             result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal("请提供指定物流商", result.Item1);
-            request.logistics = new List<string> { "123","1"};
+            request.logistics = new List<string> { "123", "1" };
             result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal("指定物流商:123,1不存在", result.Item1);
             //无效的PTId
-            request.ProList.ForEach(o => { o.PTId = 0; });
+            request.ProList.ForEach(o => { o.PTId = "0"; });
             result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal("不存在PTId:0", result.Item1);
         }
 
+        #region 算法验证
         [Fact]
         public void SplitTest()
         {
             var request = new SplitRequest()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -281,6 +275,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("4PX Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -289,7 +284,6 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -318,7 +312,8 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
-            Assert.Equal("澳通速递奶粉线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("4PX Express", result.Item2.OrderList[0].LogisticsName);
+            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -326,7 +321,6 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -337,7 +331,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "MAMIA婴幼儿奶粉二段900G二段",
                         ProPrice = 100,
                         Weight = 100,
-                        PTId = 1010703
+                        PTId = "1010703"
                     },
                     new Product()
                     {
@@ -347,7 +341,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "MAMIA婴幼儿奶粉三段900G三段",
                         ProPrice = 100,
                         Weight = 100,
-                        PTId = 1010704
+                        PTId = "1010704"
                     }
                 },
                 TotalQuantity = 1,
@@ -356,7 +350,8 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
-            Assert.Equal("澳通速递奶粉线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("4PX Express", result.Item2.OrderList[0].LogisticsName);
+            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -364,7 +359,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -401,6 +396,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("ZH Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中环杂货混装线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -409,7 +405,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -447,6 +443,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮混装线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -455,7 +452,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -466,7 +463,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "NOZOHAEM止鼻血凝胶4粒",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 9029900
+                        PTId = "9029900"
                     },
                     new Product()
                     {
@@ -476,7 +473,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "Munchkin草饲牧牛婴儿配方奶粉1段",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 1010703
+                        PTId = "1010703"
                     },
                     new Product()
                     {
@@ -486,7 +483,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "孕妇DHA",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 1019904
+                        PTId = "1019904"
                     }
                 },
                 TotalQuantity = 1,
@@ -495,6 +492,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮混装线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -503,7 +501,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -522,6 +520,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -530,7 +529,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -550,6 +549,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -558,7 +558,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -569,7 +569,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "MUNCHKIN碗",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 9029900
+                        PTId = "9029900"
                     }
                 },
                 TotalQuantity = 1,
@@ -578,6 +578,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -586,7 +587,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -614,7 +615,9 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("CNP Express", result.Item2.OrderList[1].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[1].SubBusinessName);
         }
 
@@ -623,7 +626,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -652,7 +655,9 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("CNP Express", result.Item2.OrderList[1].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[1].SubBusinessName);
         }
 
@@ -661,7 +666,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -672,7 +677,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "COBRAMESTATE橄榄油750ML",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 1019903
+                        PTId = "1019903"
                     },
                     new Product()
                     {
@@ -682,7 +687,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "SKIPHOP围兜",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 9029900
+                        PTId = "9029900"
                     }
                 },
                 TotalQuantity = 1,
@@ -691,7 +696,9 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("CNP Express", result.Item2.OrderList[1].LogisticsName);
             Assert.Equal("中邮杂货专线", result.Item2.OrderList[1].SubBusinessName);
         }
 
@@ -700,7 +707,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -728,6 +735,7 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
+            Assert.Equal("THEARK EXPRESS", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("方舟AlphaEX", result.Item2.OrderList[0].SubBusinessName);
         }
 
@@ -736,7 +744,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -765,8 +773,10 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("AOLAU EXPRESS", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("AOLAU EXPRESS", result.Item2.OrderList[1].LogisticsName);
+            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[1].SubBusinessName);
         }
 
         [Fact]
@@ -774,7 +784,7 @@ namespace SplitPackage.Tests.Split
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -785,7 +795,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "蜡笔细长0.15",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 1019903
+                        PTId = "1019903"
                     },
                     new Product()
                     {
@@ -795,7 +805,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "BONJELA口腔凝胶15G",
                         ProPrice = 1,
                         Weight = 100,
-                        PTId = 1019904
+                        PTId = "1019904"
                     }
                 },
                 TotalQuantity = 1,
@@ -804,16 +814,18 @@ namespace SplitPackage.Tests.Split
             var result = this._splitAppService.SplitWithOrganization1(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
+            Assert.Equal("AOLAU EXPRESS", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("AOLAU EXPRESS", result.Item2.OrderList[1].LogisticsName);
+            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[1].SubBusinessName);
         }
 
         [Fact]
-        public void SplitWithExp1Test_5()
+        public void SplitWithExp1_LogisticRelated_Test()
         {
             var request = new SplitWithExpRequest1()
             {
-                UserName = "admin",
+
                 OrderId = "18040300110001",
                 ProList = new List<Product>() {
                     new Product()
@@ -824,7 +836,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "Menevit 爱乐维男性备孕营养素 90粒装",
                         ProPrice = 5.69M,
                         Weight = 200,
-                        PTId = 101990401
+                        PTId = "101990401"
                     },
                     new Product()
                     {
@@ -834,7 +846,7 @@ namespace SplitPackage.Tests.Split
                         ProName = "全脂奶粉",
                         ProPrice = 5.69M,
                         Weight = 200,
-                        PTId = 1010701
+                        PTId = "1010701"
                     }
                 },
                 TotalQuantity = 1,
@@ -848,5 +860,6 @@ namespace SplitPackage.Tests.Split
             Assert.Equal("EWE Express 经济线", result.Item2.OrderList[1].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[1].SubBusinessName);
         }
+        #endregion
     }
 }

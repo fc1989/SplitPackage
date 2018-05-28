@@ -4,15 +4,14 @@ using SplitPackage.Split.SplitModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SplitPackage.Split
 {
     public interface ISplitService
     {
-        void Initialize(string folderPath);
-        Tuple<string,SplitedOrder> Split(SplitRequest request);
-        Tuple<string, SplitedOrder> SplitWithOrganization(SplitWithExpRequest request);
-        Tuple<string, SplitedOrder> SplitWithOrganization1(SplitWithExpRequest1 request);
-        Tuple<string, List<LogisticsModel>> GetLogisticsList(string userName);
+        Task<Tuple<string, SplitedOrder>> Split(SplitRequest request, int? tenantId);
+        Task<Tuple<string, SplitedOrder>> SplitWithOrganization1(SplitWithExpRequest1 request, int? tenantId);
+        Task<Tuple<string, List<LogisticsModel>>> GetLogisticsList(int? tenantId);
     }
 }

@@ -20,6 +20,7 @@ namespace SplitPackage.Authorization
             context.CreatePermission(PermissionNames.Pages_Tenant_WeightFreights, L("WeightFreights"));
             context.CreatePermission(PermissionNames.Pages_Tenant_NumFreights, L("NumFreights"));
             context.CreatePermission(PermissionNames.Pages_Tenant_LogisticRelateds, L("LogisticRelateds"));
+            context.CreatePermission(PermissionNames.Pages_Tenant_Simulator, L("Simulator"));
         }
 
         private static ILocalizableString L(string name)

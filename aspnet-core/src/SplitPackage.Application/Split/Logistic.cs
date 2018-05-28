@@ -38,5 +38,15 @@ namespace SplitPackage.Split
 
             this.RuleSequenceDic.Add(rule.Key, rule);
         }
+
+        public Logistic(SplitPackage.Business.Logistic logistic)
+        {
+            this.LogisticName = logistic.LogisticCode;
+            this.RuleSequenceDic = new Dictionary<string, RuleEntity>();
+            foreach (var item in logistic.LogisticChannels)
+            {
+                this.RuleSequenceDic.Add(item.ChannelName, new RuleEntity(item));
+            }
+        }
     }
 }

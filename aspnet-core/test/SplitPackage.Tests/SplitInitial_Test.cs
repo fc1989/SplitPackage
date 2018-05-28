@@ -165,11 +165,12 @@ namespace SplitPackage.Tests
                 var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id &&
                     s.Currency == "RMB" &&
                     s.Unit == "g" &&
+                    s.StartingPrice == 4.5 &&
                     s.StartingWeight == 1000 &&
-                    s.EndWeight == 20000 &&
+                    s.EndWeight == 10000000 &&
                     s.StepWeight == 100 &&
-                    s.CostPrice == 5 &&
-                    s.Price == 5
+                    s.CostPrice == 0.45 &&
+                    s.Price == 0.45
                 );
                 await EntityValid(wf);
                 var sr = await context.SplitRules.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id &&
@@ -179,7 +180,7 @@ namespace SplitPackage.Tests
                 s.MaxPrice == 10000);
                 await EntityValid(sr);
                 var srpcs = context.SplitRuleProductClass.Where(o => o.SplitRuleId == sr.Id);
-                Assert.Equal(4, srpcs.Count());
+                Assert.Equal(8, srpcs.Count());
                 foreach (var item in srpcs)
                 {
                     await EntityValid(item);
@@ -215,16 +216,6 @@ namespace SplitPackage.Tests
                 Assert.True(adminUserForHost.IsEmailConfirmed);
                 var userRole = await context.UserRoles.IgnoreQueryFilters().FirstOrDefaultAsync(o => o.TenantId == 1 && o.UserId == adminUserForHost.Id && o.RoleId == role.Id);
                 await EntityValid(userRole,1);
-            });
-        }
-
-        [Fact]
-        public async Task ProductInitial_test()
-        {
-            await UsingDbContextAsync(async context =>
-            {
-                var product = await context.Products.IgnoreQueryFilters().FirstOrDefaultAsync(o => o.TenantId == 1 && o.Sku == "7613035243453");
-                await EntityValid(product, 1);
             });
         }
     }

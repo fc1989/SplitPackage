@@ -6,7 +6,7 @@ namespace SplitPackage.Split.RuleModels
     public class SubLevel
     {
         [XmlAttribute()]
-        public int PTId { get; set; }
+        public string PTId { get; set; }
 
         [XmlAttribute()]
         public string TypeName { get; set; }

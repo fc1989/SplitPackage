@@ -13,7 +13,8 @@ import AppConsts from './libs/appconst'
 util.ajax.get('/AbpUserConfiguration/GetAll').then(result => {
     Vue.use(iView);
     window.abp = $.extend(true, abp, result.data.result);
-    new Vue({
+    window.abp.ajaxRequestCount = 0;
+    window.Vue = new Vue({
         i18n : i18n,
         el: '#app',
         router: router,

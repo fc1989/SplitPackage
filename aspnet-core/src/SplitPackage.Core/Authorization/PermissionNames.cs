@@ -23,5 +23,7 @@
         public const string Pages_Tenant_NumFreights = "Pages.Tenant.NumFreights";
 
         public const string Pages_Tenant_LogisticRelateds = "Pages.Tenant.LogisticRelateds";
+
+        public const string Pages_Tenant_Simulator = "Pages.Tenant.Simulator";
     }
 }

@@ -114,7 +114,14 @@ export const appRouter = [
                 name: 'splitrules', 
                 permission: 'Pages.Tenant.SplitRules', 
                 component: () => import('@/views/business/splitrules/splitrules.vue') 
-            }
+            },
+            { 
+                path: 'simulator', 
+                title: 'Menu.Pages.Simulator', 
+                name: 'simulator', 
+                permission: 'Pages.Tenant.Simulator', 
+                component: () => import('@/views/business/simulators/simulator.vue') 
+            },
         ]
     },
     {

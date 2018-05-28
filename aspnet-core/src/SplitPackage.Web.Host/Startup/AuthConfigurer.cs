@@ -48,7 +48,9 @@ namespace SplitPackage.Web.Host.Startup
                     };
                 });
             }
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic();
+            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic(op=> {
+                op.SystemApiKey = configuration["Authentication:BaseAuth:SystemApiKey"];
+            });
         }
 
         /* This method is needed to authorize SignalR javascript client.

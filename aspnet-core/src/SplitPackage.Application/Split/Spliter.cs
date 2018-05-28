@@ -44,9 +44,9 @@ namespace SplitPackage.Split
         /// </summary>
         private List<LogisticsModel> logisticsList = null;
 
-        public static Dictionary<int, SubLevel> TheSubLevelDic { get; set; }
+        public static Dictionary<string, SubLevel> TheSubLevelDic { get; set; }
 
-        public Dictionary<int, SubLevel> SubLevelDic { get; private set; }
+        public Dictionary<string, SubLevel> SubLevelDic { get; private set; }
 
         private SplitConfig splitConfig = new SplitConfig();
 
@@ -558,7 +558,7 @@ namespace SplitPackage.Split
                     {
                         No = p.ProNo,
                         SKUNo = p.SkuNo,
-                        PTId = p.PTId.Value,
+                        PTId = p.PTId,
                         Weight = p.Weight,
                         Name = p.ProName
                     });
@@ -586,12 +586,12 @@ namespace SplitPackage.Split
         private void CheckLevelConfig()
         {
             var subLevelDic = SubLevelDic;
-            var dupSingleRulePTIdList = new List<Tuple<string, string, string, int>>();
-            var invalidSingleRulePTIdList = new List<Tuple<string, string, string, int>>();
-            var invalidSingleRuleLevelList = new List<Tuple<string, string, string, int, string>>();
-            var dupMixedRulePTIdLevelList = new List<Tuple<string, string, string, int, int, string>>();
-            var invalidMixedRulePTIdList = new List<Tuple<string, string, string, int, int>>();
-            var invalidMixedRuleLevelList = new List<Tuple<string, string, string, int, int, string>>();
+            var dupSingleRulePTIdList = new List<Tuple<string, string, string, string>>();
+            var invalidSingleRulePTIdList = new List<Tuple<string, string, string, string>>();
+            var invalidSingleRuleLevelList = new List<Tuple<string, string, string, string, string>>();
+            var dupMixedRulePTIdLevelList = new List<Tuple<string, string, string, int, string, string>>();
+            var invalidMixedRulePTIdList = new List<Tuple<string, string, string, int, string>>();
+            var invalidMixedRuleLevelList = new List<Tuple<string, string, string, int, string, string>>();
             ruleConfigs.ForEach(config => config.SubOrganizations.ForEach(org => org.Rules.ForEach(pr =>
             {
                 dupSingleRulePTIdList.AddRange(pr.SinglePackRule.GroupBy(sr => sr.PTId).Where(g => g.Count() > 1).Select(g => g.Key).Distinct().Select(ptid => Tuple.Create(config.OrganizationName, org.GradeName, string.Format("{0}({1})", pr.Id, pr.SubBusinessName), ptid)));

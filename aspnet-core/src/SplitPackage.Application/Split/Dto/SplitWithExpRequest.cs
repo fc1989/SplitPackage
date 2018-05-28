@@ -16,8 +16,7 @@ namespace SplitPackage.Split.Dto
         public override string ToString()
         {
             return "SplitRequest{" +
-                "UserName=" + this.UserName +
-                ", OrderId=" + this.OrderId +
+                "OrderId=" + this.OrderId +
                 ", ProList=(Count=" + this.ProList.Count + ")[" + string.Join(", ", this.ProList) + "]" +
                 ", TotalQuantity=" + this.TotalQuantity +
                 ", LogisticsName=" + this.LogisticsName +

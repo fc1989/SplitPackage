@@ -3,6 +3,7 @@ import env from '../../build/env';
 import semver from 'semver';
 import packjson from '../../package.json';
 import AppConsts from './appconst'
+
 let util = {
 
 };
@@ -27,19 +28,37 @@ util.ajax.interceptors.request.use(function (config) {
     if (!!abp.auth.getToken()) {
         config.headers.common["Authorization"] = "Bearer " + abp.auth.getToken();
     }
-
     config.headers.common[".AspNetCore.Culture"] = abp.utils.getCookieValue("Abp.Localization.CultureName");
     config.headers.common["Abp.TenantId"] = abp.multiTenancy.getTenantIdCookie();
+    if(window.Vue){
+        if(window.abp.ajaxRequestCount === 0){
+            window.Vue.$Spin.show();
+        }
+        window.abp.ajaxRequestCount = window.abp.ajaxRequestCount + 1;
+    }
     return config;
 }, function (error) {
-
+    if(window.Vue){
+        window.abp.ajaxRequestCount = window.abp.ajaxRequestCount - 1;
+        if(window.abp.ajaxRequestCount === 0){
+            window.Vue.$Spin.hide();
+        }
+    }
     return Promise.reject(error);
 });
 
 +util.ajax.interceptors.response.use(function (response) {
+    window.abp.ajaxRequestCount = window.abp.ajaxRequestCount - 1;
+    if(window.abp.ajaxRequestCount === 0){
+        window.Vue.$Spin.hide();
+    }
     // Do something with response data
     return response;
 }, function (error) {
+    window.abp.ajaxRequestCount = window.abp.ajaxRequestCount - 1;
+    if(window.abp.ajaxRequestCount === 0){
+        window.Vue.$Spin.hide();
+    }
     // Do something with response error
     if (!!error.response && !!error.response.data && !!error.response.data.__abp) {
         abp.ajax.showError(error.response.data.error);

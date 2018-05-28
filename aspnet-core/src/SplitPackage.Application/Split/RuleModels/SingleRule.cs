@@ -8,7 +8,7 @@ namespace SplitPackage.Split.RuleModels
     {
         // 货号/条码
         [XmlAttribute()]
-        public int PTId { get; set; }
+        public string PTId { get; set; }
 
         [XmlAttribute()]
         public String TypeName { get; set; }

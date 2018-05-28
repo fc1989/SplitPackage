@@ -14,8 +14,11 @@ export default {
     Delete(id){
         return Util.ajax.delete('/api/services/app/ProductClass/Delete?Id='+id)
     },
-    Verify(ptid){
-        return Util.ajax.post('/api/services/app/ProductClass/Verify',qs.stringify({ptid:ptid}));
+    VerifyPTId(productSortId, ptid){
+        return Util.ajax.post('/api/services/app/ProductClass/VerifyPTId',qs.stringify({productSortId:productSortId,ptid:ptid}));
+    },
+    VerifyClassName(productSortId, className){
+        return Util.ajax.post('/api/services/app/ProductClass/VerifyClassName',qs.stringify({productSortId:productSortId, className:className}));
     },
     GetOptional(){
         return Util.ajax.get('/api/services/app/ProductClass/GetOptional');
