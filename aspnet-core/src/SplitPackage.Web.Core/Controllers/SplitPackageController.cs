@@ -80,7 +80,7 @@ namespace SplitPackage.Controllers
         }
 
         [HttpPost, Route("api/SplitPackage/ProductClass")]
-        public async Task<List<ProductSortDto>> GetProductClass()
+        public async Task<List<ProductSortSimpleDto1>> GetProductClass()
         {
             return await this._SplitAppService.GetProductClass();
         }

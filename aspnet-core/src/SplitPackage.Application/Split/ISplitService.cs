@@ -13,6 +13,6 @@ namespace SplitPackage.Split
         Task<Tuple<string, SplitedOrder>> Split(SplitRequest request, int? tenantId);
         Task<Tuple<string, SplitedOrder>> SplitWithOrganization1(SplitWithExpRequest1 request, int? tenantId);
         Task<Tuple<string, List<LogisticsModel>>> GetLogisticsList(int? tenantId);
-        Task<List<ProductSortDto>> GetProductClass();
+        Task<List<ProductSortSimpleDto1>> GetProductClass();
     }
 }

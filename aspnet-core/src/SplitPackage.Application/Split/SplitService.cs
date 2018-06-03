@@ -148,13 +148,13 @@ namespace SplitPackage.Split
             }).ToList());
         }
 
-        public async Task<List<ProductSortDto>> GetProductClass()
+        public async Task<List<ProductSortSimpleDto1>> GetProductClass()
         {
             var productClass = await this._cacheManager.GetProductClassAsync();
             productClass = productClass.Where(o => o.IsActive).ToList();
-            return productClass.GroupBy(o => new { o.ProductSortId, o.SortName }).Select(o=>new ProductSortDto() {
+            return productClass.GroupBy(o => new { o.ProductSortId, o.SortName }).Select(o=>new ProductSortSimpleDto1() {
                 SortName = o.Key.SortName,
-                Items = o.Select(oi=>new ProductClassDto() {
+                Items = o.Select(oi=>new ProductClassSimpleDto() {
                     PTId = oi.PTId,
                     ClassName = oi.ClassName
                 }).ToList()

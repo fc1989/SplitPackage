@@ -87,8 +87,8 @@ namespace SplitPackage.Web.Host.Startup
                 {
                     if (docName == "open")
                     {
-                        var attrs = description.ControllerAttributes();
-                        var isTrue = attrs.OfType<ApiExplorerSettingsAttribute>().Any(o => o.GroupName == "open");
+                        var attrs = description.ControllerAttributes().OfType<ApiExplorerSettingsAttribute>();
+                        var isTrue = attrs.Any(o => o.GroupName == "open");
                         return isTrue;
                     }
                     return true;
