@@ -95,16 +95,16 @@ namespace SplitPackage.Web.Host.Startup
                 });
 
                 // Define the BearerAuth scheme that's in use
+                options.AddSecurityDefinition("basicAuth", new BasicAuthScheme()
+                {
+                    Description = "basic Authorization header using the Basic scheme. Example: \"Authorization: Basic {token}\"",
+                });
                 options.AddSecurityDefinition("bearerAuth", new ApiKeyScheme()
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
                     In = "header",
                     Type = "apiKey"
-                });
-                options.AddSecurityDefinition("basicAuth", new BasicAuthScheme()
-                {
-                    Description = "basic Authorization header using the Basic scheme. Example: \"Authorization: Basic {token}\"",
                 });
                 // Assign scope requirements to operations based on AuthorizeAttribute
                 options.OperationFilter<SecurityRequirementsOperationFilter>();

@@ -42,7 +42,8 @@ namespace SplitPackage.Web.Host.Startup
                 {
                     new Dictionary<string, IEnumerable<string>>
                     {
-                        { "bearerAuth", permissions }
+                        { "bearerAuth", permissions },
+                        { "basicAuth", permissions }
                     }
                 };
             }
