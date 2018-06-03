@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SplitPackage.Tests.Business
 {
-    public class LogisticAppService_Tests : SplitPackageTestBase
+    public class LogisticAppService_Tests 
     {
 
     }

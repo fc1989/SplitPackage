@@ -165,9 +165,7 @@ namespace SplitPackage.Tests.Split
             };
             var result = this._splitService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
-            Assert.Equal(2, result.Item2.OrderList.Count);
-            Assert.Equal(3, result.Item2.OrderList[0].ProList.Count);
-            Assert.Equal(3, result.Item2.OrderList[1].ProList.Count);
+            Assert.Single(result.Item2.OrderList);
         }
 
         /// <summary>
@@ -459,25 +457,25 @@ namespace SplitPackage.Tests.Split
             var result = this._splitService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(7, result.Item2.OrderList.Count);
-            Assert.Equal("EWE Express", result.Item2.OrderList[0].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[0].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[0].SubBusinessName);
             Assert.Single(result.Item2.OrderList[0].ProList);
-            Assert.Equal("EWE Express", result.Item2.OrderList[1].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[1].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[1].SubBusinessName);
             Assert.Single(result.Item2.OrderList[1].ProList);
-            Assert.Equal("EWE Express", result.Item2.OrderList[2].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[2].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[2].SubBusinessName);
             Assert.Single(result.Item2.OrderList[2].ProList);
-            Assert.Equal("EWE Express", result.Item2.OrderList[3].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[3].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[3].SubBusinessName);
             Assert.Equal(2, result.Item2.OrderList[3].ProList.Count);
-            Assert.Equal("EWE Express", result.Item2.OrderList[4].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[4].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[4].SubBusinessName);
             Assert.Single(result.Item2.OrderList[4].ProList);
-            Assert.Equal("EWE Express", result.Item2.OrderList[5].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[5].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[5].SubBusinessName);
             Assert.Single(result.Item2.OrderList[5].ProList);
-            Assert.Equal("EWE Express", result.Item2.OrderList[6].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[6].LogisticsName);
             Assert.Equal("EWE杂货经济线", result.Item2.OrderList[6].SubBusinessName);
             Assert.Single(result.Item2.OrderList[6].ProList);
         }

@@ -29,7 +29,6 @@ namespace SplitPackage.Business.ProductSorts
 
         protected override IQueryable<ProductSort> CreateFilteredQuery(ProductSortSearchFilter input)
         {
-            System.Threading.Thread.Sleep(1000);
             var param = Expression.Parameter(typeof(ProductSort), "o");
             Expression filter = Expression.Constant(true);
             if (!string.IsNullOrEmpty(input.SortName))
@@ -56,12 +55,6 @@ namespace SplitPackage.Business.ProductSorts
                 filter = Expression.AndAlso(filter, right);
             }
             return Repository.GetAll().Where(Expression.Lambda<Func<ProductSort,bool>>(filter,param));
-        }
-
-        public async override Task Delete(EntityDto<long> input)
-        {
-            await this._pcRepository.DeleteAsync(o => o.ProductSortId == input.Id);
-            await this.Repository.DeleteAsync(o => o.Id == input.Id);
         }
 
         public async Task<bool> Verify(string flag)

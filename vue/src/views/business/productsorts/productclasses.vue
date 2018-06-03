@@ -19,7 +19,7 @@
               <FormItem :label="$t('ProductClasses.BCTaxRate')" prop="bcTaxRate">
                   <InputNumber v-model.number="modalState.model.bcTaxRate" style="width:100%"></InputNumber>
               </FormItem>
-              <FormItem v-if="modalState.state == 'edit'">
+              <FormItem v-if="modalState.actionState === 'edit'">
                   <Checkbox v-model="modalState.model.isActive">{{$t('Public.IsActive')}}</Checkbox>
               </FormItem>
             </Form>
@@ -154,7 +154,7 @@ export default {
               };
               vm.modalState.showModal = true;
               vm.modalState.actionState = "create";
-              vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
+              vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.ProductClasses');
           }); },
           render: (h)=>{
             return h('span',this.productSortName);

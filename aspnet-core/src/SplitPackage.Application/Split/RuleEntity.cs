@@ -1,4 +1,5 @@
 ﻿using Abp.Logging;
+using SplitPackage.Cache.Dto;
 using SplitPackage.Split.Common;
 using SplitPackage.Split.RuleModels;
 using SplitPackage.Split.SplitModels;
@@ -49,6 +50,43 @@ namespace SplitPackage.Split
 
         public Dictionary<string, ProductSingleRuleEntity> SingleRuleDic = new Dictionary<string, ProductSingleRuleEntity>();
         public Dictionary<string, List<ProductMixedRuleEntity>> MixRuleDic = new Dictionary<string, List<ProductMixedRuleEntity>>();
+
+        public RuleEntity(ChannelCacheDto channel, LogisticCacheDto logistic)
+        {
+            this.LogisticsName = logistic.CorporationName;
+            this.RuleName = channel.ChannelName;
+            this.Rule = new PackageRule()
+            {
+                Id = (int)channel.Id,
+                SubBusinessName = channel.ChannelName,
+                StartingPrice = channel.WeightFreights.First().StartingPrice,
+                StartingWeight = channel.WeightFreights.First().StartingWeight,
+                Price = channel.WeightFreights.First().Price,
+                StepWeight = (int)channel.WeightFreights.First().StepWeight,
+                MixRule = channel.SplitRules.Select(o => new MixRule()
+                {
+                    MRId = (int)o.Id,
+                    LimitedQuantity = o.MaxPackage,
+                    LimitedWeight = o.MaxWeight,
+                    TaxThreshold = o.MaxTax,
+                    LimitedMaxPrice = o.MaxPrice,
+                    RuleItems = o.ProductClasses.Select(oi => new RuleItem()
+                    {
+                        PTId = oi.PTId,
+                        MinQuantity = oi.MinNum,
+                        MaxQuantity = oi.MaxNum
+                    }).ToList()
+                }).OrderBy(o => o.MRId).ToList()
+            };
+            this.Organization = new SplitPackageConfig()
+            {
+                OrganizationId = logistic.LogisticCode,
+                OrganizationName = logistic.CorporationName,
+                URL = logistic.CorporationUrl,
+                LogoURL = logistic.LogoURL
+            };
+            this.InitSplitRule();
+        }
 
         public RuleEntity(SplitPackage.Business.LogisticChannel logisticChannel)
         {

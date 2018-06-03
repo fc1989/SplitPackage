@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization;
 using SplitPackage.Business.Dto;
 using SplitPackage.Business.ProductSorts.Dto;
+using SplitPackage.Cache;
 using SplitPackage.Dto;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,12 @@ namespace SplitPackage.Business.ProductSorts
     [AbpAuthorize(PermissionNames.Pages_Admin_ProductSorts)]
     public class ProductClassAppService : AsyncCrudAppService<ProductClass, ProductClassDto, long, ProductClassSearchFilter, CreateProductClassDto, UpdateProductClassDto>
     {
-        public ProductClassAppService(IRepository<ProductClass, long> repository) : base(repository)
-        {
+        private readonly ManageCache _manageCache;
 
+        public ProductClassAppService(IRepository<ProductClass, long> repository,
+            ManageCache manageCache) : base(repository)
+        {
+            this._manageCache = manageCache;
         }
 
         protected override IQueryable<ProductClass> CreateFilteredQuery(ProductClassSearchFilter input)
@@ -65,14 +69,15 @@ namespace SplitPackage.Business.ProductSorts
         [AbpAllowAnonymous]
         public async Task<List<Option>> GetOptional()
         {
-            var tenantId = AbpSession.TenantId;
-            var query = this.Repository.GetAll().Where(o=> o.IsActive);
-            query.Include(p => p.ProductSortBy);
-            return await Task.FromResult(query.GroupBy(o => o.ProductSortBy).Select(o => new Option()
+            var pcSet = await this._manageCache.GetProductClassAsync();
+            return await Task.FromResult(pcSet.GroupBy(o => new {
+                o.ProductSortId,
+                o.SortName
+            }).OrderBy(o=>o.Key.ProductSortId).Select(o => new Option()
             {
-                Value = o.Key.Id.ToString(),
+                Value = o.Key.ProductSortId.ToString(),
                 label = o.Key.SortName,
-                Children = o.Select(oi => new Option()
+                Children = o.OrderBy(oi=>oi.ClassName).Select(oi => new Option()
                 {
                     Value = oi.PTId,
                     label = oi.ClassName,

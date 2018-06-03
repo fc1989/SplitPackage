@@ -38,7 +38,9 @@ export default {
       'Import': 'Import',
       'Clear': 'Clear',
       'Index': 'Index',
-      'Add': 'Add'
+      'Add': 'Add',
+      'Banish': 'Banish',
+      'StartUse': 'StartUse'
     },
     'Menu': {
       'Modules': {
@@ -227,7 +229,9 @@ export default {
       'Import': '导入',
       'Clear': '清除',
       'Index': '序号',
-      'Add': '添加'
+      'Add': '添加',
+      'Banish': '禁用',
+      'StartUse': '启用'
     },
     'Menu': {
       'Modules': {

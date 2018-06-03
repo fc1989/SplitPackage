@@ -1,17 +1,10 @@
 ﻿using Abp.AutoMapper;
-using Abp.Dependency;
+using Abp.Events.Bus.Handlers;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
-using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using SplitPackage.Authorization;
-using SplitPackage.Business;
-using SplitPackage.Business.LogisticChannels.Dto;
-using SplitPackage.Business.NumFreights.Dto;
-using SplitPackage.Business.Products.Dto;
-using SplitPackage.Business.WeightFreights.Dto;
-using SplitPackage.Split;
-using System.Collections.Generic;
+using SplitPackage.Cache;
 using System.Linq;
 
 namespace SplitPackage
@@ -31,7 +24,14 @@ namespace SplitPackage
         public override void PreInitialize()
         {
             Configuration.Authorization.Providers.Add<SplitPackageAuthorizationProvider>();
-            //IocManager.Register<ISplitService, SplitService>(DependencyLifeStyle.Transient);
+            Configuration.UnitOfWork.ConventionalUowSelectors.Add(type =>
+            {
+                var result = type.GetInterfaces()
+                .Where(i => i.IsGenericType)
+                .Any(i => i.GetGenericTypeDefinition() == typeof(IAsyncEventHandler<>));
+                return result;
+            });
+            IocManager.Register(typeof(ManageCache), Abp.Dependency.DependencyLifeStyle.Singleton);
         }
 
         public override void Initialize()

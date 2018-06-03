@@ -1,32 +1,28 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Abp;
+﻿using Abp;
+using Abp.AspNetCore;
+using Abp.AspNetCore.TestBase;
 using Abp.Authorization.Users;
+using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Entities;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
-using Abp.TestBase;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using SplitPackage.Authorization.Users;
 using SplitPackage.EntityFrameworkCore;
+using SplitPackage.EntityFrameworkCore.Seed.Business;
 using SplitPackage.EntityFrameworkCore.Seed.Host;
 using SplitPackage.EntityFrameworkCore.Seed.Tenants;
 using SplitPackage.MultiTenancy;
-using Abp.AspNetCore.TestBase;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Abp.AspNetCore;
-using Castle.Core.Logging;
-using Microsoft.AspNetCore.Http;
-using Abp.Domain.Uow;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using Abp.TestBase.Runtime.Session;
-using Microsoft.AspNetCore.TestHost;
-using Abp.Dependency;
-using SplitPackage.EntityFrameworkCore.Seed.Business;
+using Xunit.Abstractions;
 
 namespace SplitPackage.Tests
 {
@@ -198,7 +194,6 @@ namespace SplitPackage.Tests
 
             AbpSession.UserId = user.Id;
         }
-
         #endregion
 
         /// <summary>

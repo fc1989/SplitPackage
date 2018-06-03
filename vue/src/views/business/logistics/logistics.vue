@@ -1,52 +1,37 @@
 <template>
     <div>
-        <simplePage ref="simplepage" :title="title" 
+        <simplePage ref="simplepage"
+            :title="title" 
             :columnsetting="columnsetting" 
-            :api="api"
-            :newRule="newLogisticRule"
-            :editRule="logisticRule"
+            :rule="rule"
             showSearchFilter
-            :modalWidth="800">
+            :searchPage="getPage"
+            :getCreateModel="getCreateModel"
+            :getEditModel="getEditModel">
             <template slot="search" slot-scope="slotProps">
-                <Input v-model="slotProps.searchData.corporationName" :maxlength="50" :placeholder="$t('Logistics.CorporationName')" style="width:150px"></Input>
+            <Input v-model="slotProps.searchData.corporationName" :maxlength="50" :placeholder="$t('Logistics.CorporationName')" style="width:150px"></Input>
             </template>
-            <template slot="appendBtn">
+            <template slot="appendSearchBtn">
                 <Button v-if="$store.state.session.tenantId !== null" @click="showModal" type="success">{{$t('Public.Import')}}</Button>
             </template>
-            <template slot="newform" slot-scope="slotProps">
-                <Tabs value="detail">
-                    <TabPane :label="$t('Public.Details')" name="detail">
-                        <FormItem :label="$t('Logistics.CorporationName')" prop="corporationName">
-                            <Input v-model="slotProps.createModel.corporationName" :maxlength="200" :minlength="1"></Input>
-                        </FormItem>
-                        <FormItem :label="$t('Logistics.CorporationUrl')" prop="corporationUrl">
-                            <Input v-model="slotProps.createModel.corporationUrl" :maxlength="50"></Input>
-                        </FormItem>
-                        <FormItem :label="$t('Logistics.LogisticCode')" prop="logisticCode">
-                            <Input v-model="slotProps.createModel.logisticCode" :maxlength="50">
-                                <span v-if="$store.state.session.tenantId" slot="prepend">{{$store.state.session.tenantId}}_</span>
-                            </Input>
-                        </FormItem>
-                    </TabPane>
-                </Tabs>
-            </template>
-            <template slot="editform" slot-scope="slotProps">
-                <Tabs value="detail">
-                    <TabPane :label="$t('Public.Details')" name="detail">
-                        <FormItem :label="$t('Logistics.CorporationName')" prop="corporationName">
-                            <Input v-model="slotProps.editModel.corporationName" :maxlength="200" :minlength="1"></Input>
-                        </FormItem>
-                        <FormItem :label="$t('Logistics.CorporationUrl')" prop="corporationUrl">
-                            <Input v-model="slotProps.editModel.corporationUrl" :maxlength="50"></Input>
-                        </FormItem>
-                        <FormItem :label="$t('Logistics.LogisticCode')" prop="logisticCode">
-                            <Input v-model="slotProps.editModel.logisticCode" :maxlength="50" disabled="disabled" ></Input>
-                        </FormItem>
-                        <FormItem>
-                            <Checkbox v-model="slotProps.editModel.isActive">{{$t('Public.IsActive')}}</Checkbox>
-                        </FormItem>
-                    </TabPane>
-                </Tabs>
+            <template slot="modalForm" slot-scope="slotProps">
+                <FormItem :label="$t('Logistics.CorporationName')" prop="corporationName">
+                    <Input v-model="slotProps.model.corporationName" :maxlength="200" :minlength="1"></Input>
+                </FormItem>
+                <FormItem :label="$t('Logistics.CorporationUrl')" prop="corporationUrl">
+                    <Input v-model="slotProps.model.corporationUrl" :maxlength="50"></Input>
+                </FormItem>
+                <FormItem v-if="showSpecified" :label="$t('Logistics.LogisticCode')" prop="logisticCode" :key="1">
+                    <Input v-model="slotProps.model.logisticCode" disabled="disabled" ></Input>
+                </FormItem>
+                <FormItem v-else :label="$t('Logistics.LogisticCode')" prop="logisticCode" :key="2">
+                    <Input v-model="slotProps.model.logisticCode" :maxlength="50" :disabled="showSpecified">
+                        <span v-if="$store.state.session.tenantId" slot="prepend">{{$store.state.session.tenantId}}_</span>
+                    </Input>
+                </FormItem>
+                <FormItem>
+                    <Checkbox v-model="slotProps.model.isActive" disabled>{{$t('Public.IsActive')}}</Checkbox>
+                </FormItem>
             </template>
         </simplePage>
         <Modal v-model="importState.showImportModal" :title="$t('Public.Import') + $t('Menu.Pages.LogisticChannels')">
@@ -76,7 +61,7 @@
 </style>
 
 <script>
-import simplePage from "../../../components/simplepage.vue";
+import simplePage from "../../../components/simplepagev1.vue";
 import LogisticChannels from "./logisticchannels";
 import LogisticApi from "@/api/logistic";
 import LogisticChannelApi from "@/api/logisticchannel";
@@ -121,17 +106,34 @@ export default {
             this.importState.showImportModal = false;
             this.$refs.simplepage.getpage();
         });
+    },
+    async getPage(filter){
+        var rep = await LogisticApi.Search(filter);
+        return rep.data.result;
+    },
+    getCreateModel(){
+      return {
+        isActive: true
+      };
+    },
+    async getEditModel(row){
+      return row;
     }
   },
   data() {
+    var _this = this;
     const validateFlag = (rule, value, callback) => {
       if (!value) {
         callback(new Error("logisticCode is required"));
-      } else if(!/^[A-Za-z0-9]+$/.test(value))
+      } else if(!/^[A-Za-z0-9]+[\s,_]*[A-Za-z0-9]*$/.test(value))
       {
         callback(new Error("Number or combination of letters"));
       } else
       {
+        if(_this.showSpecified){
+            callback();
+            return
+        }
         LogisticApi.Verify(value).then(function(rep) {
           if (rep.data.result) {
             callback();
@@ -141,21 +143,21 @@ export default {
         });
       }
     };
-    var _this = this;
     return {
       title: "Menu.Pages.Logistics",
-      api: LogisticApi,
-      newLogisticRule: {
+      rule: {
         corporationName: [{ required: true }],
         logisticCode: [{ required: true, validator:validateFlag }]
-      },
-      logisticRule: {
-        corporationName: [{ required: true }],
-        logisticCode: [{ required: true }]
       },
       columnsetting: {
         actionOption: {
             edit: function(row,vm) {
+                if(row.tenantId === vm.$store.state.session.tenantId){
+                    return true;
+                }
+                return false;
+            },
+            switch: function(row,vm){
                 if(row.tenantId === vm.$store.state.session.tenantId){
                     return true;
                 }
@@ -217,8 +219,30 @@ export default {
         showImportModal: false,
         systemLogisticChannel: [],
         importLogisticChannel: []
-      }
+      },
+      showSpecified: null,
     };
+  },
+  mounted(){
+      var _this = this;
+      this.$on('on-createRow',(model,callback) =>{
+        LogisticApi.Create(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-editRow',(model,callback) =>{
+        LogisticApi.Update(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-switchRow',(id, isActive, callback) =>{
+        LogisticApi.Switch(id, isActive).then(()=>{
+            callback();
+        });
+      });
+      this.$on('set-modalState',state => {
+        _this.showSpecified = state === 'edit';
+      });
   },
   created:function(){
       if(!this.$store.state.app.enumInformation.channelType){

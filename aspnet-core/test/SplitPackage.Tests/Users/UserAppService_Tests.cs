@@ -12,7 +12,7 @@ namespace SplitPackage.Tests.Users
     {
         private readonly IUserAppService _userAppService;
 
-        public UserAppService_Tests()
+        public UserAppService_Tests(Xunit.Abstractions.ITestOutputHelper output)
         {
             _userAppService = Resolve<IUserAppService>();
         }

@@ -15,7 +15,7 @@
                         </Col>
                         <Col span="12">
                             <FormItem :label="$t('LogisticChannels.ChannelName')" prop="channelName" :labelWidth="70">
-                                <Input v-model="modalState.model.channelName" :maxlength="50" :minlength="1" :disabled="modalState.actionState != 'create'"></Input>
+                                <Input v-model="modalState.model.channelName" :maxlength="50" :minlength="1" :disabled="judgeDisabled"></Input>
                             </FormItem>
                         </Col>
                     </Row>
@@ -36,7 +36,7 @@
                     <Row>
                         <Col span="12">
                             <FormItem :label="$t('Public.IsActive')" prop="isActive" :labelWidth="70">
-                                <Checkbox v-model="modalState.model.isActive" :disabled="judgeDisabled"></Checkbox>
+                                <Checkbox v-model="modalState.model.isActive" disabled="disabled"></Checkbox>
                             </FormItem>
                         </Col>
                         <Col span="12">
@@ -50,16 +50,16 @@
                     <Row v-if="modalState.model.way === 0">
                         <Col>
                             <label>{{$t('LogisticChannels.WeightChargeRule')}}</label>
-                            <FormItem prop="weightChargeRules" :labelWidth="0">
-                                <Table :columns="modalState.weightColumns" :data="modalState.model.weightChargeRules"></Table>
+                            <FormItem prop="weightFreights" :labelWidth="0">
+                                <Table :columns="modalState.weightColumns" :data="modalState.model.weightFreights"></Table>
                             </FormItem>
                         </Col>
                     </Row>
                     <Row v-if="modalState.model.way === 1">
                         <Col>
                             <label>{{$t('LogisticChannels.NumChargeRule')}}</label>
-                            <FormItem prop="weightChargeRules" :labelWidth="0">
-                                <Table :columns="modalState.numColumns" :data="modalState.model.numChargeRules"></Table>
+                            <FormItem prop="weightFreights" :labelWidth="0">
+                                <Table :columns="modalState.numColumns" :data="modalState.model.numFreights"></Table>
                             </FormItem>
                         </Col>
                     </Row>
@@ -118,6 +118,7 @@
                     LogisticChannelApi.Get(params.row.id).then(req=>{
                         vm.modalState.actionState = "edit";
                         vm.modalState.model = req.data.result;
+                        vm.modalState.oldChannelName = req.data.result.channelName;
                         vm.modalState.showModal = true;
                         vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
                     });
@@ -144,6 +145,30 @@
                 }
             }
         },vm.$t('Public.Details')));
+        if(!vm.isImport){
+            array.push(h("Button",
+            {
+                props: {
+                    type: params.row.isActive ? "error":"success",
+                    size: "small"
+                },
+                on: {
+                    click: async () => {
+                        vm.$Modal.confirm({
+                            title: vm.$t(''),
+                            content: vm.$t(params.row.isActive ? 'Public.Banish' : 'Public.StartUse') + vm.$t(vm.title),
+                            okText: vm.$t('Public.Yes'),
+                            cancelText: vm.$t('Public.No'),
+                            onOk: () => {
+                                LogisticChannelApi.Switch(params.row.id, !params.row.isActive).then(req=>{
+                                    vm.getpage();
+                                })
+                            }
+                        });
+                    }
+                }
+            },vm.$t(params.row.isActive ? 'Public.Banish' : 'Public.StartUse')));
+        }
         return h("div", array);
     };
     const generaladdHeaderRender = (h, param, vm, clickAction) => {
@@ -199,7 +224,7 @@
                 if (!value) {
                     callback(new Error("channelName is required"));
                 } else {
-                    if(_this.modalState.actionState != "create"){
+                    if(_this.modalState.actionState === "edit" && _this.modalState.oldChannelName == value){
                         callback();
                         return;
                     }
@@ -216,7 +241,7 @@
                 if(_this.modalState.model.way === 0){
                     if(value === null || value.length === 0)
                     {
-                        callback("weightChargeRules is required");
+                        callback("weightFreights is required");
                         return;
                     }
                     var array = value.filter(vl => {
@@ -229,7 +254,7 @@
                 if(_this.modalState.model.way === 1 && (value == null || value.length === 0)){
                     if(value === null || value.length === 0)
                     {
-                        callback("numChargeRules is required");
+                        callback("numFreights is required");
                         return;
                     }
                     var array = value.filter(vl => {
@@ -252,10 +277,11 @@
                             vm.modalState.model = {
                                 logisticId: vm.logisticId,
                                 logisticName: vm.logisticName,
-                                weightChargeRules: [],
-                                numChargeRules: [],
+                                weightFreights: [],
+                                numFreights: [],
                                 type: 0,
-                                way: 0
+                                way: 0,
+                                isActive: true
                             };
                             vm.modalState.showModal = true;
                             vm.modalState.actionState = "create";
@@ -306,8 +332,8 @@
                     model: {},
                     rule: {
                         channelName: [{ required: true, validator: validateChannelName }],
-                        numChargeRules: [{validator: validateChargeRule}],
-                        weightChargeRules: [{validator: validateChargeRule}]
+                        numFreights: [{validator: validateChargeRule}],
+                        weightFreights: [{validator: validateChargeRule}]
                     },
                     title: null,
                     showModal: false,
@@ -316,10 +342,10 @@
                             title: this.$t('Public.Currency'),
                             key: "currency",
                             renderHeader: (h, params) => { return generaladdHeaderRender(h, params, _this, function(vm){
-                                if(vm.modalState.model.weightChargeRules&&vm.modalState.model.weightChargeRules.length > 0){
+                                if(vm.modalState.model.weightFreights&&vm.modalState.model.weightFreights.length > 0){
                                     return;
                                 }
-                                vm.modalState.model.weightChargeRules.push({
+                                vm.modalState.model.weightFreights.push({
                                     currency: 'RMB',
                                     unit: 'g',
                                     startingWeight: 0,
@@ -329,87 +355,88 @@
                                     costPrice: 0,
                                     price: 0
                                 });
-                                vm.$emit("input", vm.modalState.model.weightChargeRules);
+                                vm.$emit("input", vm.modalState.model.weightFreights);
                             }); },
-                            render: (h, params) => generalRender(h, params, _this, false, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, false, 'weightFreights')
                         },
                         {
                             title: this.$t('Public.Unit'),
                             key: "unit",
-                            render: (h, params) => generalRender(h, params, _this, false, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, false, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.StartingWeight'),
                             key: 'startingWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.EndWeight'),
                             key: 'endWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.StartingPrice'),
                             key: 'startingPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.StepWeight'),
                             key: 'stepWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.CostPrice'),
                             key: 'costPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         },
                         {
                             title: this.$t('WeightFreights.Price'),
                             key: 'price',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
                         }
                     ],
                     numColumns: [{
                             title: this.$t('Public.Currency'),
                             key: "currency",
                             renderHeader: (h,param) => { return generaladdHeaderRender(h, param, _this, function(vm){
-                                if(vm.modalState.model.numChargeRules&&vm.modalState.model.numChargeRules.length > 0){
+                                if(vm.modalState.model.numFreights&&vm.modalState.model.numFreights.length > 0){
                                     return;
                                 }
-                                vm.modalState.model.numChargeRules.push({
+                                vm.modalState.model.numFreights.push({
                                     currency: 'RMB',
                                     unit: 'ea',
                                     splitNum: 1,
                                     firstPrice: 0,
                                     carryOnPrice: 0
                                 });
-                                vm.$emit("input", vm.modalState.model.numChargeRules);
+                                vm.$emit("input", vm.modalState.model.numFreights);
                             }); },
-                            render: (h,params) => generalRender(h, params, _this, false, 'numChargeRules')
+                            render: (h,params) => generalRender(h, params, _this, false, 'numFreights')
                         },
                         {
                             title: this.$t('Public.Unit'),
                             key: "unit",
-                            render: (h, params) => generalRender(h, params, _this, false, 'numChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, false, 'numFreights')
                         },
                         {
                             title: this.$t('NumFreights.SplitNum'),
                             key: 'splitNum',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
                         },
                         {
                             title: this.$t('NumFreights.FirstPrice'),
                             key: 'firstPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
                         },
                         {
                             title: this.$t('NumFreights.CarryOnPrice'),
                             key: 'carryOnPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numChargeRules')
+                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
                         }
                     ],
                     channelType: this.$store.state.app.enumInformation.channelType,
-                    chargeWay: this.$store.state.app.enumInformation.chargeWay
+                    chargeWay: this.$store.state.app.enumInformation.chargeWay,
+                    oldChannelName: null
                 }
             }
         },

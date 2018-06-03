@@ -26,6 +26,11 @@ namespace SplitPackage.Tests
     /// </summary>
     public class SplitInitial_Test : SplitPackageTestBase
     {
+        public SplitInitial_Test(Xunit.Abstractions.ITestOutputHelper output)
+        {
+
+        }
+
         protected async Task EntityValid(object obj, int? tenantId = null)
         {
             obj.ShouldNotBeNull();

@@ -1,4 +1,5 @@
-﻿using SplitPackage.Split.RuleModels;
+﻿using SplitPackage.Cache.Dto;
+using SplitPackage.Split.RuleModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,6 +47,16 @@ namespace SplitPackage.Split
             foreach (var item in logistic.LogisticChannels)
             {
                 this.RuleSequenceDic.Add(item.ChannelName, new RuleEntity(item));
+            }
+        }
+
+        public Logistic(LogisticCacheDto logistic)
+        {
+            this.LogisticName = logistic.LogisticCode;
+            this.RuleSequenceDic = new Dictionary<string, RuleEntity>();
+            foreach (var item in logistic.LogisticChannels)
+            {
+                this.RuleSequenceDic.Add(item.ChannelName, new RuleEntity(item, logistic));
             }
         }
     }

@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Events.Bus;
 using Abp.Linq;
 using Abp.Linq.Extensions;
 using AutoMapper;
@@ -12,6 +13,7 @@ using SplitPackage.Business.Dto;
 using SplitPackage.Business.LogisticChannels.Dto;
 using SplitPackage.Business.NumFreights.Dto;
 using SplitPackage.Business.WeightFreights.Dto;
+using SplitPackage.Domain.Logistic;
 using SplitPackage.Dto;
 using System;
 using System.Collections.Generic;
@@ -30,6 +32,7 @@ namespace SplitPackage.Business.LogisticChannels
         private readonly IRepository<NumFreight, long> _nfRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tlcRepository;
         private readonly IRepository<Logistic, long> _logisticRepository;
+        private readonly IEventBus _eventBus;
 
         protected virtual string GetPermissionName { get; set; }
         protected virtual string GetAllPermissionName { get; set; }
@@ -42,7 +45,8 @@ namespace SplitPackage.Business.LogisticChannels
             IRepository<WeightFreight, long> wfRepository,
             IRepository<NumFreight, long> nfRepository,
             IRepository<TenantLogisticChannel, long> tlcRepository,
-            IRepository<Logistic, long> logisticRepository)
+            IRepository<Logistic, long> logisticRepository,
+            IEventBus eventBus)
         {
             this.LocalizationSourceName = SplitPackageConsts.LocalizationSourceName;
             this._wfRepository = wfRepository;
@@ -51,6 +55,7 @@ namespace SplitPackage.Business.LogisticChannels
             this._lcRepository = lcRepository;
             this._logisticRepository = logisticRepository;
             this.AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
+            this._eventBus = eventBus;
         }
 
         protected virtual void CheckPermission(string permissionName)
@@ -78,12 +83,12 @@ namespace SplitPackage.Business.LogisticChannels
                  if (o.Way == ChargeWay.ChargeByNum)
                  {
                      var chargeRules = await this._nfRepository.GetAllListAsync(f => f.LogisticChannelId == o.Id);
-                     result.NumChargeRules = chargeRules.Select(rule => ObjectMapper.Map<NumFreightDto>(rule));
+                     result.NumFreights = chargeRules.Select(rule => ObjectMapper.Map<NumFreightDto>(rule));
                  }
                  else if (o.Way == ChargeWay.ChargeByWeight)
                  {
                      var chargeRules = await this._wfRepository.GetAllListAsync(f => f.LogisticChannelId == o.Id);
-                     result.WeightChargeRules = chargeRules.Select(rule => ObjectMapper.Map<WeightFreightDto>(rule));
+                     result.WeightFreights = chargeRules.Select(rule => ObjectMapper.Map<WeightFreightDto>(rule));
                  }
              };
             if (entity.TenantId != tenantId)
@@ -99,14 +104,14 @@ namespace SplitPackage.Business.LogisticChannels
                 }
                 if (!string.IsNullOrEmpty(customerChange.LogisticChannelChange))
                 {
-                    var replaceCharge = JsonConvert.DeserializeObject<ChangeInformation>(customerChange.LogisticChannelChange);
+                    var replaceCharge = JsonConvert.DeserializeObject<ChangeFreightRule>(customerChange.LogisticChannelChange);
                     switch (result.Way)
                     {
                         case ChargeWay.ChargeByWeight:
-                            result.WeightChargeRules = replaceCharge.WeightChargeRules.Select(o => ObjectMapper.Map<WeightFreightDto>(o));
+                            result.WeightFreights = replaceCharge.WeightChargeRules.Select(o => ObjectMapper.Map<WeightFreightDto>(o));
                             break;
                         case ChargeWay.ChargeByNum:
-                            result.NumChargeRules = replaceCharge.NumChargeRules.Select(o => ObjectMapper.Map<NumFreightDto>(o));
+                            result.NumFreights = replaceCharge.NumChargeRules.Select(o => ObjectMapper.Map<NumFreightDto>(o));
                             break;
                         default:
                             break;
@@ -130,35 +135,7 @@ namespace SplitPackage.Business.LogisticChannels
 
             var entity = ObjectMapper.Map<LogisticChannel>(input);
             entity.TenantId = AbpSession.TenantId;
-            var channelId = await _lcRepository.InsertAndGetIdAsync(entity);
-            if (input.Way == ChargeWay.ChargeByNum)
-            {
-                var array = input.NumChargeRules.Select(o =>
-                {
-                    var result = ObjectMapper.Map<NumFreight>(o);
-                    result.LogisticChannelId = channelId;
-                    result.IsActive = true;
-                    return result;
-                });
-                foreach (var item in array)
-                {
-                    await this._nfRepository.InsertAsync(item);
-                }
-            }
-            else if (input.Way == ChargeWay.ChargeByWeight)
-            {
-                var array = input.WeightChargeRules.Select(o =>
-                {
-                    var result = ObjectMapper.Map<WeightFreight>(o);
-                    result.LogisticChannelId = channelId;
-                    result.IsActive = true;
-                    return result;
-                });
-                foreach (var item in array)
-                {
-                    await this._wfRepository.InsertAsync(item);
-                }
-            }
+            await this._lcRepository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<LogisticChannelDto>(entity);
         }
@@ -210,30 +187,43 @@ namespace SplitPackage.Business.LogisticChannels
             CheckPermission(UpdatePermissionName);
 
             var tenantId = AbpSession.TenantId;
-            var entity = await this._lcRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.Id == input.Id && !o.IsDeleted);
+            var entity = await this._lcRepository.GetAll().Include(p=>p.WeightFreights).Include(p=>p.NumFreights).IgnoreQueryFilters()
+                .SingleAsync(o => o.Id == input.Id && !o.IsDeleted);
             if (entity.TenantId == tenantId)
             {
                 ObjectMapper.Map(input, entity);
                 switch (entity.Way)
                 {
                     case ChargeWay.ChargeByWeight:
-                        await this._wfRepository.DeleteAsync(o => o.LogisticChannelId == entity.Id);
-                        var addWeightFreight = input.WeightChargeRules.Select(o => ObjectMapper.Map<WeightFreight>(o));
-                        foreach (var item in addWeightFreight)
+                        foreach (var item in input.WeightFreights)
                         {
-                            item.LogisticChannelId = entity.Id;
-                            item.Id = 0;
-                            await this._wfRepository.InsertAsync(item);
+                            var weightRule = entity.WeightFreights.FirstOrDefault(o => o.Id == item.Id);
+                            if (weightRule == null)
+                            {
+                                weightRule = this.ObjectMapper.Map<WeightFreight>(item);
+                                weightRule.LogisticChannelBy = entity;
+                                entity.WeightFreights.Add(weightRule);
+                            }
+                            else
+                            {
+                                this.ObjectMapper.Map<WeightFreightDto, WeightFreight>(item,weightRule);
+                            }
                         }
                         break;
                     case ChargeWay.ChargeByNum:
-                        await this._nfRepository.DeleteAsync(o => o.LogisticChannelId == entity.Id);
-                        var addNumFreight = input.NumChargeRules.Select(o => ObjectMapper.Map<NumFreight>(o));
-                        foreach (var item in addNumFreight)
+                        foreach (var item in input.NumFreights)
                         {
-                            item.LogisticChannelId = entity.Id;
-                            item.Id = 0;
-                            await this._nfRepository.InsertAsync(item);
+                            var numRule = entity.NumFreights.FirstOrDefault(o => o.Id == item.Id);
+                            if (numRule == null)
+                            {
+                                numRule = this.ObjectMapper.Map<NumFreight>(item);
+                                numRule.LogisticChannelBy = entity;
+                                entity.NumFreights.Add(numRule);
+                            }
+                            else
+                            {
+                                this.ObjectMapper.Map<NumFreightDto, NumFreight>(item, numRule);
+                            }
                         }
                         break;
                     default:
@@ -249,12 +239,12 @@ namespace SplitPackage.Business.LogisticChannels
                 {
                     case ChargeWay.ChargeByWeight:
                         var weightRule = await this._wfRepository.FirstOrDefaultAsync(o => o.LogisticChannelId == entity.Id);
-                        var weightRuleDto = input.WeightChargeRules.FirstOrDefault();
+                        var weightRuleDto = input.WeightFreights.FirstOrDefault();
                         weightChange = judgeWeightChange(weightRule, weightRuleDto);
                         break;
                     case ChargeWay.ChargeByNum:
                         var numRule = await this._nfRepository.FirstOrDefaultAsync(o => o.LogisticChannelId == entity.Id);
-                        var numRuleDto = input.NumChargeRules.FirstOrDefault();
+                        var numRuleDto = input.NumFreights.FirstOrDefault();
                         numChange = judgeNumChange(numRule, numRuleDto);
                         break;
                     default:
@@ -266,15 +256,26 @@ namespace SplitPackage.Business.LogisticChannels
                     LogisticChannelId = entity.Id,
                     AliasName = string.Equals(entity.AliasName, input.AliasName) ? string.Empty : input.AliasName,
                     Way = entity.Way.Equals(input.Way) ? null : (ChargeWay?)input.Way,
-                    LogisticChannelChange = numChange || weightChange ? JsonConvert.SerializeObject(new ChangeInformation()
+                    LogisticChannelChange = numChange || weightChange ? JsonConvert.SerializeObject(new ChangeFreightRule()
                     {
-                        WeightChargeRules = weightChange ? input.WeightChargeRules.Select(o => ObjectMapper.Map<WeightFreight>(o)) : null,
-                        NumChargeRules = numChange ? input.NumChargeRules.Select(o => ObjectMapper.Map<NumFreight>(o)) : null
+                        WeightChargeRules = weightChange ? input.WeightFreights.Select(o => ObjectMapper.Map<WeightFreight>(o)) : null,
+                        NumChargeRules = numChange ? input.NumFreights.Select(o => ObjectMapper.Map<NumFreight>(o)) : null
                     }) : string.Empty
                 });
             }
             await CurrentUnitOfWork.SaveChangesAsync();
-
+            if (entity.TenantId == tenantId)
+            {
+                await this._eventBus.TriggerAsync(this.ObjectMapper.Map<ModifyChannelEvent>(entity));
+            }
+            else
+            {
+                await this._eventBus.TriggerAsync(new TenantModifyImportChannelEvent() {
+                    TenantId = tenantId.Value,
+                    LogisticId = entity.LogisticId,
+                    ChannelId = entity.Id
+                });
+            }
             return ObjectMapper.Map<LogisticChannelDto>(entity);
         }
 
@@ -340,16 +341,18 @@ namespace SplitPackage.Business.LogisticChannels
                 });
             }
             var deleteSet = imported.Where(o => !importIds.Contains(o)).ToList();
-            foreach (var item in deleteSet)
-            {
-                await this._tlcRepository.DeleteAsync(o => o.TenantId == tenantId && deleteSet.Contains(o.LogisticChannelId));
-            }
+            await this._tlcRepository.DeleteAsync(o => o.TenantId == tenantId && deleteSet.Contains(o.LogisticChannelId));
+            await this._eventBus.TriggerAsync(new TenantImportChannelEvent() {
+                TenantId = AbpSession.TenantId.Value,
+                AddChannelIds = addSet,
+                RemoveChannelIds = deleteSet
+            });
             return true;
         }
 
         public async Task<bool> Verify(VerifyChannelDto input)
         {
-            var count = await this._lcRepository.GetAll().IgnoreQueryFilters().Where(o => o.LogisticId == input.LogisticId && !o.IsDeleted && o.ChannelName == input.ChannelName).CountAsync();
+            var count = await this._lcRepository.GetAll().Where(o => o.LogisticId == input.LogisticId && o.ChannelName == input.ChannelName).CountAsync();
             if (count > 0)
                 return false;
             else
@@ -412,6 +415,37 @@ namespace SplitPackage.Business.LogisticChannels
                     label = oi.ChannelName,
                 }).ToList()
             }).ToList());
+        }
+
+        public async Task Switch(long id, bool IsActive)
+        {
+            CheckPermission(UpdatePermissionName);
+
+            var entity = await this._lcRepository.SingleAsync(o => o.Id == id);
+            if (entity.IsActive == IsActive)
+            {
+                return;
+            }
+            entity.IsActive = IsActive;
+            await CurrentUnitOfWork.SaveChangesAsync();
+            if (IsActive)
+            {
+                await this._eventBus.TriggerAsync(new StartUseChannelEvent()
+                {
+                    TenantId = entity.TenantId,
+                    LogisticId = entity.LogisticId,
+                    ChannelId = entity.Id
+                });
+            }
+            else
+            {
+                await this._eventBus.TriggerAsync(new BanishChannelEvent()
+                {
+                    TenantId = entity.TenantId,
+                    LogisticId = entity.LogisticId,
+                    ChannelId = entity.Id
+                });
+            }
         }
     }
 }

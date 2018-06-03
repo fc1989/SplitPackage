@@ -16,5 +16,8 @@ export default {
     },
     Verify(flag){
         return Util.ajax.post('/api/services/app/Logistic/Verify',qs.stringify({flag:flag}));
+    },
+    Switch(id, IsActive){
+        return Util.ajax.post('/api/services/app/Logistic/Switch',qs.stringify({id:id,IsActive:IsActive}));
     }
 }

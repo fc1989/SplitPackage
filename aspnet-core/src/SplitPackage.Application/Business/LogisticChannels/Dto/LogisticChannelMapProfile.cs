@@ -4,6 +4,7 @@ using SplitPackage.Business.WeightFreights.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace SplitPackage.Business.LogisticChannels.Dto
 {
@@ -17,6 +18,8 @@ namespace SplitPackage.Business.LogisticChannels.Dto
             CreateMap<LogisticChannel, LogisticChannelDto>().ForMember(x => x.LogisticName, opt => opt.MapFrom(src =>
                 src.LogisticBy == null ? string.Empty : src.LogisticBy.CorporationName
             ));
+
+            CreateMap<CreateLogisticChannelDto, LogisticChannel>();
         }
     }
 }

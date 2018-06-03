@@ -25,6 +25,11 @@ namespace SplitPackage.Business
         public string CorporationUrl { get; set; }
 
         /// <summary>
+        /// logo网址
+        /// </summary>
+        public string LogoURL { get; set; }
+
+        /// <summary>
         /// 物流代码
         /// </summary>
         public string LogisticCode { get; set; }

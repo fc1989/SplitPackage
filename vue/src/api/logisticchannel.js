@@ -34,5 +34,8 @@ export default {
     },
     GetOwn(){
         return Util.ajax.get('/api/services/app/LogisticChannel/GetOwn');
+    },
+    Switch(id, IsActive){
+        return Util.ajax.post('/api/services/app/LogisticChannel/Switch',qs.stringify({id:id,IsActive:IsActive}));
     }
 }

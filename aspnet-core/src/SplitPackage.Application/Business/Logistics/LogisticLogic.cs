@@ -51,10 +51,11 @@ namespace SplitPackage.Business.Logistics
             if (tenantId.HasValue)
             {
                 var LogisticQuery = from l in this._repository.GetAll().IgnoreQueryFilters()
-                        join ll in _logisticChannelRepository.GetAll().IgnoreQueryFilters() on l.Id equals ll.LogisticId
-                        join tl in _tenantLogisticChannelRepository.GetAll().IgnoreQueryFilters() on ll.Id equals tl.LogisticChannelId into left1
-                        from tb in left1.DefaultIfEmpty()
-                        where !l.IsDeleted && !ll.IsDeleted && (ll.TenantId == tenantId || tb.TenantId == tenantId)
+                        join ll in _logisticChannelRepository.GetAll().IgnoreQueryFilters() on l.Id equals ll.LogisticId into left1
+                        from tb1 in left1.DefaultIfEmpty()
+                        join tl in _tenantLogisticChannelRepository.GetAll().IgnoreQueryFilters() on tb1.Id equals tl.LogisticChannelId into left2
+                        from tb2 in left2.DefaultIfEmpty()
+                        where l.TenantId == tenantId || tb2.TenantId == tenantId
                         select l.Id;
                 query = this._repository.GetAll().IgnoreQueryFilters().Where(o => LogisticQuery.Contains(o.Id));
             }

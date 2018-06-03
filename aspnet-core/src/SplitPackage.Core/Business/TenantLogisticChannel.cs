@@ -25,18 +25,33 @@ namespace SplitPackage.Business
 
         public virtual LogisticChannel LogisticChannelBy { get; set; }
 
-        public ChangeInformation GetInformation()
+        public ChangeFreightRule GetInformation()
         {
+            ChangeFreightRule result = null;
             if (!string.IsNullOrEmpty(this.LogisticChannelChange))
             {
-                JsonConvert.DeserializeObject<ChangeInformation>(this.LogisticChannelChange);
+                result = JsonConvert.DeserializeObject<ChangeFreightRule>(this.LogisticChannelChange);
+                if (result.WeightChargeRules == null)
+                {
+                    result.WeightChargeRules = new List<WeightFreight>();
+                }
+                if (result.NumChargeRules == null)
+                {
+                    result.NumChargeRules = new List<NumFreight>();
+                }
             }
-            return null;
+            return result;
         }
     }
 
-    public class ChangeInformation
+    public class ChangeFreightRule
     {
+        public ChangeFreightRule()
+        {
+            WeightChargeRules = new List<WeightFreight>();
+            NumChargeRules = new List<NumFreight>();
+        }
+
         public IEnumerable<WeightFreight> WeightChargeRules { get; set; }
 
         public IEnumerable<NumFreight> NumChargeRules { get; set; }

@@ -2,9 +2,11 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Events.Bus;
 using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization;
 using SplitPackage.Business.SplitRules.Dto;
+using SplitPackage.Domain.Logistic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,14 @@ namespace SplitPackage.Business.SplitRules
     public class SplitRuleItemAppService : AsyncCrudAppService<SplitRuleProductClass, RuleItemDto, long, SplitRuleItemFilter, CreateRuleItemDto, UpdateRuleItemDto>
     {
         private readonly IRepository<ProductClass, long> _productClassRepository;
+        private readonly IEventBus _eventBus;
 
         public SplitRuleItemAppService(IRepository<SplitRuleProductClass, long> repository, 
-            IRepository<ProductClass, long> productClassRepository) :base(repository)
+            IRepository<ProductClass, long> productClassRepository,
+            IEventBus eventBus) :base(repository)
         {
             this._productClassRepository = productClassRepository;
+            this._eventBus = eventBus;
         }
 
         protected override IQueryable<SplitRuleProductClass> CreateFilteredQuery(SplitRuleItemFilter input)
@@ -52,6 +57,24 @@ namespace SplitPackage.Business.SplitRules
             return new PagedResultDto<RuleItemDto>(
                 totalCount, result
             );
+        }
+
+        public async override Task Delete(EntityDto<long> input)
+        {
+            CheckDeletePermission();
+
+            var entity = await this.Repository.GetAll().Include(p => p.SplitRuleBy).ThenInclude(p=>p.LogisticChannelBy)
+                .SingleAsync(o => o.Id == input.Id);
+
+            await Repository.DeleteAsync(entity);
+            await this._eventBus.TriggerAsync(new BanishSplitRuleItemEvent()
+            {
+                TenantId = AbpSession.TenantId,
+                LogisticId = entity.SplitRuleBy.LogisticChannelBy.LogisticId,
+                ChannelId = entity.SplitRuleBy.LogisticChannelId,
+                SplitRuleId = entity.SplitRuleId,
+                SplitRuleItemId = entity.Id
+            });
         }
     }
 }

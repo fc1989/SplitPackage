@@ -14,7 +14,7 @@
         </template>
         <template slot="modalForm" slot-scope="slotProps">
           <FormItem :label="$t('Menu.Pages.LogisticChannels')" prop="logisticChannelId">
-            <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+            <Cascader :data="cascaderData" v-model="cascaderValue" :disabled="showSpecified"></Cascader>
           </FormItem>
           <FormItem :label="$t('SplitRules.RuleName')" prop="ruleName">
               <Input v-model="slotProps.model.ruleName" style="width:100%"></Input>
@@ -32,7 +32,7 @@
               <Input-number v-model.number="slotProps.model.maxPrice" style="width:100%"></Input-number>
           </FormItem>
             <FormItem v-if="showSpecified">
-                <Checkbox v-model="slotProps.model.isActive">{{$t('Public.IsActive')}}</Checkbox>
+                <Checkbox v-model="slotProps.model.isActive" disabled="disabled">{{$t('Public.IsActive')}}</Checkbox>
             </FormItem>
         </template>
     </simplePage>
@@ -59,7 +59,8 @@ export default {
         maxPackage: 0,
         maxWeight: 0,
         maxTax: 0,
-        maxPrice: 0
+        maxPrice: 0,
+        isActive: true
       };
     },
     async getEditModel(row){
@@ -69,12 +70,13 @@ export default {
       var lcId = result.logisticChannelId.toString();
       for(var item in this.cascaderData){
         var array = this.cascaderData[item].children.filter(vl => {
-          vl.value === lcId;
+          return vl.value === lcId;
         });
+        console.log(array.length);
         if(array.length > 0)
         {
-          lId = item.value.toString();
-          break;          
+          lId = this.cascaderData[item].value.toString();
+          break;
         }
       }
       this.cascaderValue = [lId,lcId];
@@ -107,6 +109,12 @@ export default {
               return false;
             },
             delete: function(row, vm) {
+              if(row.tenantId === vm.$store.state.session.tenantId){
+                return true;
+              }
+              return false;
+            },
+            switch: function(row, vm) {
               if(row.tenantId === vm.$store.state.session.tenantId){
                 return true;
               }
@@ -189,6 +197,11 @@ export default {
       this.$on('on-editRow',(model,callback) =>{
         model.logisticChannelId = _this.cascaderValue[1];
         SplitRuleApi.Update(model).then(()=>{
+            callback();
+        });
+      });
+      this.$on('on-switchRow',(id, isActive, callback) =>{
+        SplitRuleApi.Switch(id, isActive).then(()=>{
             callback();
         });
       });

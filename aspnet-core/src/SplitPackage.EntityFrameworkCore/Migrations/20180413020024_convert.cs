@@ -73,6 +73,7 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CorporationName = table.Column<string>(maxLength: Logistic.MaxCorporationNameLength),
                     CorporationUrl = table.Column<string>(nullable: true, maxLength: Logistic.MaxCorporationUrlLength),
+                    LogoURL = table.Column<string>(nullable: true, maxLength: Logistic.MaxCorporationUrlLength),
                     LogisticCode = table.Column<string>(maxLength: Logistic.MaxLogisticCodeLength),
                     TenantId = table.Column<int>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
@@ -386,7 +387,7 @@ namespace SplitPackage.Migrations
                         column: x => x.LogisticRelatedId,
                         principalTable: "LogisticRelateds",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LogisticRelatedItems_Logistics_LogisticId",
                         column: x => x.LogisticId,
@@ -429,7 +430,7 @@ namespace SplitPackage.Migrations
                         column: x => x.ProductSortId,
                         principalTable: "ProductSorts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

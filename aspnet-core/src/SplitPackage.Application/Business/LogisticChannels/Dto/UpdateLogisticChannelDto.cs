@@ -28,8 +28,8 @@ namespace SplitPackage.Business.LogisticChannels.Dto
 
         public bool IsActive { get; set; }
 
-        public IEnumerable<NumFreightDto> NumChargeRules { get; set; }
+        public IEnumerable<NumFreightDto> NumFreights { get; set; }
 
-        public IEnumerable<WeightFreightDto> WeightChargeRules { get; set; }
+        public IEnumerable<WeightFreightDto> WeightFreights { get; set; }
     }
 }

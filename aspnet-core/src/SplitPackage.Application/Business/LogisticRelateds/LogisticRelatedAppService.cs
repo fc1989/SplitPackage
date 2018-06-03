@@ -68,12 +68,5 @@ namespace SplitPackage.Business.LogisticRelateds
 
             return MapToEntityDto(entity);
         }
-
-        public async override Task Delete(EntityDto<long> input)
-        {
-            System.Threading.Thread.Sleep(1000);
-            await this._lriRepository.DeleteAsync(o => o.LogisticRelatedId == input.Id);
-            await this.Repository.DeleteAsync(o => o.Id == input.Id);
-        }
     }
 }

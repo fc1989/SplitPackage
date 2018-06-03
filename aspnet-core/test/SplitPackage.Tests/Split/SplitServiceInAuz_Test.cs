@@ -181,14 +181,14 @@ namespace SplitPackage.Tests.Split
             var result = this._splitService.Split(request);
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(3, result.Item2.OrderList.Count);
-            Assert.Equal("CHANGJIANG Express", result.Item2.OrderList[0].LogisticsName);
-            Assert.Equal("长江国际速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal("ZH Express", result.Item2.OrderList[0].LogisticsName);
+            Assert.Equal("中环杂货混装线", result.Item2.OrderList[0].SubBusinessName);
             Assert.Equal(3, result.Item2.OrderList[0].ProList.Count);
-            Assert.Equal("CHANGJIANG Express", result.Item2.OrderList[1].LogisticsName);
-            Assert.Equal("长江国际速递杂货混装线", result.Item2.OrderList[1].SubBusinessName);
+            Assert.Equal("ZH Express", result.Item2.OrderList[1].LogisticsName);
+            Assert.Equal("中环杂货混装线", result.Item2.OrderList[1].SubBusinessName);
             Assert.Equal(2, result.Item2.OrderList[1].ProList.Count);
-            Assert.Equal("CHANGJIANG Express", result.Item2.OrderList[2].LogisticsName);
-            Assert.Equal("长江国际速递杂货混装线", result.Item2.OrderList[2].SubBusinessName);
+            Assert.Equal("ZH Express", result.Item2.OrderList[2].LogisticsName);
+            Assert.Equal("中环杂货混装线", result.Item2.OrderList[2].SubBusinessName);
             Assert.Equal(2, result.Item2.OrderList[2].ProList.Count);
         }
 

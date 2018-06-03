@@ -15,5 +15,8 @@ export default {
     },
     Get(id){
         return Util.ajax.get('/api/services/app/SplitRule/Get?Id=' + id);
+    },
+    Switch(id, IsActive){
+        return Util.ajax.post('/api/services/app/SplitRule/Switch',qs.stringify({id:id,IsActive:IsActive}));
     }
 }

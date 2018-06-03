@@ -98,6 +98,32 @@ const rowActionRender = (h, params, vm, actionOption) => {
       vm.$t('Public.Delete')
     ));
   }
+  if(actionOption.switch && ((typeof actionOption.switch) == "boolean" ? actionOption.switch: actionOption.switch(params.row, vm))){
+    buttonArray.push(h("Button",
+      {
+        props: {
+          type: params.row.isActive ? "error":"success",
+          size: "small"
+        },
+        on: {
+          click: async () => {
+            vm.$Modal.confirm({
+              title: vm.$t(''),
+              content: vm.$t(params.row.isActive ? 'Public.Banish' : 'Public.StartUse') + vm.$t(vm.title),
+              okText: vm.$t('Public.Yes'),
+              cancelText: vm.$t('Public.No'),
+              onOk: () => {
+                  vm.$parent.$emit('on-switchRow', params.row.id, !params.row.isActive, function(){
+                      vm.getpage();
+                  });
+              }
+            });
+          }
+        }
+      },
+      vm.$t(params.row.isActive ? 'Public.Banish' : 'Public.StartUse')
+    ));
+  }
   return h("div", buttonArray);
 };
 

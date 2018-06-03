@@ -17,7 +17,7 @@ namespace SplitPackage.Business.Logistics.Dto
 
         [Required]
         [StringLength(Logistic.MaxLogisticCodeLength)]
-        [RegularExpression("^[A-Za-z0-9]+$")]
+        [RegularExpression(@"^[A-Za-z0-9]+[\s,_]*[A-Za-z0-9]*$")]
         public string LogisticCode { get; set; }
     }
 }

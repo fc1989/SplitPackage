@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SplitPackage.Business.LogisticChannels.Dto
 {
-    [AutoMap(typeof(LogisticChannel))]
     public class CreateLogisticChannelDto : EntityDto<long>
     {
         [Required]

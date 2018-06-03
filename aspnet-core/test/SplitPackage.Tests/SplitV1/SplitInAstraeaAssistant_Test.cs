@@ -10,14 +10,16 @@ using Xunit;
 
 namespace SplitPackage.Tests.Split
 {
-    public class SplitInAstraeaAssistant_Test : SplitPackageTestBase
+    [Collection("AstraeaAssistant collection")]
+    public class SplitInAstraeaAssistant_Test
     {
         private readonly ISplitService _splitService;
+        private readonly SplitPackageSettingBase _context;
 
-        public SplitInAstraeaAssistant_Test()
+        public SplitInAstraeaAssistant_Test(Xunit.Abstractions.ITestOutputHelper output, AstraeaAssistantSetting context)
         {
-            _splitService = Resolve<ISplitService>();
-            LoginAsTenant("AstraeaAssistant", AbpUserBase.AdminUserName);
+            this._context = context;
+            this._splitService = this._context.ResolveService<ISplitService>();
         }
 
         [Fact]
@@ -61,7 +63,7 @@ namespace SplitPackage.Tests.Split
                 TotalQuantity = 1,
                 logistics = new List<string> { "CNP Express" }
             };
-            var result = await this._splitService.SplitWithOrganization1(request, AbpSession.TenantId);
+            var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
             Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
@@ -89,7 +91,7 @@ namespace SplitPackage.Tests.Split
                 TotalQuantity = 1,
                 logistics = new List<string> { "CNP Express" }
             };
-            var result = await this._splitService.SplitWithOrganization1(request, AbpSession.TenantId);
+            var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(string.Empty, result.Item1);
             Assert.Single(result.Item2.OrderList);
             Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
@@ -127,7 +129,7 @@ namespace SplitPackage.Tests.Split
                 TotalQuantity = 1,
                 logistics = new List<string> { "CNP Express" }
             };
-            var result = await this._splitService.SplitWithOrganization1(request, AbpSession.TenantId);
+            var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
             Assert.Equal("CNP Express", result.Item2.OrderList[0].LogisticsName);
@@ -167,7 +169,7 @@ namespace SplitPackage.Tests.Split
                 TotalQuantity = 1,
                 logistics = new List<string> { "AOLAU EXPRESS" }
             };
-            var result = await this._splitService.SplitWithOrganization1(request, AbpSession.TenantId);
+            var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(string.Empty, result.Item1);
             Assert.Equal(2, result.Item2.OrderList.Count);
             Assert.Equal("AOLAU EXPRESS", result.Item2.OrderList[0].LogisticsName);

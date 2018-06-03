@@ -1,13 +1,16 @@
-﻿using Abp.Logging;
+﻿using Abp.Authorization;
+using Abp.Logging;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Newtonsoft.Json;
 using SplitPackage.Split;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.SplitModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,7 +19,8 @@ using System.Threading.Tasks;
 namespace SplitPackage.Controllers
 {
     [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), AbpAuthorize]
+    [ApiExplorerSettings(GroupName = "open")]
     public class SplitPackageController : SplitPackageControllerBase
     {
         private readonly ISplitService _SplitAppService;
@@ -57,6 +61,28 @@ namespace SplitPackage.Controllers
                 return new JsonResult(new ResultMessage<String>((int)ResultCode.KeyIsNull, ResultConfig.Configs[ResultCode.Success], result.Item1));
             }
             return new JsonResult(new ResultMessage<List<LogisticsModel>>((int)ResultCode.Success, ResultConfig.Configs[ResultCode.Success], result.Item2));
+        }
+    }
+
+    /// <summary>
+    /// 妈的,action竟然AllowAnonymous特性没用
+    /// </summary>
+    [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
+    [Route("api/[controller]"), AllowAnonymous]
+    [ApiExplorerSettings(GroupName = "open")]
+    public class CommonController : SplitPackageControllerBase
+    {
+        private readonly ISplitService _SplitAppService;
+
+        public CommonController(ISplitService splitAppService)
+        {
+            this._SplitAppService = splitAppService;
+        }
+
+        [HttpPost, Route("api/SplitPackage/ProductClass")]
+        public async Task<List<ProductSortDto>> GetProductClass()
+        {
+            return await this._SplitAppService.GetProductClass();
         }
     }
 }

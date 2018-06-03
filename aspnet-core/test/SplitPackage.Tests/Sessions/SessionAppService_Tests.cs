@@ -9,7 +9,7 @@ namespace SplitPackage.Tests.Sessions
     {
         private readonly ISessionAppService _sessionAppService;
 
-        public SessionAppService_Tests()
+        public SessionAppService_Tests(Xunit.Abstractions.ITestOutputHelper output)
         {
             _sessionAppService = Resolve<ISessionAppService>();
         }

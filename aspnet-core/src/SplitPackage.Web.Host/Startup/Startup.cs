@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Runtime.ExceptionServices;
 using SplitPackage.Authentication.BasicAuth;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -79,8 +81,18 @@ namespace SplitPackage.Web.Host.Startup
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new Info { Title = "SplitPackage API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => true);
+                options.SwaggerDoc("open", new Info { Title = "open for tenant", Version = "v1" });
+                options.SwaggerDoc("private", new Info { Title = "internal api", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) =>
+                {
+                    if (docName == "open")
+                    {
+                        var attrs = description.ControllerAttributes();
+                        var isTrue = attrs.OfType<ApiExplorerSettingsAttribute>().Any(o => o.GroupName == "open");
+                        return isTrue;
+                    }
+                    return true;
+                });
 
                 // Define the BearerAuth scheme that's in use
                 options.AddSecurityDefinition("bearerAuth", new ApiKeyScheme()
@@ -89,6 +101,10 @@ namespace SplitPackage.Web.Host.Startup
                     Name = "Authorization",
                     In = "header",
                     Type = "apiKey"
+                });
+                options.AddSecurityDefinition("basicAuth", new BasicAuthScheme()
+                {
+                    Description = "basic Authorization header using the Basic scheme. Example: \"Authorization: Basic {token}\"",
                 });
                 // Assign scope requirements to operations based on AuthorizeAttribute
                 options.OperationFilter<SecurityRequirementsOperationFilter>();
@@ -178,9 +194,10 @@ namespace SplitPackage.Web.Host.Startup
             {
                 //定制化swagger ui
                 //options.IndexStream = () => GetType().GetTypeInfo().Assembly.GetManifestResourceStream("SplitPackage.Web.Host.SwaggerIndex.html");
-                options.InjectOnCompleteJavaScript("/swagger/ui/abp.js");
-                options.InjectOnCompleteJavaScript("/swagger/ui/on-complete.js");
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "SplitPackage API V1");
+                //options.InjectOnCompleteJavaScript("/swagger/ui/abp.js");
+                //options.InjectOnCompleteJavaScript("/swagger/ui/on-complete.js");
+                options.SwaggerEndpoint("/swagger/open/swagger.json", "SplitPackage Open API V1");
+                options.SwaggerEndpoint("/swagger/private/swagger.json", "SplitPackage API V1");
             }); // URL: /swagger
         }
 

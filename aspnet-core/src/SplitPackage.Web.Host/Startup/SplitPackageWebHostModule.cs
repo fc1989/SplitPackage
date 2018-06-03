@@ -4,6 +4,7 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using SplitPackage.Configuration;
 using System;
+using SplitPackage.Cache;
 
 namespace SplitPackage.Web.Host.Startup
 {
@@ -22,15 +23,21 @@ namespace SplitPackage.Web.Host.Startup
 
         public override void PreInitialize()
         {
-            //Configuration.Caching.ConfigureAll(cache =>
-            //{
-            //    cache.DefaultSlidingExpireTime = TimeSpan.FromDays(365);
-            //});
+            Configuration.Caching.ConfigureAll(cache =>
+            {
+                cache.DefaultSlidingExpireTime = TimeSpan.FromDays(365);
+            });
         }
 
         public override void Initialize()
         {
             IocManager.RegisterAssemblyByConvention(typeof(SplitPackageWebHostModule).GetAssembly());
+        }
+
+        public override void PostInitialize()
+        {
+            var init = IocManager.Resolve<ManageCache>();
+            init.InitCache();
         }
     }
 }

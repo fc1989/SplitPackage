@@ -10,6 +10,7 @@ using SplitPackage.Split.Common;
 using System.Diagnostics;
 using Abp.Logging;
 using SplitPackage.RuleModels;
+using SplitPackage.Cache.Dto;
 
 namespace SplitPackage.Split
 {
@@ -22,6 +23,25 @@ namespace SplitPackage.Split
         private readonly List<RelatedItem> logisticsRelated;
 
         private readonly List<Logistic> logistics;
+
+        public SpliterV1(IList<LogisticCacheDto> ownLogistics, IList<IList<LogisticRelatedOptionCacheDto>> relateds)
+        {
+            this.logistics = ownLogistics.Select(o => new Logistic(o)).ToList();
+            this.logisticsRelated = relateds.Select(o => new RelatedItem()
+            {
+                Logistics = o.Select(oi => oi.LogisticCode).ToList()
+            }).ToList();
+            this.splitConfig = new SplitConfig();
+            splitConfig.Initialize(this.logistics.SelectMany(o => o.RuleSequenceDic.Select(oi => oi.Value)).ToList());
+            this.bcRuleEntity = new BcRuleEntity();
+            var subLevelDic = this.logistics.SelectMany(o => o.RuleSequenceDic.SelectMany(oi => oi.Value.Rule.MixRule.SelectMany(oii => oii.RuleItems.Select(oiii => oiii.PTId)))).Distinct().ToDictionary(o => o, o => new SubLevel()
+            {
+                PTId = o,
+                PostTaxRate = 0,
+                BcTaxRate = 0
+            });
+            bcRuleEntity.Initialize(new BcConfig() { StepWeight = 1 }, subLevelDic);
+        }
 
         public SpliterV1(List<SplitPackage.Business.Logistic> logistics, List<SplitPackage.Business.LogisticRelated> logisticRelateds)
         {

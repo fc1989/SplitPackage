@@ -2,10 +2,12 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Events.Bus;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SplitPackage.Authorization;
 using SplitPackage.Business.SplitRules.Dto;
+using SplitPackage.Domain.Logistic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,17 +23,20 @@ namespace SplitPackage.Business.SplitRules
         private readonly IRepository<LogisticChannel, long> _lcRepository;
         private readonly IRepository<SplitRuleProductClass, long> _srpRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tlcRepository;
+        private readonly IEventBus _eventBus;
 
         public SplitRuleAppService(IRepository<SplitRule, long> repository, 
             IRepository<SplitRuleProductClass, long> srpRepository,
             IRepository<Logistic, long> lRepository,
             IRepository<LogisticChannel, long> lcRepository,
-            IRepository<TenantLogisticChannel, long> tlcRepository) : base(repository)
+            IRepository<TenantLogisticChannel, long> tlcRepository,
+            IEventBus eventBus) : base(repository)
         {
             this._srpRepository = srpRepository;
             this._lRepository = lRepository;
             this._lcRepository = lcRepository;
             this._tlcRepository = tlcRepository;
+            this._eventBus = eventBus;
         }
 
         protected override IQueryable<SplitRule> CreateFilteredQuery(SplitRuleSearchFilter input)
@@ -67,6 +72,57 @@ namespace SplitPackage.Business.SplitRules
                 query = query.Where(o=>o.ProductClasses.Any(oi=>oi.PTId.StartsWith(input.PTId)));
             }
             return query.Include(p => p.LogisticChannelBy).ThenInclude((LogisticChannel p) => p.LogisticBy);
+        }
+
+        public async override Task Delete(EntityDto<long> input)
+        {
+            CheckDeletePermission();
+
+            var entity = await this.Repository.GetAll().Include(p => p.LogisticChannelBy)
+                .SingleAsync(o=>o.Id == input.Id);
+
+            await Repository.DeleteAsync(entity);
+            await this._eventBus.TriggerAsync(new BanishSplitRuleEvent()
+            {
+                TenantId = AbpSession.TenantId,
+                LogisticId = entity.LogisticChannelBy.LogisticId,
+                ChannelId = entity.LogisticChannelId,
+                SplitRuleId = entity.Id
+            });
+        }
+
+        public async Task Switch(long id, bool IsActive)
+        {
+            CheckPermission(UpdatePermissionName);
+
+            var entity = await this.Repository.GetAll().Include(p=>p.LogisticChannelBy)
+                .SingleAsync(o => o.Id == id);
+            if (entity.IsActive == IsActive)
+            {
+                return;
+            }
+            entity.IsActive = IsActive;
+            await CurrentUnitOfWork.SaveChangesAsync();
+            if (IsActive)
+            {
+                await this._eventBus.TriggerAsync(new StartUseSplitRuleEvent()
+                {
+                    TenantId = AbpSession.TenantId,
+                    LogisticId = entity.LogisticChannelBy.LogisticId,
+                    ChannelId = entity.LogisticChannelId,
+                    SplitRuleId = entity.Id
+                });
+            }
+            else
+            {
+                await this._eventBus.TriggerAsync(new BanishSplitRuleEvent()
+                {
+                    TenantId = AbpSession.TenantId,
+                    LogisticId = entity.LogisticChannelBy.LogisticId,
+                    ChannelId = entity.LogisticChannelId,
+                    SplitRuleId = entity.Id
+                });
+            }
         }
     }
 }

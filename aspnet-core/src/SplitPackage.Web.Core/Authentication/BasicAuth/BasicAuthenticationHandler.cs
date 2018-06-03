@@ -73,10 +73,15 @@ namespace SplitPackage.Authentication.BasicAuth
             string tenantId = "";
             if (!string.IsNullOrEmpty(tenancyName))
             {
-                var tenants = await _tenantRepository.GetAllListAsync(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive);
+                var tenants = await _tenantRepository.GetAll().IgnoreQueryFilters()
+                    .Where(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive).ToListAsync();
                 if (tenants.Count == 0)
                 {
                     return AuthenticateResult.Fail("Invalid tenancyname or apikey");
+                }
+                if (!tenants[0].IsActive)
+                {
+                    return AuthenticateResult.Fail("tenant is banish");
                 }
                 var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
                 tenantId = tenants[0].Id.ToString();
