@@ -32,7 +32,7 @@ namespace SplitPackage.Split
         private async Task<SpliterV1> GetSpliter(int? tenantId)
         {
             var setting = await this._cacheManager.GetSplitPackageSettingAsync(tenantId);
-            return new SpliterV1(setting.OwnLogistics, setting.Relateds);
+            return new SpliterV1(setting.OwnLogistics, setting.Relateds.Select(o=>o.Logistics).ToList());
         }
 
         private async Task<List<string>> GetRulePTIds(int? tenantId)
@@ -85,13 +85,6 @@ namespace SplitPackage.Split
             {
                 return Tuple.Create(false, "缺少PTId");
             }
-            var requestPTIds = request.ProList.Select(o => o.PTId).Distinct().ToList();
-            var includePTIds = await this.GetRulePTIds(tenantId);
-            var unDeployPTIds = requestPTIds.Where(o => !includePTIds.Contains(o)).ToList();
-            if (unDeployPTIds.Count > 0)
-            {
-                return Tuple.Create(false, string.Format("不存在PTId:{0}", string.Join(",", unDeployPTIds.Distinct())));
-            }
             if (request is SplitWithExpRequest1)
             {
                 List<string> requestLogistics = (request as SplitWithExpRequest1).logistics;
@@ -100,12 +93,19 @@ namespace SplitPackage.Split
                     return Tuple.Create(false, "请提供指定物流商");
                 }
                 var logisticsCodes = requestLogistics.Distinct();
-                var includeLogisticsCodes = (await this.GetOwnLogistics(tenantId)).Select(o=>o.LogisticCode).Distinct();
+                var includeLogisticsCodes = (await this.GetOwnLogistics(tenantId)).Select(o => o.LogisticCode).Distinct();
                 var unDeploylogisticsIds = logisticsCodes.Where(o => !includeLogisticsCodes.Contains(o)).ToList();
                 if (unDeploylogisticsIds.Count > 0)
                 {
                     return Tuple.Create(false, string.Format("指定物流商:{0}不存在", string.Join(",", unDeploylogisticsIds)));
                 }
+            }
+            var requestPTIds = request.ProList.Select(o => o.PTId).Distinct().ToList();
+            var includePTIds = await this.GetRulePTIds(tenantId);
+            var unDeployPTIds = requestPTIds.Where(o => !includePTIds.Contains(o)).ToList();
+            if (unDeployPTIds.Count > 0)
+            {
+                return Tuple.Create(false, string.Format("PTId:{0}无对应规则", string.Join(",", unDeployPTIds.Distinct())));
             }
             return Tuple.Create(true, string.Empty);
         }

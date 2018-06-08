@@ -168,7 +168,7 @@ namespace SplitPackage.Tests
                 var line = await context.LogisticChannels.FirstOrDefaultAsync(s => s.TenantId == null && s.LogisticId == logistic.Id);
                 await EntityValid(line);
                 var wf = await context.WeightFreights.FirstOrDefaultAsync(s => s.LogisticChannelId == line.Id &&
-                    s.Currency == "RMB" &&
+                    s.Currency == "AUD" &&
                     s.Unit == "g" &&
                     s.StartingPrice == 4.5 &&
                     s.StartingWeight == 1000 &&

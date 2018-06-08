@@ -1,4 +1,5 @@
 ﻿import Util from '@/libs/util'
+import qs from 'qs';
 
 export default {
     Update(data){

@@ -107,12 +107,12 @@ export default {
     return {
       title: "Menu.Pages.Products",
       rule: {
-        productName: [{ required: true }],
-        sku: [{ required: true, validator: validateSku }],
-        weight: [{ type: "number" }],
-        ptid: [{required: true,validator: validateProductClass}],
-        declarePrice: [{ type: "number" }],
-        declareTaxrate: [{ type: "number" }]
+        productName: [{ required: true, trigger: 'ignore' }],
+        sku: [{ required: true, validator: validateSku, trigger: 'ignore' }],
+        weight: [{ type: "number", trigger: 'ignore' }],
+        ptid: [{required: true,validator: validateProductClass, trigger: 'ignore'}],
+        declarePrice: [{ type: "number", trigger: 'ignore' }],
+        declareTaxrate: [{ type: "number", trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {

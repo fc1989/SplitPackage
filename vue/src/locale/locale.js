@@ -40,7 +40,8 @@ export default {
       'Index': 'Index',
       'Add': 'Add',
       'Banish': 'Banish',
-      'StartUse': 'StartUse'
+      'StartUse': 'StartUse',
+      'ServerErrorPoint': 'System error,please contact administrator'
     },
     'Menu': {
       'Modules': {
@@ -231,7 +232,8 @@ export default {
       'Index': '序号',
       'Add': '添加',
       'Banish': '禁用',
-      'StartUse': '启用'
+      'StartUse': '启用',
+      'ServerErrorPoint': '系统错误,请联系管理员'
     },
     'Menu': {
       'Modules': {
@@ -345,10 +347,10 @@ export default {
       'MinNum': '最小数量'
     },
     'WeightFreights': {
-      'StartingWeight': '阶梯开始重量',
+      'StartingWeight': '起始重量',
       'EndWeight': '阶梯结束重量',
       'StartingPrice': '起始费用',
-      'StepWeight': '计费单位重量',
+      'StepWeight': '阶梯重量',
       'CostPrice': '阶梯成本价',
       'Price': '阶梯销售价'
     },

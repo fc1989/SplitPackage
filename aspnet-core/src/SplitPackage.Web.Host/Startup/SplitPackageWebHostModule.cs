@@ -33,11 +33,5 @@ namespace SplitPackage.Web.Host.Startup
         {
             IocManager.RegisterAssemblyByConvention(typeof(SplitPackageWebHostModule).GetAssembly());
         }
-
-        public override void PostInitialize()
-        {
-            var init = IocManager.Resolve<ManageCache>();
-            init.InitCache();
-        }
     }
 }

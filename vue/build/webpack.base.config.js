@@ -63,7 +63,11 @@ module.exports = {
             },
             {
                 test: /\.(gif|jpg|png|woff|svg|eot|ttf)\??.*$/,
-                loader: 'url-loader?limit=1024'
+                loader: 'url-loader',
+                options: {
+                    limit: 1024,
+                    name: path.posix.join('images', '[hash:8].[name].[ext]')
+                }
             },
             {
                 test: /\.(html|tpl)$/,

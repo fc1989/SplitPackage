@@ -97,18 +97,18 @@ export default {
       api: UserApi,
       allRoles: [],
       newUserRule: {
-        userName: [{ required: true, trigger: "blur" }],
-        name: [{ required: true, trigger: "blur" }],
-        surname: [{ required: true, trigger: "blur" }],
-        emailAddress: [{ required: true, trigger: "blur" }, { type: "email" }],
-        password: [{ required: true, trigger: "blur" }],
-        confirmPassword: { validator: validatePassCheck, trigger: "blur" }
+        userName: [{ required: true, trigger: "ignore" }],
+        // name: [{ required: true, trigger: "ignore" }],
+        // surname: [{ required: true, trigger: "ignore" }],
+        emailAddress: [{ required: true, trigger: "ignore", type: "email" }],
+        password: [{ required: true, trigger: "ignore" }],
+        confirmPassword: { validator: validatePassCheck, trigger: "ignore" }
       },
       userRule: {
-        userName: [{ required: true, trigger: "blur" }],
-        name: [{ required: true, trigger: "blur" }],
-        surname: [{ required: true, trigger: "blur" }],
-        emailAddress: [{ required: true, trigger: "blur" }, { type: "email" }]
+        userName: [{ required: true, trigger: "ignore" }],
+        // name: [{ required: true, trigger: "ignore" }],
+        // surname: [{ required: true, trigger: "ignore" }],
+        emailAddress: [{ required: true, trigger: "ignore", type: "email" }]
       },
       columnsetting: {
         actionOption: {

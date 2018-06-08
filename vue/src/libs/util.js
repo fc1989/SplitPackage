@@ -21,7 +21,7 @@ const ajaxUrl = env.env === 'development'
 
 util.ajax = axios.create({
     baseURL: ajaxUrl,
-    timeout: 30000
+    // timeout: 30000
 });
 
 util.ajax.interceptors.request.use(function (config) {
@@ -61,7 +61,8 @@ util.ajax.interceptors.request.use(function (config) {
     }
     // Do something with response error
     if (!!error.response && !!error.response.data && !!error.response.data.__abp) {
-        abp.ajax.showError(error.response.data.error);
+        abp.ajax.showError(abp.ajax.defaultError);
+        // abp.ajax.showError(error.response.data.error);
     } else {
         if (!error.response) {
             abp.ajax.showError(abp.ajax.defaultError);

@@ -1,6 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
-using Abp.Domain.Entities;
 using SplitPackage.Business.NumFreights.Dto;
 using SplitPackage.Business.WeightFreights.Dto;
 using System.Collections.Generic;
@@ -26,8 +24,8 @@ namespace SplitPackage.Business.LogisticChannels.Dto
         [Required]
         public long LogisticId { get; set; }
 
-        public IEnumerable<NumFreightDto> NumChargeRules { get; set; }
+        public IEnumerable<NumFreightDto> NumFreights { get; set; }
 
-        public IEnumerable<WeightFreightDto> WeightChargeRules { get; set; }
+        public IEnumerable<WeightFreightDto> weightFreights { get; set; }
     }
 }

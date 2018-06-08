@@ -64,7 +64,7 @@ export default {
     return {
       title: "Menu.Pages.ProductSorts",
       rule: {
-          sortName: [{ required: true, validator: validateSortName }]
+          sortName: [{ required: true, validator: validateSortName, trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {

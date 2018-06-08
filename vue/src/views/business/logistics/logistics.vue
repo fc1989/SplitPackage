@@ -146,8 +146,8 @@ export default {
     return {
       title: "Menu.Pages.Logistics",
       rule: {
-        corporationName: [{ required: true }],
-        logisticCode: [{ required: true, validator:validateFlag }]
+        corporationName: [{ required: true, trigger: 'ignore' }],
+        logisticCode: [{ required: true, validator:validateFlag, trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {

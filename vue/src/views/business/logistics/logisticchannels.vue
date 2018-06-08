@@ -41,25 +41,28 @@
                         </Col>
                         <Col span="12">
                             <FormItem :label="$t('LogisticChannels.Way')" prop="way" :labelWidth="70">
-                                <Select v-model="modalState.model.way" :disabled="this.modalState.actionState === 'detail'">
+                                <Select v-model="modalState.model.way" disabled="disabled">
                                     <Option v-for="(option,key) in modalState.chargeWay" :value="Number.parseInt(key)" :key="key">{{option}}</Option>
                                 </Select>
+                                <!-- <Select v-model="modalState.model.way" :disabled="this.modalState.actionState === 'detail'">
+                                    <Option v-for="(option,key) in modalState.chargeWay" :value="Number.parseInt(key)" :key="key">{{option}}</Option>
+                                </Select> -->
                             </FormItem>
                         </Col>
                     </Row>
                     <Row v-if="modalState.model.way === 0">
                         <Col>
                             <label>{{$t('LogisticChannels.WeightChargeRule')}}</label>
-                            <FormItem prop="weightFreights" :labelWidth="0">
-                                <Table :columns="modalState.weightColumns" :data="modalState.model.weightFreights"></Table>
+                            <FormItem prop="weightFreightData" :labelWidth="0">
+                                <Table :columns="modalState.weightColumns" :data="modalState.weightFreightData"></Table>
                             </FormItem>
                         </Col>
                     </Row>
                     <Row v-if="modalState.model.way === 1">
                         <Col>
                             <label>{{$t('LogisticChannels.NumChargeRule')}}</label>
-                            <FormItem prop="weightFreights" :labelWidth="0">
-                                <Table :columns="modalState.numColumns" :data="modalState.model.numFreights"></Table>
+                            <FormItem prop="numFreightData" :labelWidth="0">
+                                <Table :columns="modalState.numColumns" :data="modalState.numFreightData"></Table>
                             </FormItem>
                         </Col>
                     </Row>
@@ -88,7 +91,17 @@
     const addHeaderRender = (h, param, vm, showAddIcon, clickAction) => {
         var array = [];
         if(showAddIcon){
-            array.push(h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}));
+            array.push(h("Icon", 
+                {
+                    style: {
+                        "font-Size": "14px",
+                        "padding-right":"10px"
+                    },
+                    props: {
+                        type:"plus"
+                    }
+                }
+            ));
         }
         array.push(h("span", param.column.title));
         return h("div",
@@ -118,6 +131,16 @@
                     LogisticChannelApi.Get(params.row.id).then(req=>{
                         vm.modalState.actionState = "edit";
                         vm.modalState.model = req.data.result;
+                        vm.modalState.weightFreightData = [];
+                        vm.modalState.numFreightData = [];
+                        if(req.data.result.weightFreights && req.data.result.weightFreights.length > 0)
+                        {
+                            vm.modalState.weightFreightData.push(JSON.parse(JSON.stringify(req.data.result.weightFreights[0])));
+                        }
+                        if(req.data.result.numFreights && req.data.result.numFreights.length > 0)
+                        {
+                            vm.modalState.numFreightData.push(JSON.parse(JSON.stringify(req.data.result.numFreights[0])));
+                        }
                         vm.modalState.oldChannelName = req.data.result.channelName;
                         vm.modalState.showModal = true;
                         vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
@@ -139,6 +162,16 @@
                     LogisticChannelApi.Get(params.row.id).then(req=>{
                         vm.modalState.actionState = "detail";
                         vm.modalState.model = req.data.result;
+                        vm.modalState.weightFreightData = [];
+                        vm.modalState.numFreightData = [];
+                        if(req.data.result.weightFreights && req.data.result.weightFreights.length > 0)
+                        {
+                            vm.modalState.weightFreightData.push(JSON.parse(JSON.stringify(req.data.result.weightFreights[0])));
+                        }
+                        if(req.data.result.numFreights && req.data.result.numFreights.length > 0)
+                        {
+                            vm.modalState.numFreightData.push(JSON.parse(JSON.stringify(req.data.result.numFreights[0])));
+                        }
                         vm.modalState.showModal = true;
                         vm.modalState.title = vm.$t('Menu.Pages.LogisticChannels')+vm.$t('Public.Details');
                     });
@@ -179,7 +212,7 @@
             return addHeaderRender(h, param, vm, true, clickAction);
         }
     };
-    const generalRender = (h, params, vm, isNumber,tablePropertyName) => {
+    const generalRender = (h, params, vm, isNumber, tableData) => {
         if(vm.modalState.actionState === 'detail'){
           return h('span',params.row[params.column.key])  
         }
@@ -190,7 +223,7 @@
                 },
                 on: {
                     "on-change" (value) {
-                        vm.modalState.model[tablePropertyName][params.index][params.column.key] = value;
+                        tableData[params.index][params.column.key] = value;
                     }
                 }
             });
@@ -203,12 +236,14 @@
                 },
                 on: {
                     "on-blur" (event) {
-                        vm.modalState.model[tablePropertyName][params.index][params.column.key] = event.target.value;
+                        tableData[params.index][params.column.key] = event.target.value;
                     }
                 }
             });
         }
     };
+
+
     export default {
         props: {
             logisticId: Number,
@@ -220,44 +255,44 @@
         },
         data() {
             let _this = this;
-            const validateChannelName = (rule, value, callback) => {
-                if (!value) {
-                    callback(new Error("channelName is required"));
-                } else {
-                    if(_this.modalState.actionState === "edit" && _this.modalState.oldChannelName == value){
-                        callback();
-                        return;
-                    }
-                    LogisticChannelApi.Verify({logisticId:_this.logisticId,channelName:value}).then(function(rep) {
-                        if (rep.data.result) {
-                            callback();
-                        } else {
-                            callback("channelName is exit");
-                        }
-                    });
-                }
-            };
+            // const validateChannelName = (rule, value, callback) => {
+            //     if (!value) {
+            //         callback(new Error("channelName is required"));
+            //     } else {
+            //         if(_this.modalState.actionState === "edit" && _this.modalState.oldChannelName == value){
+            //             callback();
+            //             return;
+            //         }
+            //         LogisticChannelApi.Verify({logisticId:_this.logisticId,channelName:value}).then(function(rep) {
+            //             if (rep.data.result) {
+            //                 callback();
+            //             } else {
+            //                 callback("channelName is exit");
+            //             }
+            //         });
+            //     }
+            // };
             const validateChargeRule = (rule, value, callback) =>{
                 if(_this.modalState.model.way === 0){
-                    if(value === null || value.length === 0)
+                    if(_this.modalState.model.weightFreights === null || _this.modalState.model.weightFreights.length === 0)
                     {
                         callback("weightFreights is required");
                         return;
                     }
-                    var array = value.filter(vl => {
+                    var array = _this.modalState.model.weightFreights.filter(vl => {
                         return vl.stepWeight <=0;
                     });
                     if(array.length > 0){
                         return callback("stepWeight must be more than 0");
                     }
                 }
-                if(_this.modalState.model.way === 1 && (value == null || value.length === 0)){
-                    if(value === null || value.length === 0)
+                if(_this.modalState.model.way === 1){
+                    if(_this.modalState.model.numFreights === null || _this.modalState.model.numFreights.length === 0)
                     {
                         callback("numFreights is required");
                         return;
                     }
-                    var array = value.filter(vl => {
+                    var array = _this.modalState.model.numFreights.filter(vl => {
                         return vl.splitNum <=0;
                     });
                     if(array.length > 0){
@@ -274,19 +309,22 @@
                         key: "channelName",
                         renderHeader: (h, params) => { 
                             return addHeaderRender(h, params, _this, !_this.isImport,function(vm){
-                            vm.modalState.model = {
-                                logisticId: vm.logisticId,
-                                logisticName: vm.logisticName,
-                                weightFreights: [],
-                                numFreights: [],
-                                type: 0,
-                                way: 0,
-                                isActive: true
-                            };
-                            vm.modalState.showModal = true;
-                            vm.modalState.actionState = "create";
-                            vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
-                        }); }
+                                vm.modalState.weightFreightData = [];
+                                vm.modalState.numFreightData = [];
+                                vm.modalState.model = {
+                                    logisticId: vm.logisticId,
+                                    logisticName: vm.logisticName,
+                                    weightFreights: [],
+                                    numFreights: [],
+                                    type: 0,
+                                    way: 0,
+                                    isActive: true
+                                };
+                                vm.modalState.showModal = true;
+                                vm.modalState.actionState = "create";
+                                vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
+                            });
+                        }
                     },
                     {
                         title: this.$t('LogisticChannels.AliasName'),
@@ -330,10 +368,12 @@
                 },
                 modalState: {
                     model: {},
+                    weightFreightData:[],
+                    numFreightData:[],
                     rule: {
-                        channelName: [{ required: true, validator: validateChannelName }],
-                        numFreights: [{validator: validateChargeRule}],
-                        weightFreights: [{validator: validateChargeRule}]
+                        channelName: [{ required: true, trigger: 'ignore'}],
+                        numFreightData: [{validator: validateChargeRule, trigger: 'ignore' }],
+                        weightFreightData: [{validator: validateChargeRule, trigger: 'ignore' }]
                     },
                     title: null,
                     showModal: false,
@@ -342,11 +382,11 @@
                             title: this.$t('Public.Currency'),
                             key: "currency",
                             renderHeader: (h, params) => { return generaladdHeaderRender(h, params, _this, function(vm){
-                                if(vm.modalState.model.weightFreights&&vm.modalState.model.weightFreights.length > 0){
+                                if(vm.modalState.weightFreightData && vm.modalState.weightFreightData.length > 0){
                                     return;
                                 }
-                                vm.modalState.model.weightFreights.push({
-                                    currency: 'RMB',
+                                vm.modalState.weightFreightData.push({
+                                    currency: 'AUD',
                                     unit: 'g',
                                     startingWeight: 0,
                                     endWeight: 1000000,
@@ -355,83 +395,98 @@
                                     costPrice: 0,
                                     price: 0
                                 });
-                                vm.$emit("input", vm.modalState.model.weightFreights);
+                                vm.modalState.model.weightFreights.push({
+                                    currency: 'AUD',
+                                    unit: 'g',
+                                    startingWeight: 0,
+                                    endWeight: 1000000,
+                                    startingPrice: 0,
+                                    stepWeight: 1,
+                                    costPrice: 0,
+                                    price: 0
+                                });
                             }); },
-                            render: (h, params) => generalRender(h, params, _this, false, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, false, _this.modalState.model.weightFreights)
                         },
                         {
                             title: this.$t('Public.Unit'),
                             key: "unit",
-                            render: (h, params) => generalRender(h, params, _this, false, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, false, _this.modalState.model.weightFreights)
                         },
                         {
                             title: this.$t('WeightFreights.StartingWeight'),
                             key: 'startingWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
                         },
-                        {
-                            title: this.$t('WeightFreights.EndWeight'),
-                            key: 'endWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
-                        },
+                        // {
+                        //     title: this.$t('WeightFreights.EndWeight'),
+                        //     key: 'endWeight',
+                        //     render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
+                        // },
                         {
                             title: this.$t('WeightFreights.StartingPrice'),
                             key: 'startingPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
                         },
                         {
                             title: this.$t('WeightFreights.StepWeight'),
                             key: 'stepWeight',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
                         },
-                        {
-                            title: this.$t('WeightFreights.CostPrice'),
-                            key: 'costPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
-                        },
+                        // {
+                        //     title: this.$t('WeightFreights.CostPrice'),
+                        //     key: 'costPrice',
+                        //     render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
+                        // },
                         {
                             title: this.$t('WeightFreights.Price'),
                             key: 'price',
-                            render: (h, params) => generalRender(h, params, _this, true, 'weightFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.weightFreights)
                         }
                     ],
                     numColumns: [{
                             title: this.$t('Public.Currency'),
                             key: "currency",
                             renderHeader: (h,param) => { return generaladdHeaderRender(h, param, _this, function(vm){
-                                if(vm.modalState.model.numFreights&&vm.modalState.model.numFreights.length > 0){
+                                if(vm.modalState.numFreightData&&vm.modalState.numFreightData.length > 0){
                                     return;
                                 }
-                                vm.modalState.model.numFreights.push({
-                                    currency: 'RMB',
+                                vm.modalState.numFreightData.push({
+                                    currency: 'AUD',
                                     unit: 'ea',
                                     splitNum: 1,
                                     firstPrice: 0,
                                     carryOnPrice: 0
                                 });
-                                vm.$emit("input", vm.modalState.model.numFreights);
+                                vm.modalState.model.numFreights.push({
+                                    currency: 'AUD',
+                                    unit: 'ea',
+                                    splitNum: 1,
+                                    firstPrice: 0,
+                                    carryOnPrice: 0
+                                });
                             }); },
-                            render: (h,params) => generalRender(h, params, _this, false, 'numFreights')
+                            render: (h,params) => generalRender(h, params, _this, false, _this.modalState.model.numFreights)
                         },
                         {
                             title: this.$t('Public.Unit'),
                             key: "unit",
-                            render: (h, params) => generalRender(h, params, _this, false, 'numFreights')
+                            render: (h, params) => generalRender(h, params, _this, false, _this.modalState.model.numFreights)
                         },
                         {
                             title: this.$t('NumFreights.SplitNum'),
                             key: 'splitNum',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.numFreights)
                         },
                         {
                             title: this.$t('NumFreights.FirstPrice'),
                             key: 'firstPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.numFreights)
                         },
                         {
                             title: this.$t('NumFreights.CarryOnPrice'),
                             key: 'carryOnPrice',
-                            render: (h, params) => generalRender(h, params, _this, true, 'numFreights')
+                            render: (h, params) => generalRender(h, params, _this, true, _this.modalState.model.numFreights)
                         }
                     ],
                     channelType: this.$store.state.app.enumInformation.channelType,

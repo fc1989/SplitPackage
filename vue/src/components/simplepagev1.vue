@@ -38,7 +38,7 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="modalState.showModal=false">{{$t('Public.Cancel')}}</Button>
+                <Button @click="cancel">{{$t('Public.Cancel')}}</Button>
                 <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
@@ -61,7 +61,7 @@ const rowActionRender = (h, params, vm, actionOption) => {
         },
         on: {
           click: async () => {
-            vm.modalState.model = await vm.getEditModel(params.row);
+            vm.modalState.model = JSON.parse(JSON.stringify(await vm.getEditModel(params.row)));
             vm.modalState.state = "edit";
             vm.modalState.showModal = true;
             vm.modalState.title = vm.$t('Public.Edit') + vm.$t(vm.title);
@@ -78,6 +78,9 @@ const rowActionRender = (h, params, vm, actionOption) => {
         props: {
           type: "error",
           size: "small"
+        },
+        style: {
+          marginRight: "5px"
         },
         on: {
           click: async () => {
@@ -196,10 +199,15 @@ export default {
         if (val) {
             _this.$parent.$emit(_this.modalState.state === 'create' ? 'on-createRow' : 'on-editRow',_this.modalState.model,function(){
                 _this.modalState.showModal = false;
+                _this.$refs.modalForm.resetFields();
                 _this.getpage();
             })
         }
       });
+    },
+    async cancel(){
+      this.modalState.showModal=false;
+      this.$refs.modalForm.resetFields();
     },
     pageChange(page) {
       this.state.currentPage = page;
@@ -253,7 +261,7 @@ export default {
       this.columnsetting.columns.push({
         title: this.$t('Public.Actions'),
         key: "action",
-        width: 150,
+        align: "center",
         render: (h, params) => rowActionRender(h, params, this, this.columnsetting.actionOption)
       });
     }

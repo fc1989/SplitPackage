@@ -27,6 +27,7 @@ namespace SplitPackage.EntityFrameworkCore
         public DbSet<LogisticRelatedItem> LogisticRelatedItem { get; set; }
         public DbSet<ProductSort> ProductSort { get; set; }
         public DbSet<ProductClass> ProductClass { get; set; }
+        public DbSet<OtherSystem> OtherSystems { get; set; }
 
         public SplitPackageDbContext(DbContextOptions<SplitPackageDbContext> options)
             : base(options)

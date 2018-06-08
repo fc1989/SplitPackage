@@ -61,12 +61,12 @@ export default {
       allPermissions: [],
       api: RoleApi,
       newRoleRule: {
-        name: [{ required: true, trigger: "blur" }],
-        displayName: [{ required: true, trigger: "blur" }]
+        name: [{ required: true, trigger: "ignore" }],
+        displayName: [{ required: true, trigger: "ignore" }]
       },
       roleRule: {
-        name: [{ required: true, trigger: "blur" }],
-        displayName: [{ required: true, trigger: "blur" }]
+        name: [{ required: true, trigger: "ignore" }],
+        displayName: [{ required: true, trigger: "ignore" }]
       },
       columnsetting: {
         actionOption: {

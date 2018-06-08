@@ -9,7 +9,7 @@
             <Input v-model="slotProps.searchData.name" :maxlength="50" :placeholder="$t('Public.Name')" style="width:150px"></Input>
         </template>
         <template slot="newform" slot-scope="slotProps">
-            <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName">
+            <FormItem :label="$t('Tenants.TenancyName')" prop="tenancyName" :validateStatus="false">
                 <Input v-model="slotProps.createModel.tenancyName" :maxlength="64" :minlength="2"></Input>
             </FormItem>
             <FormItem :label="$t('Public.Name')" prop="name">
@@ -64,9 +64,9 @@ export default {
       title: "Menu.Pages.Tenants",
       api: TenantApi,
       newtenantRule: {
-        tenancyName: [{ required: true }],
-        name: [{ required: true }],
-        adminEmailAddress: [{ required: true }, { type: "email" }]
+        tenancyName: [{ required: true, trigger: 'ignore' }],
+        name: [{ required: true, trigger: 'ignore' }],
+        adminEmailAddress: [{ required: true, type: "email", trigger: 'ignore' }]
       },
       tenantRule: {
         tenancyName: [{ required: true }],
@@ -126,7 +126,7 @@ export default {
                     },
                     on: {
                       click: () => {
-                        this.$refs.simplepage.editModel = params.row;
+                        this.$refs.simplepage.editModel = JSON.parse(JSON.stringify(params.row));
                         this.$refs.simplepage.showEditModal = true;
                       }
                     }

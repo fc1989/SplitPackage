@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SplitPackage.Authorization.Users;
+using SplitPackage.Cache;
 using SplitPackage.EntityFrameworkCore;
 using SplitPackage.EntityFrameworkCore.Seed.Business;
 using SplitPackage.EntityFrameworkCore.Seed.Host;
@@ -54,6 +55,9 @@ namespace SplitPackage.Tests
             {
                 NormalizeDbContext(context);
             });
+
+            var init = IocManager.Resolve<ManageCache>();
+            init.InitCache();
 
             LoginAsDefaultTenantAdmin();
         }

@@ -71,7 +71,7 @@ export default {
     return {
       title: "Menu.Pages.LogisticRelateds",
       rule: {
-          relatedName: [{ required: true }]
+          relatedName: [{ required: true, trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {

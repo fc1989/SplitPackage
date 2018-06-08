@@ -51,7 +51,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
                         lc.WeightFreights = new List<WeightFreight>()
                         {
                             new WeightFreight(){
-                                Currency = "RMB",
+                                Currency = "AUD",
                                 Unit = "g",
                                 StartingWeight = rule.StartingWeight,
                                 EndWeight = 10000000,

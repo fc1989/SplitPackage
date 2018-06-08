@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SplitPackage.Business;
+using SplitPackage.MultiTenancy;
 using System;
 using System.Collections.Generic;
 
@@ -10,6 +11,33 @@ namespace SplitPackage.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "OtherSystems",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SystemName = table.Column<string>(nullable: false, maxLength : OtherSystem.MaxSystemNameLength),
+                    Certificate = table.Column<string>(nullable: false, maxLength: OtherSystem.MaxCertificateLength),
+                    IsActive = table.Column<bool>(nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OtherSystems", x => x.Id);
+                    table.UniqueConstraint(
+                        name: "UQ_OtherSystems",
+                        columns: x => x.SystemName);
+                });
+
+            migrationBuilder.AddColumn<long>("OtherSystemId", "Tenants", nullable: true);
+
+            migrationBuilder.AddForeignKey("PK_OtherSystems", 
+                "Tenants", 
+                "OtherSystemId", 
+                "OtherSystems", 
+                onDelete: ReferentialAction.SetNull,
+                principalColumn: "Id");
+
             migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
@@ -169,7 +197,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.UniqueConstraint(name: "UQ_LogisticChannels", columns: x => new { x.LogisticId, x.ChannelName });
+                    //table.UniqueConstraint(name: "UQ_LogisticChannels", columns: x => new { x.LogisticId, x.ChannelName });
                 });
 
             migrationBuilder.CreateTable(
@@ -571,6 +599,8 @@ namespace SplitPackage.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(name: "OtherSystems");
+            migrationBuilder.DropForeignKey("PK_OtherSystems", "Tenants");
             migrationBuilder.DropTable(name: "SplitRule_ProductClass");
             migrationBuilder.DropTable(name: "Tenant_LogisticChannel");
             migrationBuilder.DropTable(name: "SplitRules");

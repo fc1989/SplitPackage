@@ -135,8 +135,17 @@ namespace SplitPackage.Business.LogisticChannels
 
             var entity = ObjectMapper.Map<LogisticChannel>(input);
             entity.TenantId = AbpSession.TenantId;
+            if (entity.WeightFreights != null)
+            {
+                entity.WeightFreights.ToList().ForEach(o => o.LogisticChannelBy = entity);
+            }
+            if (entity.NumFreights != null)
+            {
+                entity.NumFreights.ToList().ForEach(o => o.LogisticChannelBy = entity);
+            }
             await this._lcRepository.InsertAsync(entity);
             await CurrentUnitOfWork.SaveChangesAsync();
+            await this._eventBus.TriggerAsync(this.ObjectMapper.Map<CreateChannelEvent>(entity));
             return ObjectMapper.Map<LogisticChannelDto>(entity);
         }
 
@@ -188,10 +197,20 @@ namespace SplitPackage.Business.LogisticChannels
 
             var tenantId = AbpSession.TenantId;
             var entity = await this._lcRepository.GetAll().Include(p=>p.WeightFreights).Include(p=>p.NumFreights).IgnoreQueryFilters()
-                .SingleAsync(o => o.Id == input.Id && !o.IsDeleted);
+                .AsNoTracking().SingleAsync(o => o.Id == input.Id && !o.IsDeleted);
             if (entity.TenantId == tenantId)
             {
-                ObjectMapper.Map(input, entity);
+                entity.Type = input.Type;
+                if (entity.Way != input.Way)
+                {
+                    entity.WeightFreights.ToList().ForEach(o => this._wfRepository.Delete(o));
+                    entity.NumFreights.ToList().ForEach(o => this._nfRepository.Delete(o));
+                    entity.WeightFreights = new List<WeightFreight>();
+                    entity.NumFreights = new List<NumFreight>();
+                }
+                entity.Way = input.Way;
+                entity.ChannelName = input.ChannelName;
+                entity.AliasName = input.AliasName;
                 switch (entity.Way)
                 {
                     case ChargeWay.ChargeByWeight:
@@ -203,10 +222,12 @@ namespace SplitPackage.Business.LogisticChannels
                                 weightRule = this.ObjectMapper.Map<WeightFreight>(item);
                                 weightRule.LogisticChannelBy = entity;
                                 entity.WeightFreights.Add(weightRule);
+                                await this._wfRepository.InsertAsync(weightRule);
                             }
                             else
                             {
                                 this.ObjectMapper.Map<WeightFreightDto, WeightFreight>(item,weightRule);
+                                await this._wfRepository.UpdateAsync(weightRule);
                             }
                         }
                         break;
@@ -219,16 +240,19 @@ namespace SplitPackage.Business.LogisticChannels
                                 numRule = this.ObjectMapper.Map<NumFreight>(item);
                                 numRule.LogisticChannelBy = entity;
                                 entity.NumFreights.Add(numRule);
+                                await this._nfRepository.InsertAsync(numRule);
                             }
                             else
                             {
                                 this.ObjectMapper.Map<NumFreightDto, NumFreight>(item, numRule);
+                                await this._nfRepository.UpdateAsync(numRule);
                             }
                         }
                         break;
                     default:
                         break;
                 }
+                await this._lcRepository.UpdateAsync(entity);
             }
             else
             {
@@ -273,7 +297,7 @@ namespace SplitPackage.Business.LogisticChannels
                 await this._eventBus.TriggerAsync(new TenantModifyImportChannelEvent() {
                     TenantId = tenantId.Value,
                     LogisticId = entity.LogisticId,
-                    ChannelId = entity.Id
+                    LogisticChannelId = entity.Id
                 });
             }
             return ObjectMapper.Map<LogisticChannelDto>(entity);
@@ -434,7 +458,7 @@ namespace SplitPackage.Business.LogisticChannels
                 {
                     TenantId = entity.TenantId,
                     LogisticId = entity.LogisticId,
-                    ChannelId = entity.Id
+                    LogisticChannelId = entity.Id
                 });
             }
             else
@@ -443,7 +467,7 @@ namespace SplitPackage.Business.LogisticChannels
                 {
                     TenantId = entity.TenantId,
                     LogisticId = entity.LogisticId,
-                    ChannelId = entity.Id
+                    LogisticChannelId = entity.Id
                 });
             }
         }

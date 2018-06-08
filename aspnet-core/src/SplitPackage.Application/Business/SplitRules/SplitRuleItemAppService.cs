@@ -19,13 +19,16 @@ namespace SplitPackage.Business.SplitRules
     public class SplitRuleItemAppService : AsyncCrudAppService<SplitRuleProductClass, RuleItemDto, long, SplitRuleItemFilter, CreateRuleItemDto, UpdateRuleItemDto>
     {
         private readonly IRepository<ProductClass, long> _productClassRepository;
+        private readonly IRepository<SplitRule, long> _srRepository;
         private readonly IEventBus _eventBus;
 
         public SplitRuleItemAppService(IRepository<SplitRuleProductClass, long> repository, 
             IRepository<ProductClass, long> productClassRepository,
+            IRepository<SplitRule, long> srRepository,
             IEventBus eventBus) :base(repository)
         {
             this._productClassRepository = productClassRepository;
+            this._srRepository = srRepository;
             this._eventBus = eventBus;
         }
 
@@ -71,10 +74,43 @@ namespace SplitPackage.Business.SplitRules
             {
                 TenantId = AbpSession.TenantId,
                 LogisticId = entity.SplitRuleBy.LogisticChannelBy.LogisticId,
-                ChannelId = entity.SplitRuleBy.LogisticChannelId,
+                LogisticChannelId = entity.SplitRuleBy.LogisticChannelId,
                 SplitRuleId = entity.SplitRuleId,
                 SplitRuleItemId = entity.Id
             });
+        }
+
+        public async override Task<RuleItemDto> Create(CreateRuleItemDto input)
+        {
+            CheckCreatePermission();
+
+            var splitRule = await this._srRepository.GetAll().Include(p => p.LogisticChannelBy)
+                .FirstAsync(o => o.Id == input.SplitRuleId);
+            var entity = MapToEntity(input);
+
+            await Repository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var @event = this.ObjectMapper.Map<CreateSplitRuleItemEvent>(input);
+            @event.TenantId = AbpSession.TenantId;
+            @event.LogisticId = splitRule.LogisticChannelBy.LogisticId;
+            @event.LogisticChannelId = splitRule.LogisticChannelId;
+            await this._eventBus.TriggerAsync(@event);
+            return MapToEntityDto(entity);
+        }
+
+        public async override Task<RuleItemDto> Update(UpdateRuleItemDto input)
+        {
+            CheckUpdatePermission();
+
+            var entity = await this.Repository.GetAll().Include(p=>p.SplitRuleBy).ThenInclude(p=>p.LogisticChannelBy)
+                .FirstAsync(o=>o.Id == input.Id);
+            MapToEntity(input, entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var @event = this.ObjectMapper.Map<ModifySplitRuleItemEvent>(entity);
+            @event.TenantId = AbpSession.TenantId;
+            @event.LogisticId = entity.SplitRuleBy.LogisticChannelBy.LogisticId;
+            @event.LogisticChannelId = entity.SplitRuleBy.LogisticChannelId;
+            return MapToEntityDto(entity);
         }
     }
 }

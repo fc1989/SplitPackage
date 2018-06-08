@@ -10,7 +10,14 @@ namespace SplitPackage.Cache.Dto
     {
         public IList<LogisticCacheDto> OwnLogistics { get; set; }
 
-        public IList<IList<LogisticRelatedOptionCacheDto>> Relateds { get; set; }
+        public IList<LogisticRelatedCacheDto> Relateds { get; set; }
+    }
+
+    public class LogisticRelatedCacheDto
+    {
+        public long RelatedId { get; set; }
+
+        public IList<LogisticRelatedOptionCacheDto> Logistics { get; set; }
     }
 
     public class LogisticRelatedOptionCacheDto

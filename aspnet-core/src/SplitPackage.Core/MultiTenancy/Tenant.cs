@@ -13,6 +13,10 @@ namespace SplitPackage.MultiTenancy
 
         public string ApiSecret { get; set; }
 
+        public long? OtherSystemId { get; set; }
+
+        public OtherSystem OtherSystem { get; set; }
+
         public Tenant()
         {            
         }

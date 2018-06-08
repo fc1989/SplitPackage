@@ -16,17 +16,22 @@ namespace SplitPackage.Cache.Dto
         {
             CreateMap<Logistic, LogisticCacheDto>().ForMember(dest => dest.LogisticChannels, opt => opt.MapFrom(o => o.LogisticChannels));
 
-            CreateMap<SplitRule, SplitRuleCacheDto>();
-
             CreateMap<SplitRuleProductClass, SplitRuleProductClassCacheDto>();
 
-            CreateMap<LogisticChannel, ChannelCacheDto>();
+            CreateMap<CreateLogisticEvent, LogisticCacheDto>();
 
-            CreateMap<LogisticRelated, IList<LogisticRelatedOptionCacheDto>>().ConvertUsing(o => o.Items.Select(oi => new LogisticRelatedOptionCacheDto()
-            {
-                LogisticId = oi.LogisticId,
-                LogisticCode = oi.LogisticBy.LogisticCode
-            }).ToList());
+            CreateMap<CreateChannelEvent, ChannelCacheDto>();
+
+            CreateMap<CreateSplitRuleEvent, SplitRuleCacheDto>();
+
+            CreateMap<LogisticRelated, LogisticRelatedCacheDto>().ConvertUsing(o => new LogisticRelatedCacheDto() {
+                RelatedId = o.Id,
+                Logistics = o.Items.Select(oi=>new LogisticRelatedOptionCacheDto()
+                {
+                    LogisticId = oi.LogisticId,
+                    LogisticCode = oi.LogisticBy.LogisticCode
+                }).ToList()
+            });
 
             CreateMap<WeightFreight, WeightFreightCacheDto>();
 
@@ -37,8 +42,6 @@ namespace SplitPackage.Cache.Dto
             CreateMap<WeightFreightDto, WeightFreightCacheDto>();
 
             CreateMap<ModifyChannelEvent, ChannelCacheDto>();
-
-            CreateMap<SplitRule, SplitRuleCacheDto>();
         }
     }
 }

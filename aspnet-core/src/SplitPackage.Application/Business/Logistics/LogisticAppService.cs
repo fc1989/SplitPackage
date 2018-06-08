@@ -47,6 +47,14 @@ namespace SplitPackage.Business.Logistics
 
             var entity = await this._logic.Create(input,AbpSession.TenantId);
             await CurrentUnitOfWork.SaveChangesAsync();
+            await this._eventBus.TriggerAsync(new CreateLogisticEvent() {
+                Id = entity.Id,
+                CorporationName = entity.CorporationName,
+                CorporationUrl = entity.CorporationUrl,
+                LogoURL = entity.LogoURL,
+                LogisticCode = entity.LogisticCode,
+                TenantId = AbpSession.TenantId
+            });
             return MapToEntityDto(entity);
         }
 

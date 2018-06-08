@@ -18,7 +18,7 @@ using Abp.Events.Bus;
 namespace SplitPackage.Domain.Logistic
 {
     public class Handler : 
-        IAsyncEventHandler<EntityCreatedEventData<Business.Logistic>>,
+        IAsyncEventHandler<CreateLogisticEvent>,
         IAsyncEventHandler<ModifyLogisticEvent>,
         IAsyncEventHandler<TenantModifyImportLogisticEvent>,
         IAsyncEventHandler<StartUseLogisticEvent>,
@@ -26,7 +26,7 @@ namespace SplitPackage.Domain.Logistic
         IAsyncEventHandler<TenantStartUseImportLogisticEvent>,
         IAsyncEventHandler<TenantBanishImportLogisticEvent>,
 
-        IAsyncEventHandler<EntityCreatedEventData<LogisticChannel>>,
+        IAsyncEventHandler<CreateChannelEvent>,
         IAsyncEventHandler<ModifyChannelEvent>,
         IAsyncEventHandler<TenantModifyImportChannelEvent>,
         IAsyncEventHandler<StartUseChannelEvent>,
@@ -35,28 +35,32 @@ namespace SplitPackage.Domain.Logistic
         IAsyncEventHandler<TenantBanishImportChannelEvent>,
         IAsyncEventHandler<TenantImportChannelEvent>,
 
-        IAsyncEventHandler<EntityCreatedEventData<SplitRule>>,
+        IAsyncEventHandler<CreateSplitRuleEvent>,
         IAsyncEventHandler<TenantCreateImportSplitRuleEvent>,
-        IAsyncEventHandler<EntityUpdatedEventData<SplitRule>>,
+        IAsyncEventHandler<ModifyImportSplitRuleEvent>,
         IAsyncEventHandler<TenanModifyImportSplitRuleEvent>,
         IAsyncEventHandler<StartUseSplitRuleEvent>,
         IAsyncEventHandler<TenantStartUseImportSplitRuleEvent>,
         IAsyncEventHandler<BanishSplitRuleEvent>,
         IAsyncEventHandler<TenantBanishImportSplitRuleEvent>,
 
-        IAsyncEventHandler<EntityCreatedEventData<SplitRuleProductClass>>,
+        IAsyncEventHandler<CreateSplitRuleItemEvent>,
         IAsyncEventHandler<TenantCreateImportSplitRuleItemEvent>,
-        IAsyncEventHandler<EntityUpdatedEventData<SplitRuleProductClass>>,
+        IAsyncEventHandler<ModifySplitRuleItemEvent>,
         IAsyncEventHandler<TenanModifyImportSplitRuleItemEvent>,
         IAsyncEventHandler<BanishSplitRuleItemEvent>,
         IAsyncEventHandler<BanishTenantSplitRuleItemEvent>,
+
+        IAsyncEventHandler<CreateLogisticRelation>,
+        IAsyncEventHandler<ModifyLogisticRelation>,
+        IAsyncEventHandler<BanishLogisticRelation>,
 
         ITransientDependency
     {
         private readonly ManageCache _manageCache;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         public IObjectMapper _objectMapper;
-        public IEventBus EventBus;
+        private readonly IEventBus _eventBus;
         private readonly IRepository<Business.Logistic, long> _logisticRepository;
         private readonly IRepository<LogisticChannel, long> _logisticChannelRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tenantLogisticChannelRepository;
@@ -66,6 +70,7 @@ namespace SplitPackage.Domain.Logistic
         public Handler(ManageCache manageCache,
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper objectMapper,
+            IEventBus eventBus,
             IRepository<Business.Logistic, long> logisticRepository,
             IRepository<LogisticChannel, long> logisticChannelRepository,
             IRepository<TenantLogisticChannel, long> tenantLogisticChannelRepository,
@@ -75,7 +80,7 @@ namespace SplitPackage.Domain.Logistic
             this._manageCache = manageCache;
             this._unitOfWorkManager = unitOfWorkManager;
             this._objectMapper = objectMapper;
-            this.EventBus = NullEventBus.Instance;
+            this._eventBus = eventBus;
             this._logisticRepository = logisticRepository;
             this._logisticChannelRepository = logisticChannelRepository;
             this._tenantLogisticChannelRepository = tenantLogisticChannelRepository;
@@ -84,21 +89,16 @@ namespace SplitPackage.Domain.Logistic
         }
 
         #region logistic
-        public async Task HandleEventAsync(EntityCreatedEventData<Business.Logistic> eventData)
+        public virtual async Task HandleEventAsync(CreateLogisticEvent eventData)
         {
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.Entity.TenantId);
-            settingCache.OwnLogistics.Add(new LogisticCacheDto() {
-                Id = eventData.Entity.Id,
-                CorporationName = eventData.Entity.CorporationName,
-                CorporationUrl = eventData.Entity.CorporationUrl,
-                LogoURL = eventData.Entity.LogoURL,
-                LogisticCode = eventData.Entity.LogisticCode,
-                LogisticChannels = new List<ChannelCacheDto>()
-            });
-            await this._manageCache.SetSplitPackageSettingAsync(eventData.Entity.TenantId, settingCache);
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = this._objectMapper.Map<LogisticCacheDto>(eventData);
+            logisticCache.LogisticChannels = new List<ChannelCacheDto>();
+            settingCache.OwnLogistics.Add(logisticCache);
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
         }
 
-        public async Task HandleEventAsync(ModifyLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(ModifyLogisticEvent eventData)
         {
             if (!eventData.IsActive)
             {
@@ -106,7 +106,11 @@ namespace SplitPackage.Domain.Logistic
             }
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var logisticCache = settingCache.OwnLogistics.First(o => o.Id == eventData.Id);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.Id);
+            if (logisticCache == null)
+            {
+                return;
+            }
             logisticCache.CorporationName = eventData.CorporationName;
             logisticCache.CorporationUrl = eventData.CorporationUrl;
             logisticCache.LogoURL = eventData.LogoURL;
@@ -120,7 +124,7 @@ namespace SplitPackage.Domain.Logistic
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantModifyImportLogisticEvent()
+                    await this._eventBus.TriggerAsync(new TenantModifyImportLogisticEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.Id
@@ -129,12 +133,20 @@ namespace SplitPackage.Domain.Logistic
             }
         }
 
-        public async Task HandleEventAsync(TenantModifyImportLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(TenantModifyImportLogisticEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var logisticCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId);
-            var tenantLogisticCache = tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
             tenantLogisticCache.CorporationName = logisticCache.CorporationName;
             tenantLogisticCache.CorporationUrl = logisticCache.CorporationUrl;
             tenantLogisticCache.LogoURL = logisticCache.LogoURL;
@@ -142,7 +154,7 @@ namespace SplitPackage.Domain.Logistic
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(StartUseLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(StartUseLogisticEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
@@ -163,7 +175,7 @@ namespace SplitPackage.Domain.Logistic
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantStartUseImportLogisticEvent() {
+                    await this._eventBus.TriggerAsync(new TenantStartUseImportLogisticEvent() {
                         TenantId = item,
                         LogisticId = eventData.LogisticId
                     });
@@ -171,7 +183,7 @@ namespace SplitPackage.Domain.Logistic
             }
         }
 
-        public async Task HandleEventAsync(TenantStartUseImportLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(TenantStartUseImportLogisticEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
@@ -196,17 +208,26 @@ namespace SplitPackage.Domain.Logistic
                 }
                 return channel;
             });
-            var logisticCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
             logisticCache.LogisticChannels = tenantChannelSet.ToList();
             tenantSettingCache.OwnLogistics.Add(logisticCache);
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(BanishLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(BanishLogisticEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            settingCache.OwnLogistics.Remove(settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId));
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            settingCache.OwnLogistics.Remove(logisticCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated impact other
             if (!eventData.TenantId.HasValue)
@@ -216,7 +237,7 @@ namespace SplitPackage.Domain.Logistic
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantBanishImportLogisticEvent()
+                    await this._eventBus.TriggerAsync(new TenantBanishImportLogisticEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId
@@ -225,23 +246,36 @@ namespace SplitPackage.Domain.Logistic
             }
         }
 
-        public async Task HandleEventAsync(TenantBanishImportLogisticEvent eventData)
+        public virtual async Task HandleEventAsync(TenantBanishImportLogisticEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            settingCache.OwnLogistics.Remove(settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId));
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            settingCache.OwnLogistics.Remove(logisticCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
         }
         #endregion
 
         #region channel
-        public async Task HandleEventAsync(EntityCreatedEventData<LogisticChannel> eventData)
+        public virtual async Task HandleEventAsync(CreateChannelEvent eventData)
         {
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.Entity.TenantId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.Entity.LogisticId).LogisticChannels.Add(this._objectMapper.Map<ChannelCacheDto>(eventData.Entity));
-            await this._manageCache.SetSplitPackageSettingAsync(eventData.Entity.TenantId, settingCache);
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            else
+            {
+                logisticCache.LogisticChannels.Add(this._objectMapper.Map<ChannelCacheDto>(eventData));
+                await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+            }
         }
 
-        public async Task HandleEventAsync(ModifyChannelEvent eventData)
+        public virtual async Task HandleEventAsync(ModifyChannelEvent eventData)
         {
             if (!eventData.IsActive)
             {
@@ -249,7 +283,16 @@ namespace SplitPackage.Domain.Logistic
             }
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var channelCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o => o.Id == eventData.Id);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.Id);
+            if (channelCache == null)
+            {
+                return;
+            }
             this._objectMapper.Map<ModifyChannelEvent, ChannelCacheDto>(eventData, channelCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated import other
@@ -260,23 +303,41 @@ namespace SplitPackage.Domain.Logistic
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantModifyImportChannelEvent()
+                    await this._eventBus.TriggerAsync(new TenantModifyImportChannelEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.Id
+                        LogisticChannelId = eventData.Id
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantModifyImportChannelEvent eventData)
+        public virtual async Task HandleEventAsync(TenantModifyImportChannelEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var channelCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o => o.Id == eventData.ChannelId);
-            var tenantChannelCache = tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o => o.Id == eventData.ChannelId);
-            var importRelated = await this._tenantLogisticChannelRepository.SingleAsync(o => o.TenantId == eventData.TenantId && o.LogisticChannelId == eventData.ChannelId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (tenantChannelCache == null)
+            {
+                return;
+            }
+            var importRelated = await this._tenantLogisticChannelRepository.SingleAsync(o => o.TenantId == eventData.TenantId && o.LogisticChannelId == eventData.LogisticChannelId);
             if (string.IsNullOrEmpty(importRelated.AliasName))
             {
                 tenantChannelCache.AliasName = channelCache.AliasName;
@@ -310,7 +371,7 @@ namespace SplitPackage.Domain.Logistic
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(StartUseChannelEvent eventData)
+        public virtual async Task HandleEventAsync(StartUseChannelEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
@@ -319,35 +380,40 @@ namespace SplitPackage.Domain.Logistic
                 .Include(p => p.NumFreights)
                 .Include(p => p.SplitRules).ThenInclude((SplitRule p) => p.ProductClasses)
                 .IgnoreQueryFilters()
-                .FirstAsync(o => o.TenantId == eventData.TenantId && o.Id == eventData.ChannelId);
+                .FirstAsync(o => o.TenantId == eventData.TenantId && o.Id == eventData.LogisticChannelId);
             var channelCache = this._objectMapper.Map<ChannelCacheDto>(channelData);
-            settingCache.OwnLogistics.First(o=>o.Id == eventData.LogisticId).LogisticChannels.Add(channelCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            logisticCache.LogisticChannels.Add(channelCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //Associated impact other
             if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.ChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantStartUseImportChannelEvent()
+                    await this._eventBus.TriggerAsync(new TenantStartUseImportChannelEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.ChannelId
+                        LogisticChannelId = eventData.LogisticChannelId
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantStartUseImportChannelEvent eventData)
+        public virtual async Task HandleEventAsync(TenantStartUseImportChannelEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
             var importRelated = await this._tenantLogisticChannelRepository.GetAll().IgnoreQueryFilters()
-                .SingleAsync(o => o.LogisticChannelId == eventData.ChannelId && o.TenantId == eventData.TenantId);
-            var channelCache = settingCache.OwnLogistics.SelectMany(oi => oi.LogisticChannels).First(oi => oi.Id == eventData.ChannelId);
+                .SingleAsync(o => o.LogisticChannelId == eventData.LogisticChannelId && o.TenantId == eventData.TenantId);
+            var channelCache = settingCache.OwnLogistics.SelectMany(oi => oi.LogisticChannels).First(oi => oi.Id == eventData.LogisticChannelId);
             if (!string.IsNullOrEmpty(importRelated.AliasName))
             {
                 channelCache.AliasName = importRelated.AliasName;
@@ -362,46 +428,70 @@ namespace SplitPackage.Domain.Logistic
                 channelCache.WeightFreights = information.WeightChargeRules.Select(this._objectMapper.Map<WeightFreightCacheDto>).ToList();
                 channelCache.NumFreights = information.NumChargeRules.Select(this._objectMapper.Map<NumFreightCacheDto>).ToList();
             }
-            tenantSettingCache.OwnLogistics.First(o=>o.Id == eventData.LogisticId).LogisticChannels.Add(channelCache);
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            tenantLogisticCache.LogisticChannels.Add(channelCache);
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(BanishChannelEvent eventData)
+        public virtual async Task HandleEventAsync(BanishChannelEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var channelCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o=>o.Id == eventData.ChannelId);
-            settingCache.OwnLogistics.First(o=>o.Id == eventData.LogisticId).LogisticChannels.Remove(channelCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o=>o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            logisticCache.LogisticChannels.Remove(channelCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated impact other
             if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.ChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantBanishImportChannelEvent()
+                    await this._eventBus.TriggerAsync(new TenantBanishImportChannelEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.ChannelId
+                        LogisticChannelId = eventData.LogisticChannelId
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantBanishImportChannelEvent eventData)
+        public virtual async Task HandleEventAsync(TenantBanishImportChannelEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var channelCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o => o.Id == eventData.ChannelId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.Remove(channelCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            logisticCache.LogisticChannels.Remove(channelCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
         }
 
-        public async Task HandleEventAsync(TenantImportChannelEvent eventData)
+        public virtual async Task HandleEventAsync(TenantImportChannelEvent eventData)
         {
-            var channelsSet = await this._logisticChannelRepository.GetAll().Where(o => eventData.RemoveChannelIds.Union(eventData.AddChannelIds).Contains(o.Id))
+            var channelsSet = await this._logisticChannelRepository.GetAll().IgnoreQueryFilters()
+                .Where(o => eventData.RemoveChannelIds.Union(eventData.AddChannelIds).Contains(o.Id) && !o.IsDeleted)
                 .Select(o=>new {
                     o.LogisticId,
                     ChannelId = o.Id
@@ -411,8 +501,40 @@ namespace SplitPackage.Domain.Logistic
             foreach (var item in eventData.AddChannelIds)
             {
                 var channel = channelsSet.First(o => o.ChannelId == item);
-                var channelCache = settingCache.OwnLogistics.First(o => o.Id == channel.LogisticId).LogisticChannels.First(o => o.Id == channel.ChannelId);
-                tenantSettingCache.OwnLogistics.First(o => o.Id == channel.LogisticId).LogisticChannels.Add(channelCache);
+                var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == channel.LogisticId);
+                if (logisticCache == null)
+                {
+                    return;
+                }
+                var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == channel.ChannelId);
+                if (channelCache == null)
+                {
+                    return;
+                }
+                if (tenantSettingCache == null)
+                {
+                    tenantSettingCache = new SplitPackageSettingCache() {
+                        OwnLogistics = new List<LogisticCacheDto>(),
+                        Relateds = new List<LogisticRelatedCacheDto>()
+                    };
+                }
+                var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == channel.LogisticId);
+                if (tenantLogisticCache == null)
+                {
+                    tenantSettingCache.OwnLogistics.Add(new LogisticCacheDto()
+                    {
+                        Id = logisticCache.Id,
+                        CorporationName = logisticCache.CorporationName,
+                        CorporationUrl = logisticCache.CorporationUrl,
+                        LogoURL = logisticCache.LogoURL,
+                        LogisticCode = logisticCache.LogisticCode,
+                        LogisticChannels = new List<ChannelCacheDto>() { channelCache }
+                    });
+                }
+                else
+                {
+                    tenantLogisticCache.LogisticChannels.Add(channelCache);
+                }
             }
             foreach (var item in eventData.RemoveChannelIds)
             {
@@ -425,101 +547,157 @@ namespace SplitPackage.Domain.Logistic
         #endregion
 
         #region splitrule
-        public async Task HandleEventAsync(EntityCreatedEventData<SplitRule> eventData)
+        public virtual async Task HandleEventAsync(CreateSplitRuleEvent eventData)
         {
             //update cache for myself
-            var splitRule = await this._splitRuleRepository.GetAll()
-                .Where(o => o.Id == eventData.Entity.Id)
-                .Select(o=> new {
-                    TenantId = o.LogisticChannelBy.TenantId,
-                    LogisticId = o.LogisticChannelBy.LogisticId,
-                    LogisticChannelId = o.LogisticChannelId
-                })
-                .FirstAsync();
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(splitRule.TenantId);
-            settingCache.OwnLogistics.First(o => o.Id == splitRule.LogisticId).LogisticChannels
-                .First(o=> o.Id == splitRule.LogisticChannelId).SplitRules
-                .Add(this._objectMapper.Map<SplitRuleCacheDto>(eventData.Entity));
-            await this._manageCache.SetSplitPackageSettingAsync(splitRule.TenantId, settingCache);
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var ChannelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (ChannelCache == null)
+            {
+                return;
+            }
+            ChannelCache.SplitRules.Add(this._objectMapper.Map<SplitRuleCacheDto>(eventData));
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated  import other
-            if (!splitRule.TenantId.HasValue)
+            if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.Entity.LogisticChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantCreateImportSplitRuleEvent()
+                    await this._eventBus.TriggerAsync(new TenantCreateImportSplitRuleEvent()
                     {
                         TenantId = item,
-                        LogisticId = splitRule.LogisticId,
-                        ChannelId = splitRule.LogisticChannelId,
-                        SplitRuleId = eventData.Entity.Id
+                        LogisticId = eventData.LogisticId,
+                        LogisticChannelId = eventData.LogisticChannelId,
+                        SplitRuleId = eventData.Id
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantCreateImportSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(TenantCreateImportSplitRuleEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId);
-            tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.Add(splitRuleCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (tenantChannelCache == null)
+            {
+                return;
+            }
+            tenantChannelCache.SplitRules.Add(splitRuleCache);
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(EntityUpdatedEventData<SplitRule> eventData)
+        public virtual async Task HandleEventAsync(ModifyImportSplitRuleEvent eventData)
         {
             //update cache for myself
-            var logistic = await this._logisticChannelRepository.GetAll().Include(p => p.LogisticBy).Select(o => o.LogisticBy).FirstAsync(o => o.Id == eventData.Entity.LogisticChannelId);
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(logistic.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.First(o => o.Id == logistic.Id).LogisticChannels
-                .First(o => o.Id == eventData.Entity.LogisticChannelId).SplitRules.First(o=>o.Id == eventData.Entity.Id);
-            splitRuleCache.RuleName = eventData.Entity.RuleName;
-            splitRuleCache.MaxPackage = eventData.Entity.MaxPackage;
-            splitRuleCache.MaxWeight = eventData.Entity.MaxWeight;
-            splitRuleCache.MaxTax = eventData.Entity.MaxTax;
-            splitRuleCache.MaxPrice = eventData.Entity.MaxPrice;
-            await this._manageCache.SetSplitPackageSettingAsync(logistic.TenantId, settingCache);
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            splitRuleCache.RuleName = eventData.RuleName;
+            splitRuleCache.MaxPackage = eventData.MaxPackage;
+            splitRuleCache.MaxWeight = eventData.MaxWeight;
+            splitRuleCache.MaxTax = eventData.MaxTax;
+            splitRuleCache.MaxPrice = eventData.MaxPrice;
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated  import other
-            if (!logistic.TenantId.HasValue)
+            if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.Entity.LogisticChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenanModifyImportSplitRuleEvent()
+                    await this._eventBus.TriggerAsync(new TenanModifyImportSplitRuleEvent()
                     {
                         TenantId = item,
-                        LogisticId = logistic.Id,
-                        ChannelId = eventData.Entity.LogisticChannelId,
-                        SplitRuleId = eventData.Entity.Id
+                        LogisticId = eventData.LogisticId,
+                        LogisticChannelId = eventData.LogisticChannelId,
+                        SplitRuleId = eventData.SplitRuleId
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenanModifyImportSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(TenanModifyImportSplitRuleEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId);
-            var tenantSplitRuleCache = tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (tenantChannelCache == null)
+            {
+                return;
+            }
+            var tenantSplitRuleCache = tenantChannelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (tenantSplitRuleCache == null)
+            {
+                return;
+            }
             tenantSplitRuleCache = splitRuleCache;
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(StartUseSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(StartUseSplitRuleEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
@@ -528,217 +706,353 @@ namespace SplitPackage.Domain.Logistic
                 .IgnoreQueryFilters()
                 .FirstAsync(o => o.Id == eventData.SplitRuleId);
             var splitRuleCache = this._objectMapper.Map<SplitRuleCacheDto>(splitRuleData);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o=>o.Id == eventData.ChannelId)
-                .SplitRules.Add(splitRuleCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            channelCache.SplitRules.Add(splitRuleCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //Associated impact other
             if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.ChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantStartUseImportSplitRuleEvent()
+                    await this._eventBus.TriggerAsync(new TenantStartUseImportSplitRuleEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.ChannelId,
+                        LogisticChannelId = eventData.LogisticChannelId,
                         SplitRuleId = eventData.SplitRuleId
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantStartUseImportSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(TenantStartUseImportSplitRuleEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
             var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.SelectMany(oi => oi.LogisticChannels)
-                .First(oi => oi.Id == eventData.ChannelId).SplitRules.First(o=>o.Id == eventData.SplitRuleId);
-            tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels.First(o=>o.Id == eventData.ChannelId)
-                .SplitRules.Add(splitRuleCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o=>o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (tenantChannelCache == null)
+            {
+                return;
+            }
+            tenantChannelCache.SplitRules.Add(splitRuleCache);
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
         }
 
-        public async Task HandleEventAsync(BanishSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(BanishSplitRuleEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels
-                .First(o => o.Id == eventData.ChannelId).SplitRules.First(o => o.Id == eventData.SplitRuleId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels
-                .First(o => o.Id == eventData.ChannelId).SplitRules
-                .Remove(splitRuleCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            channelCache.SplitRules.Remove(splitRuleCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated  import other
             if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.ChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new TenantBanishImportSplitRuleEvent()
+                    await this._eventBus.TriggerAsync(new TenantBanishImportSplitRuleEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.ChannelId,
+                        LogisticChannelId = eventData.LogisticChannelId,
                         SplitRuleId = eventData.SplitRuleId
                     });
                 }
             }
         }
 
-        public async Task HandleEventAsync(TenantBanishImportSplitRuleEvent eventData)
+        public virtual async Task HandleEventAsync(TenantBanishImportSplitRuleEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels
-                .First(o => o.Id == eventData.ChannelId).SplitRules.First(o => o.Id == eventData.SplitRuleId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId).LogisticChannels
-                .First(o => o.Id == eventData.ChannelId).SplitRules
-                .Remove(splitRuleCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            channelCache.SplitRules.Remove(splitRuleCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
         }
         #endregion
 
         #region splitruleitem
-        public async Task HandleEventAsync(EntityCreatedEventData<SplitRuleProductClass> eventData)
-        {
-            //update cache for myself
-            var splitRuleItem = await this._splitRuleProductClassRepository.GetAll()
-                .Where(o => o.Id == eventData.Entity.Id)
-                .Select(o => new
-                {
-                    TenantId = o.SplitRuleBy.LogisticChannelBy.TenantId,
-                    LogisticId = o.SplitRuleBy.LogisticChannelBy.LogisticId,
-                    LogisticChannelId = o.SplitRuleBy.LogisticChannelId,
-                    SplitRuleId = o.SplitRuleId
-                }).FirstAsync();
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(splitRuleItem.TenantId);
-            settingCache.OwnLogistics.First(o => o.Id == splitRuleItem.LogisticId).LogisticChannels
-                .First(o => o.Id == splitRuleItem.LogisticChannelId).SplitRules
-                .First(o=>o.Id == splitRuleItem.SplitRuleId).ProductClasses
-                .Add(this._objectMapper.Map<SplitRuleProductClassCacheDto>(eventData.Entity));
-            await this._manageCache.SetSplitPackageSettingAsync(splitRuleItem.TenantId, settingCache);
-            //associated  import other
-            if (!splitRuleItem.TenantId.HasValue)
-            {
-                var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == splitRuleItem.LogisticChannelId)
-                    .Select(o => o.TenantId).Distinct().ToListAsync();
-                foreach (var item in importTenantId)
-                {
-                    await this.EventBus.TriggerAsync(new TenantCreateImportSplitRuleItemEvent()
-                    {
-                        TenantId = item,
-                        LogisticId = splitRuleItem.LogisticId,
-                        ChannelId = splitRuleItem.LogisticChannelId,
-                        SplitRuleId = splitRuleItem.SplitRuleId,
-                        SplitRuleItemId = eventData.Entity.Id
-                    });
-                }
-            }
-        }
-
-        public async Task HandleEventAsync(TenantCreateImportSplitRuleItemEvent eventData)
-        {
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
-            var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleItemCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.First(o=>o.Id == eventData.SplitRuleItemId);
-            tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.Add(splitRuleItemCache);
-            await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
-        }
-
-        public async Task HandleEventAsync(EntityUpdatedEventData<SplitRuleProductClass> eventData)
-        {
-            //update cache for myself
-            var splitRuleItem = await this._splitRuleProductClassRepository.GetAll()
-                .Where(o => o.Id == eventData.Entity.Id)
-                .Select(o => new
-                {
-                    TenantId = o.SplitRuleBy.LogisticChannelBy.TenantId,
-                    LogisticId = o.SplitRuleBy.LogisticChannelBy.LogisticId,
-                    LogisticChannelId = o.SplitRuleBy.LogisticChannelId,
-                    SplitRuleId = o.SplitRuleId
-                }).FirstAsync();
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(splitRuleItem.TenantId);
-            var splitRuleItemCache = settingCache.OwnLogistics.First(o => o.Id == splitRuleItem.LogisticId)
-                .LogisticChannels.First(o => o.Id == splitRuleItem.LogisticChannelId)
-                .SplitRules.First(o => o.Id == splitRuleItem.SplitRuleId)
-                .ProductClasses.First(o=>o.Id == eventData.Entity.Id);
-            splitRuleItemCache.PTId = eventData.Entity.PTId;
-            splitRuleItemCache.MinNum = eventData.Entity.MinNum;
-            splitRuleItemCache.MaxNum = eventData.Entity.MaxNum;
-            await this._manageCache.SetSplitPackageSettingAsync(splitRuleItem.TenantId, settingCache);
-            //associated  import other
-            if (!splitRuleItem.TenantId.HasValue)
-            {
-                var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == splitRuleItem.LogisticChannelId)
-                    .Select(o => o.TenantId).Distinct().ToListAsync();
-                foreach (var item in importTenantId)
-                {
-                    await this.EventBus.TriggerAsync(new TenanModifyImportSplitRuleItemEvent()
-                    {
-                        TenantId = item,
-                        LogisticId = splitRuleItem.LogisticId,
-                        ChannelId = splitRuleItem.LogisticChannelId,
-                        SplitRuleId = splitRuleItem.SplitRuleId,
-                        SplitRuleItemId = eventData.Entity.Id
-                    });
-                }
-            }
-        }
-
-        public async Task HandleEventAsync(TenanModifyImportSplitRuleItemEvent eventData)
-        {
-            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
-            var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleItemCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.First(o => o.Id == eventData.SplitRuleItemId);
-            var tenantSplitRuleItemCache = tenantSettingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.First(o => o.Id == eventData.SplitRuleItemId);
-            tenantSplitRuleItemCache = splitRuleItemCache;
-            await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
-        }
-
-        public async Task HandleEventAsync(BanishSplitRuleItemEvent eventData)
+        public virtual async Task HandleEventAsync(CreateSplitRuleItemEvent eventData)
         {
             //update cache for myself
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleItemCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.First(o => o.Id == eventData.SplitRuleItemId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.Remove(splitRuleItemCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            splitRuleCache.ProductClasses.Add(this._objectMapper.Map<SplitRuleProductClassCacheDto>(eventData));
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
             //associated  import other
             if (!eventData.TenantId.HasValue)
             {
                 var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
-                    .Where(o => o.LogisticChannelId == eventData.ChannelId)
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
                     .Select(o => o.TenantId).Distinct().ToListAsync();
                 foreach (var item in importTenantId)
                 {
-                    await this.EventBus.TriggerAsync(new BanishTenantSplitRuleItemEvent()
+                    await this._eventBus.TriggerAsync(new TenantCreateImportSplitRuleItemEvent()
                     {
                         TenantId = item,
                         LogisticId = eventData.LogisticId,
-                        ChannelId = eventData.ChannelId,
+                        LogisticChannelId = eventData.LogisticChannelId,
+                        SplitRuleId = eventData.SplitRuleId,
+                        SplitRuleItemId = eventData.Id
+                    });
+                }
+            }
+        }
+
+        public virtual async Task HandleEventAsync(TenantCreateImportSplitRuleItemEvent eventData)
+        {
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
+            var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var splitRuleItemCache = splitRuleCache.ProductClasses.FirstOrDefault(o=>o.Id == eventData.SplitRuleItemId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var tenantSplitRuleCache = tenantChannelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (tenantSplitRuleCache == null)
+            {
+                return;
+            }
+            tenantSplitRuleCache.ProductClasses.Add(splitRuleItemCache);
+            await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
+        }
+
+        public virtual async Task HandleEventAsync(ModifySplitRuleItemEvent eventData)
+        {
+            //update cache for myself
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var splitRuleItemCache = splitRuleCache.ProductClasses.FirstOrDefault(o => o.Id == eventData.Id);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            splitRuleItemCache.PTId = eventData.PTId;
+            splitRuleItemCache.MinNum = eventData.MinNum;
+            splitRuleItemCache.MaxNum = eventData.MaxNum;
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+            //associated  import other
+            if (!eventData.TenantId.HasValue)
+            {
+                var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
+                    .Select(o => o.TenantId).Distinct().ToListAsync();
+                foreach (var item in importTenantId)
+                {
+                    await this._eventBus.TriggerAsync(new TenanModifyImportSplitRuleItemEvent()
+                    {
+                        TenantId = item,
+                        LogisticId = eventData.LogisticId,
+                        LogisticChannelId = eventData.LogisticChannelId,
+                        SplitRuleId = eventData.SplitRuleId,
+                        SplitRuleItemId = eventData.Id
+                    });
+                }
+            }
+        }
+
+        public virtual async Task HandleEventAsync(TenanModifyImportSplitRuleItemEvent eventData)
+        {
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(null);
+            var tenantSettingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var splitRuleItemCache = splitRuleCache.ProductClasses.FirstOrDefault(o => o.Id == eventData.SplitRuleItemId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var tenantLogisticCache = tenantSettingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (tenantLogisticCache == null)
+            {
+                return;
+            }
+            var tenantChannelCache = tenantLogisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (tenantChannelCache == null)
+            {
+                return;
+            }
+            var tenantSplitRuleCache = tenantChannelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (tenantSplitRuleCache == null)
+            {
+                return;
+            }
+            var tenantSplitRuleItemCache = tenantSplitRuleCache.ProductClasses.FirstOrDefault(o => o.Id == eventData.SplitRuleItemId);
+            if (tenantSplitRuleItemCache == null)
+            {
+                return;
+            }
+            tenantSplitRuleItemCache = splitRuleItemCache;
+            await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
+        }
+
+        public virtual async Task HandleEventAsync(BanishSplitRuleItemEvent eventData)
+        {
+            //update cache for myself
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var splitRuleItemCache = splitRuleCache.ProductClasses.FirstOrDefault(o => o.Id == eventData.SplitRuleItemId);
+            if (splitRuleItemCache == null)
+            {
+                return;
+            }
+            splitRuleCache.ProductClasses.Remove(splitRuleItemCache);
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+            //associated  import other
+            if (!eventData.TenantId.HasValue)
+            {
+                var importTenantId = await this._tenantLogisticChannelRepository.GetAll()
+                    .Where(o => o.LogisticChannelId == eventData.LogisticChannelId)
+                    .Select(o => o.TenantId).Distinct().ToListAsync();
+                foreach (var item in importTenantId)
+                {
+                    await this._eventBus.TriggerAsync(new BanishTenantSplitRuleItemEvent()
+                    {
+                        TenantId = item,
+                        LogisticId = eventData.LogisticId,
+                        LogisticChannelId = eventData.LogisticChannelId,
                         SplitRuleId = eventData.SplitRuleId,
                         SplitRuleItemId = eventData.SplitRuleItemId
                     });
@@ -746,17 +1060,75 @@ namespace SplitPackage.Domain.Logistic
             }
         }
 
-        public async Task HandleEventAsync(BanishTenantSplitRuleItemEvent eventData)
+        public virtual async Task HandleEventAsync(BanishTenantSplitRuleItemEvent eventData)
         {
             var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
-            var splitRuleItemCache = settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.First(o => o.Id == eventData.SplitRuleItemId);
-            settingCache.OwnLogistics.First(o => o.Id == eventData.LogisticId)
-                .LogisticChannels.First(o => o.Id == eventData.ChannelId)
-                .SplitRules.First(o => o.Id == eventData.SplitRuleId)
-                .ProductClasses.Remove(splitRuleItemCache);
+            var logisticCache = settingCache.OwnLogistics.FirstOrDefault(o => o.Id == eventData.LogisticId);
+            if (logisticCache == null)
+            {
+                return;
+            }
+            var channelCache = logisticCache.LogisticChannels.FirstOrDefault(o => o.Id == eventData.LogisticChannelId);
+            if (channelCache == null)
+            {
+                return;
+            }
+            var splitRuleCache = channelCache.SplitRules.FirstOrDefault(o => o.Id == eventData.SplitRuleId);
+            if (splitRuleCache == null)
+            {
+                return;
+            }
+            var splitRuleItemCache = splitRuleCache.ProductClasses.FirstOrDefault(o => o.Id == eventData.SplitRuleItemId);
+            if (splitRuleItemCache == null)
+            {
+                return;
+            }
+            splitRuleCache.ProductClasses.Remove(splitRuleItemCache);
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+        }
+        #endregion
+
+        #region logisticrelation
+        public async Task HandleEventAsync(CreateLogisticRelation eventData)
+        {
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var relationLogistics = this._logisticRepository.GetAll().IgnoreQueryFilters().Where(o => eventData.LogisticIds.Contains(o.Id)).Select(o => new LogisticRelatedOptionCacheDto()
+            {
+                LogisticId = o.Id,
+                LogisticCode = o.LogisticCode
+            }).ToList();
+            settingCache.Relateds.Add(new LogisticRelatedCacheDto() {
+                RelatedId = eventData.RelationId,
+                Logistics = relationLogistics
+            });
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+        }
+
+        public async Task HandleEventAsync(ModifyLogisticRelation eventData)
+        {
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticRelationCache = settingCache.Relateds.First(o => o.RelatedId == eventData.RelationId);
+            if (eventData.AddLogisticIds != null && eventData.AddLogisticIds.Count > 0)
+            {
+                var relationLogistics = this._logisticRepository.GetAll().IgnoreQueryFilters().Where(o => eventData.AddLogisticIds.Contains(o.Id)).Select(o => new LogisticRelatedOptionCacheDto()
+                {
+                    LogisticId = o.Id,
+                    LogisticCode = o.LogisticCode
+                }).ToList();
+                logisticRelationCache.Logistics = logisticRelationCache.Logistics.Union(relationLogistics).ToList();
+            }
+            if (eventData.RemoveLogisticIds != null && eventData.RemoveLogisticIds.Count > 0)
+            {
+                logisticRelationCache.Logistics = logisticRelationCache.Logistics.Where(o => !eventData.RemoveLogisticIds.Contains(o.LogisticId)).ToList();
+            }
+            await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
+        }
+
+        public async Task HandleEventAsync(BanishLogisticRelation eventData)
+        {
+            var settingCache = await this._manageCache.GetSplitPackageSettingAsync(eventData.TenantId);
+            var logisticRelationCache = settingCache.Relateds.First(o => o.RelatedId == eventData.RelationId);
+            settingCache.Relateds.Remove(logisticRelationCache);
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);
         }
         #endregion

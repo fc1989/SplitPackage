@@ -94,7 +94,7 @@ namespace SplitPackage.Cache
                 splitPackageSettingCache.Set("host", new SplitPackageSettingCache()
                 {
                     OwnLogistics = hostLogistics,
-                    Relateds = logisticRelatedQuery.IgnoreQueryFilters().Where(o => o.TenantId == null).Select(this._objectMapper.Map<IList<LogisticRelatedOptionCacheDto>>).ToList()
+                    Relateds = logisticRelatedQuery.IgnoreQueryFilters().Where(o => o.TenantId == null).Select(this._objectMapper.Map<LogisticRelatedCacheDto>).ToList()
                 });
                 foreach (var item in _tenantRepository.GetAll().Where(o => o.IsActive).ToList())
                 {
@@ -116,7 +116,11 @@ namespace SplitPackage.Cache
                             LogisticCode = o.Key.LogisticCode,
                         };
                         result.LogisticChannels = o.Select(oi => {
-                            var c = importChannls.Where(oii => oi.LogisticChannelId == oii.Id).First();
+                            var c = importChannls.Where(oii => oi.LogisticChannelId == oii.Id).FirstOrDefault();
+                            if (c == null)
+                            {
+                                return null;
+                            }
                             if (!string.IsNullOrEmpty(oi.AliasName))
                             {
                                 c.AliasName = oi.AliasName;
@@ -132,11 +136,11 @@ namespace SplitPackage.Cache
                                 c.NumFreights = information.NumChargeRules.Select(this._objectMapper.Map<NumFreightCacheDto>).ToList();
                             }
                             return c;
-                        }).ToList();
+                        }).Where(oi=>oi!=null).ToList();
                         return result;
                     });
                     ownLogistics.AddRange(importSet);
-                    var relateds = logisticRelatedQuery.IgnoreQueryFilters().Where(o => o.TenantId == item.Id).Select(this._objectMapper.Map<IList<LogisticRelatedOptionCacheDto>>).ToList();
+                    var relateds = logisticRelatedQuery.IgnoreQueryFilters().Where(o => o.TenantId == item.Id).Select(this._objectMapper.Map<LogisticRelatedCacheDto>).ToList();
                     if (ownLogistics.Count > 0)
                     {
                         splitPackageSettingCache.Set(item.Id.ToString(), new SplitPackageSettingCache()

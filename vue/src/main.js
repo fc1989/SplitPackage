@@ -44,6 +44,11 @@ util.ajax.get('/AbpUserConfiguration/GetAll').then(result => {
 
             this.$store.commit('setTagsList', tagsList);
             this.$store.commit('session/setTenantId');
+            abp.ajax.defaultError = {
+                details: this.$t("Public.ServerErrorPoint"),
+                message: this.$t("Public.ServerErrorPoint")
+            };
+
             abp.message.info = (message, title) => {
                 this.$Modal.info({
                     title: title,

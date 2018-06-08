@@ -127,10 +127,13 @@ namespace SplitPackage.Tests.Split
             request.logistics = new List<string> { "123", "1" };
             result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal("指定物流商:123,1不存在", result.Item1);
-            //无效的PTId
             request.ProList.ForEach(o => { o.PTId = "0"; });
             result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("不存在PTId:0", result.Item1);
+            Assert.Equal("指定物流商:123,1不存在", result.Item1);
+            //无效的PTId
+            request.logistics = new List<string> { "AOLAU EXPRESS" };
+            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
+            Assert.Equal("PTId:0无对应规则", result.Item1);
         }
 
         [Fact]

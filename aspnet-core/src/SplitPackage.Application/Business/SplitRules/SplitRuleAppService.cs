@@ -74,6 +74,61 @@ namespace SplitPackage.Business.SplitRules
             return query.Include(p => p.LogisticChannelBy).ThenInclude((LogisticChannel p) => p.LogisticBy);
         }
 
+        public async override Task<SplitRuleDto> Create(CreateSplitRuleDto input)
+        {
+            CheckCreatePermission();
+
+            var channel = await this._lcRepository.SingleAsync(o=> o.Id == input.LogisticChannelId);
+
+            var entity = MapToEntity(input);
+
+            await Repository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var @event = this.ObjectMapper.Map<CreateSplitRuleEvent>(entity);
+            @event.LogisticId = channel.LogisticId;
+            @event.TenantId = AbpSession.TenantId;
+            await this._eventBus.TriggerAsync(@event);
+            return MapToEntityDto(entity);
+        }
+
+        public async override Task<SplitRuleDto> Get(EntityDto<long> input)
+        {
+            CheckGetPermission();
+
+            var entity = await GetEntityByIdAsync(input.Id);
+            return MapToEntityDto(entity);
+        }
+
+        protected async override Task<SplitRule> GetEntityByIdAsync(long id)
+        {
+            return await Repository.GetAll().Include(p=>p.LogisticChannelBy).SingleAsync(o=>o.Id == id);
+        }
+
+        public async override Task<SplitRuleDto> Update(UpdateSplitRuleDto input)
+        {
+            CheckUpdatePermission();
+
+            var entity = await this.Repository.GetAll().Include(p => p.LogisticChannelBy)
+                .SingleAsync(o => o.Id == input.Id);
+
+            MapToEntity(input, entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await this._eventBus.TriggerAsync(new ModifyImportSplitRuleEvent()
+            {
+                TenantId = AbpSession.TenantId,
+                LogisticId = entity.LogisticChannelBy.LogisticId,
+                LogisticChannelId = entity.LogisticChannelId,
+                SplitRuleId = entity.Id,
+                RuleName = input.RuleName,
+                MaxPackage = input.MaxPackage,
+                MaxWeight = input.MaxWeight,
+                MaxTax = input.MaxTax,
+                MaxPrice = input.MaxPrice
+            });
+            return MapToEntityDto(entity);
+        }
+
         public async override Task Delete(EntityDto<long> input)
         {
             CheckDeletePermission();
@@ -86,7 +141,7 @@ namespace SplitPackage.Business.SplitRules
             {
                 TenantId = AbpSession.TenantId,
                 LogisticId = entity.LogisticChannelBy.LogisticId,
-                ChannelId = entity.LogisticChannelId,
+                LogisticChannelId = entity.LogisticChannelId,
                 SplitRuleId = entity.Id
             });
         }
@@ -109,7 +164,7 @@ namespace SplitPackage.Business.SplitRules
                 {
                     TenantId = AbpSession.TenantId,
                     LogisticId = entity.LogisticChannelBy.LogisticId,
-                    ChannelId = entity.LogisticChannelId,
+                    LogisticChannelId = entity.LogisticChannelId,
                     SplitRuleId = entity.Id
                 });
             }
@@ -119,7 +174,7 @@ namespace SplitPackage.Business.SplitRules
                 {
                     TenantId = AbpSession.TenantId,
                     LogisticId = entity.LogisticChannelBy.LogisticId,
-                    ChannelId = entity.LogisticChannelId,
+                    LogisticChannelId = entity.LogisticChannelId,
                     SplitRuleId = entity.Id
                 });
             }

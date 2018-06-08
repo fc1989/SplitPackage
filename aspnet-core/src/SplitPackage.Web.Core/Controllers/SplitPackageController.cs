@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace SplitPackage.Controllers
 {
     [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
-    [Route("api/[controller]"), AbpAuthorize]
+    [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "open")]
     public class SplitPackageController : SplitPackageControllerBase
     {
@@ -30,7 +30,7 @@ namespace SplitPackage.Controllers
             this._SplitAppService = splitAppService;
         }
 
-        [HttpPost, Route("Split")]
+        [HttpPost, Route("Split"), AbpAuthorize]
         public async Task<JsonResult> Split([FromBody]SplitRequest request)
         {
             var result = await this._SplitAppService.Split(request, AbpSession.TenantId);
@@ -52,7 +52,7 @@ namespace SplitPackage.Controllers
             return new JsonResult(new ResultMessage<SplitedOrder>((int)ResultCode.Success, ResultConfig.Configs[ResultCode.Success], result.Item2));
         }
 
-        [HttpPost, Route("GetLogisticsList")]
+        [HttpPost, Route("GetLogisticsList"), AbpAuthorize]
         public async Task<JsonResult> GetLogisticsList()
         {
             var result = await this._SplitAppService.GetLogisticsList(AbpSession.TenantId);
@@ -62,24 +62,8 @@ namespace SplitPackage.Controllers
             }
             return new JsonResult(new ResultMessage<List<LogisticsModel>>((int)ResultCode.Success, ResultConfig.Configs[ResultCode.Success], result.Item2));
         }
-    }
 
-    /// <summary>
-    /// 妈的,action竟然AllowAnonymous特性没用
-    /// </summary>
-    [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
-    [Route("api/[controller]"), AllowAnonymous]
-    [ApiExplorerSettings(GroupName = "open")]
-    public class CommonController : SplitPackageControllerBase
-    {
-        private readonly ISplitService _SplitAppService;
-
-        public CommonController(ISplitService splitAppService)
-        {
-            this._SplitAppService = splitAppService;
-        }
-
-        [HttpPost, Route("api/SplitPackage/ProductClass")]
+        [HttpPost, Route("ProductClass"), AbpAllowAnonymous]
         public async Task<List<ProductSortSimpleDto1>> GetProductClass()
         {
             return await this._SplitAppService.GetProductClass();

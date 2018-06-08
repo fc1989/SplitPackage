@@ -14,7 +14,7 @@ const package = require('../package.json');
 fs.open('./build/env.js', 'w', function(err, fd) {
     const buf = "export default {\
         env: 'production',\
-        remoteServiceBaseUrl: 'http://split.gvt861.com:8070/'\
+        remoteServiceBaseUrl: 'http://192.168.1.225:8070/'\
     }";
     fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) {});
 });
@@ -72,21 +72,24 @@ module.exports = merge(webpackBaseConfig, {
             {
                 from:'node_modules/abp-web-resources/abp/framework/scripts/abp.js',
                 to:'abp'
-            },{
+            },
+            {
                 from:'node_modules/jquery/dist/jquery.min.js'
             },
-            {
-                from:'node_modules/signalr/jquery.signalR.min.js'
-            },
-            {
-                from:'node_modules/@aspnet/signalr/dist/browser/signalr.min.js'
-            },{
-                from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr.js',
-                to:'abp'
-            },{
-                from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js',
-                to:'abp'
-            },
+            // {
+            //     from:'node_modules/signalr/jquery.signalR.min.js'
+            // },
+            // {
+            //     from:'node_modules/@aspnet/signalr/dist/browser/signalr.min.js'
+            // },
+            // {
+            //     from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr.js',
+            //     to:'abp'
+            // },
+            // {
+            //     from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js',
+            //     to:'abp'
+            // },
             {
                 from:'node_modules/abp-web-resources/Abp/Framework/scripts/libs/abp.jquery.js',
                 to:'abp'

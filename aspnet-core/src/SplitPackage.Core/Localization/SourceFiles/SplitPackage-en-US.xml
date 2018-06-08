@@ -95,8 +95,8 @@
     <text name="LogisticRelateds" value="LogisticRelateds"></text>
     <text name="Simulator" value ="Simulator"></text>
     
-    <text name="UnPower">No right to do</text>
-    <text name="ChargeByWeight">ChargeByWeight</text>
-    <text name="ChargeByNum">ChargeByNum</text>
+    <text name="UnPower" value="No right to do"></text>
+    <text name="ChargeByWeight" value ="ChargeByWeight"></text>
+    <text name="ChargeByNum" value ="ChargeByNum"></text>
   </texts>
 </localizationDictionary>

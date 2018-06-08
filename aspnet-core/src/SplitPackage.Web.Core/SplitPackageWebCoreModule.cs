@@ -22,6 +22,7 @@ using Abp.AspNetCore.SignalR;
 namespace SplitPackage
 {
     [DependsOn(
+         typeof(SplitPackageAppliactionPrepareModule),
          typeof(SplitPackageApplicationModule),
          typeof(SplitPackageEntityFrameworkModule),
          typeof(AbpAspNetCoreModule)

@@ -22,13 +22,13 @@
           <FormItem :label="$t('SplitRules.MaxPackage')" prop="maxPackage">
               <Input-number v-model.number="slotProps.model.maxPackage" style="width:100%"></Input-number>
           </FormItem>
-          <FormItem :label="$t('SplitRules.MaxWeight')" prop="maxWeight">
+          <FormItem :label="$t('SplitRules.MaxWeight') + '(g)'" prop="maxWeight">
               <Input-number v-model.number="slotProps.model.maxWeight" style="width:100%"></Input-number>
           </FormItem>
-          <FormItem :label="$t('SplitRules.MaxTax')" prop="maxTax">
+          <FormItem :label="$t('SplitRules.MaxTax') + '(AUD)'" prop="maxTax">
               <Input-number v-model.number="slotProps.model.maxTax" style="width:100%"></Input-number>
           </FormItem>
-          <FormItem :label="$t('SplitRules.MaxPrice')" prop="maxPrice">
+          <FormItem :label="$t('SplitRules.MaxPrice') + '(AUD)'" prop="maxPrice">
               <Input-number v-model.number="slotProps.model.maxPrice" style="width:100%"></Input-number>
           </FormItem>
             <FormItem v-if="showSpecified">
@@ -94,11 +94,11 @@ export default {
     return {
       title: "Menu.Pages.SplitRules",
       rule: {
-        logisticChannelId: [{ required: true, validator:validateLogisticChannelId }],
-        maxPackage: [{ required: true }],
-        maxWeight: [{ required: true }],
-        maxTax: [{ required: true }],
-        maxPrice: [{ required: true }]
+        logisticChannelId: [{ required: true, validator:validateLogisticChannelId, trigger: 'ignore' }],
+        maxPackage: [{ required: true, trigger: 'ignore' }],
+        maxWeight: [{ required: true, trigger: 'ignore' }],
+        maxTax: [{ required: true, trigger: 'ignore' }],
+        maxPrice: [{ required: true, trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {
@@ -149,22 +149,27 @@ export default {
           },
           {
             title: this.$t('SplitRules.MaxPackage'),
+            width: 100,
             key: "maxPackage"
           },
           {
-            title: this.$t('SplitRules.MaxWeight'),
+            title: this.$t('SplitRules.MaxWeight') + "(g)",
+            width: 120,
             key: "maxWeight"
           },
           {
-            title: this.$t('SplitRules.MaxTax'),
+            title: this.$t('SplitRules.MaxTax') + "(AUD)",
+            width: 120,
             key: "maxTax"
           },
           {
-            title: this.$t('SplitRules.MaxPrice'),
+            title: this.$t('SplitRules.MaxPrice') + "(AUD)",
+            width: 120,
             key: "maxPrice"
           },
           {
             title: this.$t('Public.IsActive'),
+            width: 100,
             render: (h, params) => {
               return h("Checkbox", {
                 props: {

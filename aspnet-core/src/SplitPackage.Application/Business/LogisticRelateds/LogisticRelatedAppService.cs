@@ -8,6 +8,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
+using Abp.Events.Bus;
+using SplitPackage.Domain.Logistic;
 
 namespace SplitPackage.Business.LogisticRelateds
 {
@@ -15,9 +17,13 @@ namespace SplitPackage.Business.LogisticRelateds
     {
         private readonly IRepository<LogisticRelatedItem, long> _lriRepository;
 
-        public LogisticRelatedAppService(IRepository<LogisticRelated, long> repository, IRepository<LogisticRelatedItem, long> lriRepository) : base(repository)
+        private readonly IEventBus _eventBus;
+
+        public LogisticRelatedAppService(IRepository<LogisticRelated, long> repository, IRepository<LogisticRelatedItem, long> lriRepository,
+            IEventBus eventBus) : base(repository)
         {
             this._lriRepository = lriRepository;
+            this._eventBus = eventBus;
         }
 
         protected override IQueryable<LogisticRelated> CreateFilteredQuery(LogisticRelatedSearchFilter input)
@@ -39,7 +45,12 @@ namespace SplitPackage.Business.LogisticRelateds
                 });
             }
             await CurrentUnitOfWork.SaveChangesAsync();
-
+            await this._eventBus.TriggerAsync(new CreateLogisticRelation()
+            {
+                TenantId = AbpSession.TenantId,
+                RelationId = id,
+                LogisticIds = input.LogisticIds
+            });
             return MapToEntityDto(entity);
         }
 
@@ -65,8 +76,25 @@ namespace SplitPackage.Business.LogisticRelateds
                 await this._lriRepository.DeleteAsync(item);
             }
             await CurrentUnitOfWork.SaveChangesAsync();
-
+            await this._eventBus.TriggerAsync(new ModifyLogisticRelation()
+            {
+                TenantId = AbpSession.TenantId,
+                RelationId = input.Id,
+                AddLogisticIds = addSet.ToList(),
+                RemoveLogisticIds = deleteSet.Select(o=>o.LogisticId).ToList()
+            });
             return MapToEntityDto(entity);
+        }
+
+        public async override Task Delete(EntityDto<long> input)
+        {
+            CheckDeletePermission();
+            var entity = await this.Repository.SingleAsync(o=>o.Id == input.Id);
+            await Repository.DeleteAsync(entity);
+            await this._eventBus.TriggerAsync(new BanishLogisticRelation() {
+                TenantId = AbpSession.TenantId,
+                RelationId = input.Id
+            });
         }
     }
 }

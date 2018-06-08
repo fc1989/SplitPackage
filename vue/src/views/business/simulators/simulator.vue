@@ -15,7 +15,7 @@
             <Col span="12">
                 <Card>
                     <p slot="title">{{$t('Simulator.OrderSettings')}}</p>
-                    <Form ref="splitRequestForm" :model="splitRequest" :rules="splitRequestRule" label-position="left" :label-width="60">
+                    <Form ref="splitRequestForm" :model="splitRequest" :rules="splitRequestRule" label-position="left" :label-width="70">
                         <Row>
                             <FormItem :label="$t('Simulator.SplitType')" prop="splitType">
                                 <Select v-model="splitRequest.splitType">
@@ -59,7 +59,7 @@
                                 <FormItem :label="'SkuNo'" prop="skuNo">
                                     <Input v-model="modalState.model.skuNo"></Input>
                                 </FormItem>
-                                <FormItem :label="'PTId'" prop="cascaderValue">
+                                <FormItem :label="$t('Menu.Pages.ProductClasses')" prop="cascaderValue">
                                     <Cascader :data="cascaderData" v-model="modalState.model.cascaderValue"  @on-change="cascaderChange"></Cascader>
                                 </FormItem>
                                 <FormItem :label="$t('Simulator.Quantity')" prop="quantity">
@@ -89,7 +89,7 @@
                                 <Row>
                                     <Col span="12">
                                         <FormItem :label="$t('Simulator.LogisticsCost')">
-                                            {{order.logisticsCost}}
+                                            {{order.logisticsCost + "AUD"}}
                                         </FormItem>
                                     </Col>
                                     <Col span="12">
@@ -101,7 +101,7 @@
                                 <Row>
                                     <Col span="12">
                                         <FormItem :label="$t('Simulator.LogisticsUnitPrice')">
-                                            {{order.logisticsUnitPrice}}
+                                            {{order.logisticsUnitPrice + "AUD"}}
                                         </FormItem>
                                     </Col>
                                     <Col span="12">
@@ -113,19 +113,19 @@
                                 <Row>
                                     <Col span="12">
                                         <FormItem :label="$t('Simulator.TaxCost')">
-                                            {{order.taxCost}}
+                                            {{order.taxCost + "AUD"}}
                                         </FormItem>
                                     </Col>
                                     <Col span="12">
                                         <FormItem :label="$t('Simulator.TotalPrice')">
-                                            {{order.TotalPrice}}
+                                            {{order.totalPrice + "AUD"}}
                                         </FormItem>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col span="12">
                                         <FormItem :label="$t('Simulator.TotalWeight')">
-                                            {{order.totalWeight}}
+                                            {{order.totalWeight + "g"}}
                                         </FormItem>
                                     </Col>
                                     <Col span="12">
@@ -167,7 +167,16 @@ const addHeaderRender = (h, params, vm) => {
                 }
             }
         },
-        [h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}),
+        [h("Icon",
+        {
+            style: {
+                "font-Size": "14px",
+                "padding-right":"10px"
+            },
+            props: {
+                type:"plus"
+            }
+        }),
         h("strong", params.column.title)]
     );
 };
@@ -238,8 +247,8 @@ export default {
                 proList: []
             },
             splitRequestRule:{
-                logistics: [{required: true, type: 'array' }],
-                proList: [{required: true, type:'array' }]
+                logistics: [{required: true, type: 'array', trigger: 'ignore' }],
+                proList: [{required: true, type:'array', trigger: 'ignore' }]
             },
             splitResult: [],
             logistics: [],
@@ -247,30 +256,37 @@ export default {
                 {
                     title: this.$t("Simulator.ProNo"),
                     key: "proNo",
+                    width: 90,
                     renderHeader: (h,params) => { return addHeaderRender(h, params, _this);}
                 },
                 {
                     title: this.$t("Simulator.ProName"),
+                    width: 90,
                     key: "proName"
                 },
                 {
                     title: 'SkuNo',
+                    width: 90,
                     key: "skuNo"
                 },
                 {
-                    title: 'PTId',
+                    title: _this.$t('Menu.Pages.ProductClasses'),
+                    width: 90,
                     key: "ptidName"
                 },
                 {
                     title: this.$t("Simulator.Quantity"),
+                    width: 70,
                     key: "quantity"
                 },
                 {
-                    title: this.$t("Simulator.ProPrice"),
+                    title: this.$t("Simulator.ProPrice") + "(AUD)",
+                    width: 95,
                     key: "proPrice"
                 },
                 {
-                    title: this.$t("Simulator.Weight"),
+                    title: this.$t("Simulator.Weight") + "(g)",
+                    width: 110,
                     key: "weight"
                 },
                 {
@@ -301,21 +317,21 @@ export default {
                     key: "quantity"
                 },
                 {
-                    title: this.$t("Simulator.ProPrice"),
+                    title: this.$t("Simulator.ProPrice") + "(AUD)",
                     key: "proPrice"
                 },
                 {
-                    title: this.$t("Simulator.Weight"),
+                    title: this.$t("Simulator.Weight") + "(g)",
                     key: "weight"
                 }
             ],
             modalState: {
                 model: {},
                 rule: {
-                    cascaderValue:[{required: true}],
-                    quantity:[{required: true, type: 'number', min: 1}],
-                    proPrice:[{required: true, type: 'number', min: 1}],
-                    weight:[{required: true, type: 'number', min:1}]
+                    cascaderValue:[{required: true, type: 'array', trigger: 'ignore'}],
+                    quantity:[{required: true, type: 'number', min: 1, trigger: 'ignore'}],
+                    proPrice:[{required: true, type: 'number', min: 1, trigger: 'ignore'}],
+                    weight:[{required: true, type: 'number', min:1, trigger: 'ignore'}]
                 },
                 title: null,
                 showModal: false,
@@ -361,7 +377,7 @@ export default {
                         else{
                             _this.$Modal.error({
                                 title: 'Error',
-                                content: req.data.message
+                                content: req.data.result
                             });
                         }
                     });

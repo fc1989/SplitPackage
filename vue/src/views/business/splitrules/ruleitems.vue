@@ -36,7 +36,15 @@ import SplitRuleItemApi from "@/api/splitruleitem";
 const addHeaderRender = (h, param, vm, clickAction) => {
     var array = [];
     if(vm.canModify){
-        array.push(h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}));
+        array.push(h("Icon",           {
+            style: {
+                "font-Size": "14px",
+                "padding-right":"10px"
+            },
+            props: {
+                type:"plus"
+            }
+        }));
     }
     array.push(h("span", param.column.title));
     return h("div",
@@ -175,9 +183,9 @@ export default {
             modalState: {
                 model: {},
                 rule: {
-                    productClassId: [{required: true, validator: validateProductClass}],
-                    maxNum: [{required: true,}],
-                    minNum: [{required: true,}],
+                    productClassId: [{required: true, validator: validateProductClass, trigger: 'ignore'}],
+                    maxNum: [{required: true, trigger: 'ignore'}],
+                    minNum: [{required: true, trigger: 'ignore'}],
                 },
                 title: null,
                 showModal: false,

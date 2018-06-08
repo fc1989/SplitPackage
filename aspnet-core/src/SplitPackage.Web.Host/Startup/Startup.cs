@@ -23,6 +23,7 @@ using System.Runtime.ExceptionServices;
 using SplitPackage.Authentication.BasicAuth;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc;
+using Abp.Logging;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -129,40 +130,45 @@ namespace SplitPackage.Web.Host.Startup
 
             app.UseAuthentication();
 
-            app.Use(async (context, next) =>
+            if (!_appConfiguration.GetValue<bool>("Logging:IgnoreOpenRequest"))
             {
-                if (context.Request.Headers.ContainsKey("Authorization"))
-                {
-                    var scheme = context.Request.Headers["Authorization"].ToString().Split(' ')[0];
-                    if (scheme.Equals(JwtBearerDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
-                    {
-                        scheme = JwtBearerDefaults.AuthenticationScheme;
-                    }
-                    else if (scheme.Equals(BasicAuthenticationDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
-                    {
-                        scheme = BasicAuthenticationDefaults.AuthenticationScheme;
-                    }
-                    AuthenticateResult result = await context.AuthenticateAsync(scheme);
-                    if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
-                    {
-                        if (result?.Principal != null)
-                        {
-                            context.User = result.Principal;
-                        }
-                    }
-                    //else if (result.Failure != null)
-                    //{
-                    //    // Rethrow, let the exception page handle it.
-                    //    ExceptionDispatchInfo.Capture(result.Failure).Throw();
-                    //}
-                    else
-                    {
-                        await context.ChallengeAsync(scheme);
-                        return;
-                    }
-                }
-                await next();
-            });
+                app.UseMiddleware<RequestLoggingMiddleware>();
+            }
+
+            app.Use(async (context, next) =>
+             {
+                 if (context.Request.Headers.ContainsKey("Authorization"))
+                 {
+                     var scheme = context.Request.Headers["Authorization"].ToString().Split(' ')[0];
+                     if (scheme.Equals(JwtBearerDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+                     {
+                         scheme = JwtBearerDefaults.AuthenticationScheme;
+                     }
+                     else if (scheme.Equals(BasicAuthenticationDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+                     {
+                         scheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                     }
+                     AuthenticateResult result = await context.AuthenticateAsync(scheme);
+                     if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
+                     {
+                         if (result?.Principal != null)
+                         {
+                             context.User = result.Principal;
+                         }
+                     }
+                     //else if (result.Failure != null)
+                     //{
+                     //    // Rethrow, let the exception page handle it.
+                     //    ExceptionDispatchInfo.Capture(result.Failure).Throw();
+                     //}
+                     else
+                     {
+                         await context.ChallengeAsync(scheme);
+                         return;
+                     }
+                 }
+                 await next();
+             });
 
             app.UseAbpRequestLocalization();
 

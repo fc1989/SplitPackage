@@ -10,7 +10,21 @@ using System.Text;
 namespace SplitPackage.Domain.Logistic
 {
     #region logistic
-    [AutoMapFrom(typeof(Business.Logistic))]
+    public class CreateLogisticEvent : EventData
+    {
+        public long Id { get; set; }
+
+        public string CorporationName { get; set; }
+
+        public string CorporationUrl { get; set; }
+
+        public string LogoURL { get; set; }
+
+        public string LogisticCode { get; set; }
+
+        public int? TenantId { get; set; }
+    }
+
     public class ModifyLogisticEvent : EventData
     {
         public long Id { get; set; }
@@ -65,7 +79,27 @@ namespace SplitPackage.Domain.Logistic
     #endregion
 
     #region channel
-    [AutoMapFrom(typeof(LogisticChannel))]
+    public class CreateChannelEvent : EventData
+    {
+        public long Id { get; set; }
+
+        public long LogisticId { get; set; }
+
+        public int? TenantId { get; set; }
+
+        public string ChannelName { get; set; }
+
+        public string AliasName { get; set; }
+
+        public ChannelType Type { get; set; }
+
+        public ChargeWay Way { get; set; }
+
+        public IEnumerable<Business.NumFreight> NumFreights { get; set; }
+
+        public IEnumerable<Business.WeightFreight> WeightFreights { get; set; }
+    }
+
     public class ModifyChannelEvent : EventData
     {
         public long Id { get; set; }
@@ -95,7 +129,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
     }
 
     public class StartUseChannelEvent : EventData
@@ -104,7 +138,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
     }
 
     public class TenantStartUseImportChannelEvent : EventData
@@ -113,7 +147,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
     }
 
     public class BanishChannelEvent : EventData
@@ -122,7 +156,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
     }
 
     public class TenantBanishImportChannelEvent : EventData
@@ -131,7 +165,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
     }
 
     public class TenantImportChannelEvent : EventData
@@ -145,15 +179,57 @@ namespace SplitPackage.Domain.Logistic
     #endregion
 
     #region splitrule
+    public class CreateSplitRuleEvent : EventData
+    {
+        public int? TenantId { get; set; }
+
+        public long LogisticId { get; set; }
+
+        public long LogisticChannelId { get; set; }
+
+        public long Id { get; set; }
+
+        public string RuleName { get; set; }
+
+        public int MaxPackage { get; set; }
+
+        public double MaxWeight { get; set; }
+
+        public double MaxTax { get; set; }
+
+        public double MaxPrice { get; set; }
+    }
+
     public class TenantCreateImportSplitRuleEvent :EventData
     {
         public int TenantId { get; set; }
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
+    }
+
+    public class ModifyImportSplitRuleEvent : EventData
+    {
+        public int? TenantId { get; set; }
+
+        public long LogisticId { get; set; }
+
+        public long LogisticChannelId { get; set; }
+
+        public long SplitRuleId { get; set; }
+
+        public string RuleName { get; set; }
+
+        public int MaxPackage { get; set; }
+
+        public double MaxWeight { get; set; }
+
+        public double MaxTax { get; set; }
+
+        public double MaxPrice { get; set; }
     }
 
     public class TenanModifyImportSplitRuleEvent : EventData
@@ -162,7 +238,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
     }
@@ -173,7 +249,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
     }
@@ -184,7 +260,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
     }
@@ -195,7 +271,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
     }
@@ -206,24 +282,62 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
     }
     #endregion
 
-    #region logistcirelation
+    #region splitruleitem
+    public class CreateSplitRuleItemEvent : EventData
+    {
+        public long Id { get; set; }
+
+        public int? TenantId { get; set; }
+
+        public long LogisticId { get; set; }
+
+        public long LogisticChannelId { get; set; }
+
+        public long SplitRuleId { get; set; }
+
+        public string PTId { get; set; }
+
+        public int MinNum { get; set; }
+
+        public int MaxNum { get; set; }
+    }
+
     public class TenantCreateImportSplitRuleItemEvent : EventData
     {
         public int TenantId { get; set; }
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
 
         public long SplitRuleItemId { get; set; }
+    }
+
+    public class ModifySplitRuleItemEvent : EventData
+    {
+        public long Id { get; set; }
+
+        public int? TenantId { get; set; }
+
+        public long LogisticId { get; set; }
+
+        public long LogisticChannelId { get; set; }
+
+        public long SplitRuleId { get; set; }
+
+        public string PTId { get; set; }
+
+        public int MinNum { get; set; }
+
+        public int MaxNum { get; set; }
     }
 
     public class TenanModifyImportSplitRuleItemEvent : EventData
@@ -232,7 +346,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
 
@@ -245,7 +359,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
 
@@ -258,11 +372,40 @@ namespace SplitPackage.Domain.Logistic
 
         public long LogisticId { get; set; }
 
-        public long ChannelId { get; set; }
+        public long LogisticChannelId { get; set; }
 
         public long SplitRuleId { get; set; }
 
         public long SplitRuleItemId { get; set; }
+    }
+    #endregion
+
+    #region logisticrelation
+    public class CreateLogisticRelation : EventData
+    {
+        public int? TenantId { get; set; }
+
+        public long RelationId { get; set; }
+
+        public List<long> LogisticIds { get; set; }
+    }
+
+    public class ModifyLogisticRelation : EventData
+    {
+        public int? TenantId { get; set; }
+
+        public long RelationId { get; set; }
+
+        public List<long> AddLogisticIds { get; set; }
+
+        public List<long> RemoveLogisticIds { get; set; }
+    }
+
+    public class BanishLogisticRelation : EventData
+    {
+        public int? TenantId { get; set; }
+
+        public long RelationId { get; set; }
     }
     #endregion
 }

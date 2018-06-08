@@ -21,6 +21,7 @@ using SplitPackage.Cache;
 namespace SplitPackage.Tests
 {
     [DependsOn(
+        typeof(SplitPackageAppliactionPrepareModule),
         typeof(SplitPackageApplicationModule),
         typeof(SplitPackageEntityFrameworkModule),
         typeof(AbpTestBaseModule)
@@ -58,25 +59,6 @@ namespace SplitPackage.Tests
         public override void Initialize()
         {
             ServiceCollectionRegistrar.Register(IocManager);
-        }
-
-        public override void PostInitialize()
-        {
-            //using (var uowManager = IocManager.ResolveAsDisposable<IUnitOfWorkManager>())
-            //{
-            //    using (var uow = uowManager.Object.Begin(TransactionScopeOption.Suppress))
-            //    {
-            //        var context = uowManager.Object.Current.GetDbContext<SplitPackageDbContext>(MultiTenancySides.Host);
-            //        new EntityFrameworkCore.Seed.Host.InitialHostDbBuilder(context).Create();
-            //        new EntityFrameworkCore.Seed.Business.InitialBusinessDbBuilder(context).Create();
-            //        new EntityFrameworkCore.Seed.Tenants.DefaultTenantBuilder(context, new string[] { Abp.MultiTenancy.AbpTenantBase.DefaultTenantName, "AstraeaAssistant", "Auz", "Iautao", "Phoenix" }).Create();
-            //        new EntityFrameworkCore.Seed.Tenants.DefaultTenantBusinessBuilder(context).Create();
-            //        uow.Complete();
-            //    }
-            //}
-            //不规范实现
-            var init = IocManager.Resolve<ManageCache>();
-            init.InitCache();
         }
 
         private void RegisterFakeService<TService>() where TService : class

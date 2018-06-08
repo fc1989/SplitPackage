@@ -43,7 +43,15 @@ const addHeaderRender = (h, params, vm, clickAction) => {
                 }
             }
         },
-        [h("Icon", { props: {type:"android-add-circle",color:"#57a3f3"}}),h("span", params.column.title)]
+        [h("Icon", {
+            style: {
+                "font-Size": "14px",
+                "padding-right":"10px"
+            },
+            props: {
+                type:"plus"
+            }
+        }),h("span", params.column.title)]
     );
 };
 const rowActionRender = (h, params, vm) => {
@@ -135,10 +143,10 @@ export default {
     };
     return {
       rule: {
-        className: [{ required: true, validator: validateClassName }],
-        ptid: [{ required: true, validator: validatePTId }],
-        postTaxRate: [{ type: "number" }],
-        bcTaxRate: [{ type: "number" }]
+        className: [{ required: true, validator: validateClassName, trigger: 'ignore' }],
+        ptid: [{ required: true, validator: validatePTId, trigger: 'ignore' }],
+        postTaxRate: [{ type: "number", trigger: 'ignore' }],
+        bcTaxRate: [{ type: "number", trigger: 'ignore' }]
       },
       columns: [
         {

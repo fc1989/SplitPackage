@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using SplitPackage.Domain.Logistic;
 
 namespace SplitPackage.Business.LogisticChannels.Dto
 {
@@ -20,6 +21,8 @@ namespace SplitPackage.Business.LogisticChannels.Dto
             ));
 
             CreateMap<CreateLogisticChannelDto, LogisticChannel>();
+
+            CreateMap<LogisticChannel, CreateChannelEvent>();
         }
     }
 }
