@@ -59,7 +59,7 @@ namespace SplitPackage.MultiTenancy
             identityResult.CheckErrors(_localizationManager);
         }
 
-        public async Task<bool> CreateTenant(SynchronizeTenantDto dto)
+        public async Task<bool> CreateTenant(SynchronizeTenantDto dto, long otherSystemId)
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
@@ -68,7 +68,7 @@ namespace SplitPackage.MultiTenancy
                     TenancyName = dto.TenantName,
                     Name = dto.TenantName,
                     ApiKey = dto.TenantName,
-                    OtherSystemId = null
+                    OtherSystemId = otherSystemId
                 };
                 await _tenantManager.CreateAsync(tenant);
                 await _unitOfWorkManager.Current.SaveChangesAsync(); // To get new tenant's id.
@@ -88,46 +88,48 @@ namespace SplitPackage.MultiTenancy
                     await _unitOfWorkManager.Current.SaveChangesAsync(); // To get admin user's id
                     // Assign admin user to role!
                     CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
-                    await _unitOfWorkManager.Current.SaveChangesAsync();
-                }
-                List<long> addSet = new List<long>();
-                foreach (var item in dto.Channels)
-                {
-                    var channel = await this._lcRepository.GetAll().IgnoreQueryFilters().FirstAsync(o => o.LogisticBy.LogisticCode == item.LogisticCode 
-                    && o.ChannelName == item.LogisticChannelCode);
-                    var tlc = new TenantLogisticChannel()
+                    List<long> addSet = new List<long>();
+                    foreach (var item in dto.Channels)
+                    {
+                        var channel = await this._lcRepository.GetAll().IgnoreQueryFilters().FirstAsync(o => o.LogisticBy.LogisticCode == item.LogisticCode
+                        && o.ChannelName == item.LogisticChannelCode);
+                        var tlc = new TenantLogisticChannel()
+                        {
+                            TenantId = tenant.Id,
+                            LogisticChannelId = channel.Id
+                        };
+                        if (item.StepWeight > 0)
+                        {
+                            tlc.LogisticChannelChange = JsonConvert.SerializeObject(new ChangeFreightRule()
+                            {
+                                WeightChargeRules = new List<WeightFreight>()
+                                {
+                                    new WeightFreight()
+                                    {
+                                        Currency = "AUD",
+                                        Unit = "g",
+                                        StartingWeight = item.StartingWeight.Value,
+                                        EndWeight = 1000000,
+                                        StartingPrice = item.StartingPrice.Value,
+                                        StepWeight = item.StepWeight.Value,
+                                        CostPrice = item.Price.Value,
+                                        Price = item.Price.Value
+                                    }
+                                }
+                            });
+                        }
+                        await this._tlcRepository.InsertAsync(tlc);
+                        addSet.Add(channel.Id);
+                    }
+                    await this._eventBus.TriggerAsync(new TenantImportChannelEvent()
                     {
                         TenantId = tenant.Id,
-                        LogisticChannelId = channel.Id
-                    };
-                    if (item.StepWeight > 0)
-                    {
-                        tlc.LogisticChannelChange = JsonConvert.SerializeObject(new ChangeFreightRule()
-                        {
-                            WeightChargeRules = new List<WeightFreight>()
-                            {
-                                new WeightFreight()
-                                {
-                                    Currency = "AUD",
-                                    Unit = "g",
-                                    StartingWeight = item.StartingWeight,
-                                    EndWeight = 1000000,
-                                    StartingPrice = item.StartingPrice,
-                                    StepWeight = item.StepWeight,
-                                    CostPrice = item.Price,
-                                    Price = item.Price
-                                }
-                            }
-                        });
-                    }
-                    await this._tlcRepository.InsertAsync(tlc);
-                    addSet.Add(channel.Id);
+                        AddChannelIds = addSet,
+                        RemoveChannelIds = new List<long>()
+                    });
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
                 }
-                await this._eventBus.TriggerAsync(new TenantImportChannelEvent()
-                {
-                    TenantId = tenant.Id,
-                    AddChannelIds = addSet
-                });
+                await unitOfWork.CompleteAsync();
                 return true;
             }
         }

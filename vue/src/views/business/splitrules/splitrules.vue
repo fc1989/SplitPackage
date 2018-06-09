@@ -72,7 +72,6 @@ export default {
         var array = this.cascaderData[item].children.filter(vl => {
           return vl.value === lcId;
         });
-        console.log(array.length);
         if(array.length > 0)
         {
           lId = this.cascaderData[item].value.toString();
@@ -95,10 +94,10 @@ export default {
       title: "Menu.Pages.SplitRules",
       rule: {
         logisticChannelId: [{ required: true, validator:validateLogisticChannelId, trigger: 'ignore' }],
-        maxPackage: [{ required: true, trigger: 'ignore' }],
-        maxWeight: [{ required: true, trigger: 'ignore' }],
-        maxTax: [{ required: true, trigger: 'ignore' }],
-        maxPrice: [{ required: true, trigger: 'ignore' }]
+        maxPackage: [{ required: true, type:'number', trigger: 'ignore' }],
+        maxWeight: [{ required: true, type:'number', trigger: 'ignore' }],
+        maxTax: [{ required: true, type:'number', trigger: 'ignore' }],
+        maxPrice: [{ required: true, type:'number', trigger: 'ignore' }]
       },
       columnsetting: {
         actionOption: {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SplitPackage.Authentication.ApplicationAuth;
 using SplitPackage.Authentication.BasicAuth;
 using System;
 using System.Linq;
@@ -51,6 +52,7 @@ namespace SplitPackage.Web.Host.Startup
             services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic(op=> {
                 op.SystemApiKey = configuration["Authentication:BaseAuth:SystemApiKey"];
             });
+            services.AddAuthentication(ApplicationAuthenticationDefaults.AuthenticationScheme).AddApplication();
         }
 
         /* This method is needed to authorize SignalR javascript client.

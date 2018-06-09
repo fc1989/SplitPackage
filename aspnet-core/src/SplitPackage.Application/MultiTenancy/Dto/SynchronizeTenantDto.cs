@@ -17,12 +17,12 @@ namespace SplitPackage.MultiTenancy.Dto
 
         public string LogisticChannelCode { get; set; }
 
-        public double StartingWeight { get; set; }
+        public double? StartingWeight { get; set; }
 
-        public double StartingPrice { get; set; }
+        public double? StartingPrice { get; set; }
 
-        public double StepWeight { get; set; }
+        public double? StepWeight { get; set; }
 
-        public double Price { get; set; }
+        public double? Price { get; set; }
     }
 }

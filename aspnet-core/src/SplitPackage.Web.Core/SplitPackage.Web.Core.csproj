@@ -35,4 +35,7 @@
   <ItemGroup>
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="3.5.0-preview3" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Authentication\ApplicationAuth\" />
+  </ItemGroup>
 </Project>

@@ -184,8 +184,8 @@ export default {
                 model: {},
                 rule: {
                     productClassId: [{required: true, validator: validateProductClass, trigger: 'ignore'}],
-                    maxNum: [{required: true, trigger: 'ignore'}],
-                    minNum: [{required: true, trigger: 'ignore'}],
+                    maxNum: [{required: true, type:'number', trigger: 'ignore'}],
+                    minNum: [{required: true, type:'number', trigger: 'ignore'}],
                 },
                 title: null,
                 showModal: false,

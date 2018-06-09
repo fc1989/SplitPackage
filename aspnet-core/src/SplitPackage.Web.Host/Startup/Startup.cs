@@ -24,6 +24,7 @@ using SplitPackage.Authentication.BasicAuth;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc;
 using Abp.Logging;
+using SplitPackage.Authentication.ApplicationAuth;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -147,6 +148,10 @@ namespace SplitPackage.Web.Host.Startup
                      else if (scheme.Equals(BasicAuthenticationDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
                      {
                          scheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                     }
+                     else if (scheme.Equals(ApplicationAuthenticationDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+                     {
+                         scheme = ApplicationAuthenticationDefaults.AuthenticationScheme;
                      }
                      AuthenticateResult result = await context.AuthenticateAsync(scheme);
                      if (result.Succeeded && result.Principal.Identity.IsAuthenticated)

@@ -17,26 +17,26 @@ using Abp.Runtime.Security;
 using Abp.Domain.Uow;
 using SplitPackage.Authorization.Roles;
 
-namespace SplitPackage.Authentication.BasicAuth
+namespace SplitPackage.Authentication.ApplicationAuth
 {
-    public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
+    public class ApplicationAuthenticationHandler : AuthenticationHandler<ApplicationAuthenticationOptions>
     {
         private const string AuthorizationHeaderName = "Authorization";
-        private const string BasicSchemeName = "Basic";
-        private readonly IRepository<Tenant> _tenantRepository;
-        private readonly IRepository<User,long> _userRepository;
+        private const string BasicSchemeName = "App";
+        private readonly IRepository<OtherSystem, long> _osRepository;
+        private readonly IRepository<User, long> _userRepository;
 
-        public BasicAuthenticationHandler(
-            IOptionsMonitor<BasicAuthenticationOptions> options,
+        public ApplicationAuthenticationHandler(
+            IOptionsMonitor<ApplicationAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IRepository<Tenant> tenantRepository,
+            IRepository<OtherSystem, long> osRepository,
             IRepository<User, long> userRepository)
             : base(options, logger, encoder, clock)
         {
-            _tenantRepository = tenantRepository;
-            _userRepository = userRepository;
+            this._osRepository = osRepository;
+            this._userRepository = userRepository;
         }
 
         [UnitOfWork]
@@ -44,7 +44,6 @@ namespace SplitPackage.Authentication.BasicAuth
         {
             if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
             {
-                //Authorization header not in request
                 return AuthenticateResult.NoResult();
             }
 
@@ -67,39 +66,19 @@ namespace SplitPackage.Authentication.BasicAuth
             {
                 return AuthenticateResult.Fail("Invalid Basic authentication header");
             }
-            string tenancyName = parts[0];
-            string apiKey = parts[1];
+            string otherSystemName = parts[0];
+            string certificate = parts[1];
 
-            string userId = "";
-            string tenantId = "";
-            if (!string.IsNullOrEmpty(tenancyName))
+            var os = await this._osRepository.FirstOrDefaultAsync(o => o.SystemName == otherSystemName && o.Certificate == certificate);
+            if (os == null)
             {
-                var tenants = await _tenantRepository.GetAll().IgnoreQueryFilters()
-                    .Where(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive).ToListAsync();
-                if (tenants.Count == 0)
-                {
-                    return AuthenticateResult.Fail("Invalid tenancyname or apikey");
-                }
-                if (!tenants[0].IsActive)
-                {
-                    return AuthenticateResult.Fail("tenant is banish");
-                }
-                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
-                tenantId = tenants[0].Id.ToString();
-                userId = user.Id.ToString();
+                return AuthenticateResult.Fail("os is banish");
             }
-            else if (apiKey.Equals(Options.SystemApiKey))
-            {
-                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == null);
-                userId = user.Id.ToString();
-            }
-            else {
-                return AuthenticateResult.Fail("Invalid tenancyname or apikey");
-            }
+            var user = await this._userRepository.SingleAsync(o => o.UserName == StaticRoleNames.Host.Admin && o.TenantId == null);
             var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(AbpClaimTypes.TenantId, tenantId),
-                new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin),
+                new Claim("SplitPackageOtherSystemId", os.Id.ToString())
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
@@ -109,7 +88,7 @@ namespace SplitPackage.Authentication.BasicAuth
 
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            Response.Headers["WWW-Authenticate"] = $"Basic realm=\"split\", charset=\"UTF-8\"";
+            Response.Headers["WWW-Authenticate"] = $"App realm=\"split\", charset=\"UTF-8\"";
             await base.HandleChallengeAsync(properties);
         }
     }

@@ -42,6 +42,8 @@ namespace SplitPackage.Cache.Dto
             CreateMap<WeightFreightDto, WeightFreightCacheDto>();
 
             CreateMap<ModifyChannelEvent, ChannelCacheDto>();
+
+            CreateMap<LogisticChannel, ModifyChannelEvent>();
         }
     }
 }

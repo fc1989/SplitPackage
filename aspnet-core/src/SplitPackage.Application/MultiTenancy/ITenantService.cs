@@ -8,6 +8,6 @@ namespace SplitPackage.MultiTenancy
 {
     public interface ITenantService
     {
-        Task<bool> CreateTenant(SynchronizeTenantDto dto);
+        Task<bool> CreateTenant(SynchronizeTenantDto dto, long otherSystemId);
     }
 }
