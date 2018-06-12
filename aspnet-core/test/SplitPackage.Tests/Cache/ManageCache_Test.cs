@@ -25,18 +25,18 @@ namespace SplitPackage.Tests.Cache
         {
             var pcCache = this._cacheManager.GetCache("ProductClass");
             var productClassSet = pcCache.GetOrDefault<string, List<ProductClassCacheDto>>("host");
-            Assert.True(productClassSet.Count == 141);
+            Assert.Equal(141, productClassSet.Count);
             var ssCache = this._cacheManager.GetCache<string, SplitPackageSettingCache>("SplitSetting");
-            Assert.True(ssCache.GetOrDefault("host").OwnLogistics.Count == 17);
-            Assert.True(ssCache.GetOrDefault("host").Relateds.Count == 1);
+            Assert.Equal(18, ssCache.GetOrDefault("host").OwnLogistics.Count);
+            Assert.Equal(1, ssCache.GetOrDefault("host").Relateds.Count);
             IRepository<Tenant> tenantRepository = Resolve<IRepository<Tenant>>();
             var tenants = tenantRepository.GetAllList();
             foreach (var item in tenants)
             {
                 if (item.TenancyName == "AstraeaAssistant")
                 {
-                    Assert.True(ssCache.GetOrDefault(item.Id.ToString()).OwnLogistics.Count == 17);
-                    Assert.True(ssCache.GetOrDefault(item.Id.ToString()).Relateds.Count == 1);
+                    Assert.Equal(18, ssCache.GetOrDefault(item.Id.ToString()).OwnLogistics.Count);
+                    Assert.Equal(1, ssCache.GetOrDefault(item.Id.ToString()).Relateds.Count);
                 }
                 else
                 {

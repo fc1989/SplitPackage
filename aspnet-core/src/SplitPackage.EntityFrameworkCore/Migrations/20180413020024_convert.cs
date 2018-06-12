@@ -197,7 +197,7 @@ namespace SplitPackage.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    //table.UniqueConstraint(name: "UQ_LogisticChannels", columns: x => new { x.LogisticId, x.ChannelName });
+                    table.UniqueConstraint(name: "UQ_LogisticChannels", columns: x => new { x.LogisticId, x.ChannelName });
                 });
 
             migrationBuilder.CreateTable(

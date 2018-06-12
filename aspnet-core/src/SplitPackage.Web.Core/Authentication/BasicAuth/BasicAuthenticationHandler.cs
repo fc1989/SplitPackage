@@ -16,6 +16,7 @@ using SplitPackage.Authorization.Users;
 using Abp.Runtime.Security;
 using Abp.Domain.Uow;
 using SplitPackage.Authorization.Roles;
+using Abp.Logging;
 
 namespace SplitPackage.Authentication.BasicAuth
 {
@@ -24,7 +25,7 @@ namespace SplitPackage.Authentication.BasicAuth
         private const string AuthorizationHeaderName = "Authorization";
         private const string BasicSchemeName = "Basic";
         private readonly IRepository<Tenant> _tenantRepository;
-        private readonly IRepository<User,long> _userRepository;
+        private readonly IRepository<User, long> _userRepository;
 
         public BasicAuthenticationHandler(
             IOptionsMonitor<BasicAuthenticationOptions> options,
@@ -60,51 +61,68 @@ namespace SplitPackage.Authentication.BasicAuth
                 return AuthenticateResult.NoResult();
             }
 
-            byte[] headerValueBytes = Convert.FromBase64String(headerValue.Parameter);
-            string userAndPassword = Encoding.UTF8.GetString(headerValueBytes);
-            string[] parts = userAndPassword.Split(':');
-            if (parts.Length != 2)
+            try
             {
-                return AuthenticateResult.Fail("Invalid Basic authentication header");
-            }
-            string tenancyName = parts[0];
-            string apiKey = parts[1];
+                if (string.IsNullOrEmpty(headerValue.Parameter))
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidToken, "Invalid token"));
+                }
+                byte[] headerValueBytes = Convert.FromBase64String(headerValue.Parameter);
+                string userAndPassword = Encoding.UTF8.GetString(headerValueBytes);
+                string[] parts = userAndPassword.Split(':');
+                if (parts.Length != 2)
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidAutheHeader, "Invalid Basic authentication header"));
+                }
+                string tenancyName = parts[0];
+                string apiKey = parts[1];
 
-            string userId = "";
-            string tenantId = "";
-            if (!string.IsNullOrEmpty(tenancyName))
-            {
-                var tenants = await _tenantRepository.GetAll().IgnoreQueryFilters()
-                    .Where(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive).ToListAsync();
-                if (tenants.Count == 0)
+                string userId = "";
+                string tenantId = "";
+                if (!string.IsNullOrEmpty(tenancyName))
                 {
-                    return AuthenticateResult.Fail("Invalid tenancyname or apikey");
+                    var tenants = await _tenantRepository.GetAll().IgnoreQueryFilters()
+                        .Where(o => o.ApiKey == apiKey && o.TenancyName == tenancyName && !o.IsDeleted && o.IsActive).ToListAsync();
+                    if (tenants.Count == 0)
+                    {
+                        return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidInput, "Invalid tenancyname or apikey"));
+                    }
+                    if (!tenants[0].IsActive)
+                    {
+                        return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_RefuseAuthorization, "tenant is banish"));
+                    }
+                    var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
+                    tenantId = tenants[0].Id.ToString();
+                    userId = user.Id.ToString();
                 }
-                if (!tenants[0].IsActive)
+                else if (apiKey.Equals(Options.SystemApiKey))
                 {
-                    return AuthenticateResult.Fail("tenant is banish");
+                    var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == null);
+                    userId = user.Id.ToString();
                 }
-                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == tenants[0].Id);
-                tenantId = tenants[0].Id.ToString();
-                userId = user.Id.ToString();
+                else
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidInput, "Invalid tenancyname or apikey"));
+                }
+                var claims = new[] {
+                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(AbpClaimTypes.TenantId, tenantId),
+                    new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin)
+                };
+                var identity = new ClaimsIdentity(claims, Scheme.Name);
+                var principal = new ClaimsPrincipal(identity);
+                var ticket = new AuthenticationTicket(principal, Scheme.Name);
+                return AuthenticateResult.Success(ticket);
             }
-            else if (apiKey.Equals(Options.SystemApiKey))
+            catch (Exception ex) when (ex is FormatException || ex is DecoderFallbackException)
             {
-                var user = await this._userRepository.GetAll().IgnoreQueryFilters().SingleAsync(o => o.UserName == "admin" && o.TenantId == null);
-                userId = user.Id.ToString();
+                return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidToken, "Invalid token"));
             }
-            else {
-                return AuthenticateResult.Fail("Invalid tenancyname or apikey");
+            catch (Exception ex)
+            {
+                LogHelper.Logger.Error("basic auth", ex);
+                return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.SytemError, "Invalid auth request"));
             }
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(AbpClaimTypes.TenantId, tenantId),
-                new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin)
-            };
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-            return AuthenticateResult.Success(ticket);
         }
 
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)

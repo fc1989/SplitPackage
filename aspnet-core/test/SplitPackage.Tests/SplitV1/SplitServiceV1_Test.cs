@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Domain.Uow;
 using Abp.MultiTenancy;
+using Abp.UI;
 using SplitPackage.Split;
 using SplitPackage.Split.Common;
 using SplitPackage.Split.Dto;
@@ -32,7 +33,7 @@ namespace SplitPackage.Tests.Split
         [Fact]
         public async Task SplitInputValidTest()
         {
-            Tuple<string, SplitedOrder> result = null;
+            UserFriendlyException result = null;
             var request = new SplitRequest()
             {
                 OrderId = "18040300110001",
@@ -63,22 +64,25 @@ namespace SplitPackage.Tests.Split
             };
             //商品重量不能为0
             request.ProList.ForEach(o => o.Weight = 0);
-            result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal("商品重量必须大于0", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.Split(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's weight must more then zero", result.Message);
             //商品价格不能为0
             request.ProList.ForEach(o => { o.ProPrice = 0; o.Weight = 100; });
-            result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal("商品价格必须大于0", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.Split(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's price must more then zero", result.Message);
             //商品数量不能为0
             request.ProList.ForEach(o => { o.Quantity = 0; o.ProPrice = 100; });
-            result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal("商品数量必须大于0", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(()=>this._splitService.Split(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's quantity must more then zero", result.Message);
         }
 
         [Fact]
         public async Task SplitWithExp1InputValidTest()
         {
-            Tuple<string, SplitedOrder> result = null;
+            UserFriendlyException result = null;
             var request = new SplitWithExpRequest1()
             {
                 OrderId = "18040300110001",
@@ -109,31 +113,38 @@ namespace SplitPackage.Tests.Split
             };
             //商品重量不能为0
             request.ProList.ForEach(o => o.Weight = 0);
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("商品重量必须大于0", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(()=>this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's weight must more then zero", result.Message);
             //商品价格不能为0
             request.ProList.ForEach(o => { o.ProPrice = 0; o.Weight = 100; });
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("商品价格必须大于0", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(()=>this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's price must more then zero", result.Message);
             //商品数量不能为0
             request.ProList.ForEach(o => { o.Quantity = 0; o.ProPrice = 100; });
-            result =  await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("商品数量必须大于0", result.Item1);
+            result =  await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("product's quantity must more then zero", result.Message);
             //指定物流商不存在
             request.ProList.ForEach(o => o.Quantity = 1);
             request.logistics = new List<string> { };
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("请提供指定物流商", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("logistic must more then zero", result.Message);
             request.logistics = new List<string> { "123", "1" };
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("指定物流商:123,1不存在", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("the following logistics providers do not exist:123,1", result.Message);
             request.ProList.ForEach(o => { o.PTId = "0"; });
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("指定物流商:123,1不存在", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("the following logistics providers do not exist:123,1", result.Message);
             //无效的PTId
             request.logistics = new List<string> { "AOLAU EXPRESS" };
-            result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal("PTId:0无对应规则", result.Item1);
+            result = await Assert.ThrowsAsync<UserFriendlyException>(() => this._splitService.SplitWithOrganization1(request, this._context.GetTenantId()));
+            Assert.Equal((int)ResultCode.BadRequest_ParamConstraint, result.Code);
+            Assert.Equal("the following ptid no corresponding rules:0", result.Message);
         }
 
         [Fact]
@@ -168,9 +179,8 @@ namespace SplitPackage.Tests.Split
                 Type = 3
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.OrderList[0].SubBusinessName);
             return true;
         }
 
@@ -206,9 +216,8 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "AOLAU EXPRESS" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -254,9 +263,8 @@ namespace SplitPackage.Tests.Split
                 Type = 3
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("中环杂货混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("中环杂货混装线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -302,9 +310,8 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "CNP Express" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("中邮混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("中邮混装线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -330,9 +337,8 @@ namespace SplitPackage.Tests.Split
                 Type = 3
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -358,9 +364,8 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "CNP Express" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -396,10 +401,9 @@ namespace SplitPackage.Tests.Split
                 Type = 3
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Equal(2, result.Item2.OrderList.Count);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[1].SubBusinessName);
+            Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("中邮杂货专线", result.OrderList[1].SubBusinessName);
         }
 
         [Fact]
@@ -435,10 +439,9 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "CNP Express" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Equal(2, result.Item2.OrderList.Count);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("中邮杂货专线", result.Item2.OrderList[1].SubBusinessName);
+            Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("中邮杂货专线", result.OrderList[1].SubBusinessName);
         }
 
         [Fact]
@@ -474,9 +477,8 @@ namespace SplitPackage.Tests.Split
                 Type = 3
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Single(result.Item2.OrderList);
-            Assert.Equal("方舟AlphaEX", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Single(result.OrderList);
+            Assert.Equal("方舟AlphaEX", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -512,10 +514,9 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "AOLAU EXPRESS" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Equal(2, result.Item2.OrderList.Count);
-            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("澳通速递杂货混装线", result.Item2.OrderList[0].SubBusinessName);
+            Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
         }
 
         [Fact]
@@ -551,12 +552,11 @@ namespace SplitPackage.Tests.Split
                 logistics = new List<string> { "EWE Express 标准线" }
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
-            Assert.Equal(string.Empty, result.Item1);
-            Assert.Equal(2, result.Item2.OrderList.Count);
-            Assert.Equal("EWE Express 标准线", result.Item2.OrderList[0].LogisticsName);
-            Assert.Equal("EWE杂货标准线", result.Item2.OrderList[0].SubBusinessName);
-            Assert.Equal("EWE Express 经济线", result.Item2.OrderList[1].LogisticsName);
-            Assert.Equal("EWE杂货经济线", result.Item2.OrderList[1].SubBusinessName);
+            Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("EWE Express 标准线", result.OrderList[0].LogisticsName);
+            Assert.Equal("EWE杂货标准线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("EWE Express 经济线", result.OrderList[1].LogisticsName);
+            Assert.Equal("EWE杂货经济线", result.OrderList[1].SubBusinessName);
         }
     }
 }

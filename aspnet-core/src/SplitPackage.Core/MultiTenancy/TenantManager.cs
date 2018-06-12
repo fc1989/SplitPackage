@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using SplitPackage.Authorization.Users;
 using SplitPackage.Editions;
+using System.Threading.Tasks;
 
 namespace SplitPackage.MultiTenancy
 {
@@ -19,6 +20,11 @@ namespace SplitPackage.MultiTenancy
                 editionManager,
                 featureValueStore)
         {
+        }
+
+        protected override Task ValidateTenancyNameAsync(string tenancyName)
+        {
+            return Task.FromResult(0);
         }
     }
 }

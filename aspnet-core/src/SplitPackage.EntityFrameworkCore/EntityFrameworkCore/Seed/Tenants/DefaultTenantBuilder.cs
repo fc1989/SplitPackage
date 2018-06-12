@@ -31,6 +31,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Tenants
             foreach (var item in this._tenants)
             {
                 var tenant = new Tenant(item, item);
+                tenant.ApiKey = "123456";
                 var defaultEdition = _context.Editions.IgnoreQueryFilters().FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);
                 if (defaultEdition != null)
                 {

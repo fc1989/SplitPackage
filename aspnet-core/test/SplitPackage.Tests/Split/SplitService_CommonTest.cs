@@ -24,7 +24,7 @@ namespace SplitPackage.Tests.Split
         [Fact]
         public void AllLogisticTest()
         {
-            var files = Directory.EnumerateFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SplitPackageRules", "Rules"));
+            var files = Directory.EnumerateFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SplitRuleXml/AstraeaAssistant","Rules"));
             Tuple<string, SplitedOrder> result = null;
             foreach (var item in files)
             {

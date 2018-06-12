@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using SplitPackage.Business;
 using SplitPackage.EntityFrameworkCore;
+using SplitPackage.MultiTenancy;
 using System;
 
 namespace SplitPackage.Migrations
@@ -26,6 +27,14 @@ namespace SplitPackage.Migrations
             modelBuilder
                 .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
+
+            modelBuilder.Entity<OtherSystem>(b=> {
+                b.Property(p => p.Id).ValueGeneratedOnAdd();
+                b.Property(p => p.SystemName).HasMaxLength(OtherSystem.MaxSystemNameLength);
+                b.Property(p => p.Certificate).HasMaxLength(OtherSystem.MaxCertificateLength);
+                b.Property(p => p.IsActive);
+                b.ToTable("OtherSystems");
+            });
 
             modelBuilder.Entity<Logistic>(b =>
             {

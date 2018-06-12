@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace SplitPackage.Controllers
 {
-    [WrapResult(WrapOnSuccess = false, WrapOnError = false)]
+    [WrapResult(WrapOnSuccess = false,WrapOnError = false)]
     [Route("api/[controller]"), AbpAuthorize]
     [ApiExplorerSettings(GroupName = "open")]
     public class TenantBoardController : SplitPackageControllerBase
@@ -31,14 +31,14 @@ namespace SplitPackage.Controllers
         }
 
         [HttpPost,Route("CreateTenant")]
-        public async Task<bool> CreateTenant([FromBody]SynchronizeTenantDto input)
+        public async Task<ResultMessage<bool>> CreateTenant([FromBody]SynchronizeTenantDto input)
         {
             var otherSystem = _principalAccessor.Principal?.Claims.FirstOrDefault(c => c.Type == "SplitPackageOtherSystemId");
             if (string.IsNullOrEmpty(otherSystem?.Value))
             {
                 throw new UserFriendlyException("不存在该系统标识");
             }
-            return await _tenantService.CreateTenant(input, long.Parse(otherSystem.Value));
+            return new ResultMessage<bool>(ResultCode.Success,"success",await _tenantService.CreateTenant(input, long.Parse(otherSystem.Value)));
         }
     }
 }

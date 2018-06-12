@@ -25,6 +25,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc;
 using Abp.Logging;
 using SplitPackage.Authentication.ApplicationAuth;
+using System.IO;
+using Newtonsoft.Json;
+using SplitPackage.Split.Dto;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -89,7 +93,7 @@ namespace SplitPackage.Web.Host.Startup
                 {
                     if (docName == "open")
                     {
-                        var attrs = description.ControllerAttributes().OfType<ApiExplorerSettingsAttribute>();
+                       var attrs = description.ControllerAttributes().OfType<ApiExplorerSettingsAttribute>();
                         var isTrue = attrs.Any(o => o.GroupName == "open");
                         return isTrue;
                     }
@@ -123,6 +127,8 @@ namespace SplitPackage.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
@@ -161,11 +167,12 @@ namespace SplitPackage.Web.Host.Startup
                              context.User = result.Principal;
                          }
                      }
-                     //else if (result.Failure != null)
-                     //{
-                     //    // Rethrow, let the exception page handle it.
-                     //    ExceptionDispatchInfo.Capture(result.Failure).Throw();
-                     //}
+                     else if (result.Failure != null)
+                     {
+                         // Rethrow, let the exception page handle it.
+                         ExceptionDispatchInfo.Capture(result.Failure).Throw();
+                         return;
+                     }
                      else
                      {
                          await context.ChallengeAsync(scheme);

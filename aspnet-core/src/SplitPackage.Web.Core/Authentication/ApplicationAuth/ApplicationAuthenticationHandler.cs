@@ -16,6 +16,7 @@ using SplitPackage.Authorization.Users;
 using Abp.Runtime.Security;
 using Abp.Domain.Uow;
 using SplitPackage.Authorization.Roles;
+using Abp.Logging;
 
 namespace SplitPackage.Authentication.ApplicationAuth
 {
@@ -59,31 +60,47 @@ namespace SplitPackage.Authentication.ApplicationAuth
                 return AuthenticateResult.NoResult();
             }
 
-            byte[] headerValueBytes = Convert.FromBase64String(headerValue.Parameter);
-            string userAndPassword = Encoding.UTF8.GetString(headerValueBytes);
-            string[] parts = userAndPassword.Split(':');
-            if (parts.Length != 2)
+            try
             {
-                return AuthenticateResult.Fail("Invalid Basic authentication header");
-            }
-            string otherSystemName = parts[0];
-            string certificate = parts[1];
+                if (string.IsNullOrEmpty(headerValue.Parameter))
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidToken, "Invalid token"));
+                }
+                byte[] headerValueBytes = Convert.FromBase64String(headerValue.Parameter);
+                string userAndPassword = Encoding.UTF8.GetString(headerValueBytes);
+                string[] parts = userAndPassword.Split(':');
+                if (parts.Length != 2)
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidAutheHeader, "Invalid Basic authentication header"));
+                }
+                string otherSystemName = parts[0];
+                string certificate = parts[1];
 
-            var os = await this._osRepository.FirstOrDefaultAsync(o => o.SystemName == otherSystemName && o.Certificate == certificate);
-            if (os == null)
-            {
-                return AuthenticateResult.Fail("os is banish");
+                var os = await this._osRepository.FirstOrDefaultAsync(o => o.SystemName == otherSystemName && o.Certificate == certificate);
+                if (os == null)
+                {
+                    return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_RefuseAuthorization, "os is banish"));
+                }
+                var user = await this._userRepository.SingleAsync(o => o.UserName == StaticRoleNames.Host.Admin && o.TenantId == null);
+                var claims = new[] {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin),
+                    new Claim("SplitPackageOtherSystemId", os.Id.ToString())
+                };
+                var identity = new ClaimsIdentity(claims, Scheme.Name);
+                var principal = new ClaimsPrincipal(identity);
+                var ticket = new AuthenticationTicket(principal, Scheme.Name);
+                return AuthenticateResult.Success(ticket);
             }
-            var user = await this._userRepository.SingleAsync(o => o.UserName == StaticRoleNames.Host.Admin && o.TenantId == null);
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(AbpClaimTypes.UserName, StaticRoleNames.Host.Admin),
-                new Claim("SplitPackageOtherSystemId", os.Id.ToString())
-            };
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-            return AuthenticateResult.Success(ticket);
+            catch (Exception ex) when (ex is FormatException || ex is DecoderFallbackException)
+            {
+                return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.Auth_InvalidToken, "Invalid token"));
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Logger.Error("application auth", ex);
+                return AuthenticateResult.Fail(new Abp.UI.UserFriendlyException((int)Split.Dto.ResultCode.SytemError, "Invalid auth request"));
+            }
         }
 
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)

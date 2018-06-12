@@ -66,7 +66,7 @@ namespace SplitPackage.MultiTenancy
                 var tenant = new Tenant()
                 {
                     TenancyName = dto.TenantName,
-                    Name = dto.TenantName,
+                    Name = dto.Name,
                     ApiKey = dto.TenantName,
                     OtherSystemId = otherSystemId
                 };

@@ -10,9 +10,9 @@ namespace SplitPackage.Split
 {
     public interface ISplitService
     {
-        Task<Tuple<string, SplitedOrder>> Split(SplitRequest request, int? tenantId);
-        Task<Tuple<string, SplitedOrder>> SplitWithOrganization1(SplitWithExpRequest1 request, int? tenantId);
-        Task<Tuple<string, List<LogisticsModel>>> GetLogisticsList(int? tenantId);
+        Task<SplitedOrder> Split(SplitRequest request, int? tenantId);
+        Task<SplitedOrder> SplitWithOrganization1(SplitWithExpRequest1 request, int? tenantId);
+        Task<List<LogisticsModel>> GetLogisticsList(int? tenantId);
         Task<List<ProductSortSimpleDto1>> GetProductClass();
     }
 }

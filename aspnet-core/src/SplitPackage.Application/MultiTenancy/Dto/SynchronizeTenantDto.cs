@@ -8,6 +8,8 @@ namespace SplitPackage.MultiTenancy.Dto
     {
         public string TenantName { get; set; }
 
+        public string Name { get; set; }
+
         public List<SynchronizeChannelDto> Channels { get; set; }
     }
 

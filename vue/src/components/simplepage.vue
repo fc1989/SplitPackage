@@ -33,7 +33,7 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="cancel">{{$t('Public.Cancel')}}</Button>
+                <Button @click="showModal=false">{{$t('Public.Cancel')}}</Button>
                 <Button @click="create" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
@@ -44,7 +44,7 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="cancel">{{$t('Public.Cancel')}}</Button>
+                <Button @click="showEditModal = false">{{$t('Public.Cancel')}}</Button>
                 <Button @click="edit" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
@@ -68,6 +68,7 @@ const rowActionRender = (h, params, vm, actionOption) => {
           click: () => {
             vm.editModel = JSON.parse(JSON.stringify(params.row));
             vm.showEditModal = true;
+            vm.$refs.editForm.resetFields();
           }
         }
       },
@@ -141,10 +142,6 @@ export default {
     }
   },
   methods: {
-    async cancel(){
-      this.modalState.showModal=false;
-      this.$refs.modalForm.resetFields();
-    },
     async create() {
       var _this = this;
       this.$refs.newForm.validate(async val => {
@@ -206,6 +203,7 @@ export default {
           this.createModel = {};
         }
         this.showModal = true;
+        this.$refs.newForm.resetFields();
       } else if (name === "Refresh") {
         this.getpage();
       }

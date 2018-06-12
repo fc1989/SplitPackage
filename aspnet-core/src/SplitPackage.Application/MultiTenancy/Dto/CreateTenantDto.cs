@@ -10,7 +10,6 @@ namespace SplitPackage.MultiTenancy.Dto
     {
         [Required]
         [StringLength(AbpTenantBase.MaxTenancyNameLength)]
-        [RegularExpression(AbpTenantBase.TenancyNameRegex)]
         public string TenancyName { get; set; }
 
         [Required]

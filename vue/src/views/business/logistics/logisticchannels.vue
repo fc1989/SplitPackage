@@ -143,6 +143,7 @@
                         }
                         vm.modalState.oldChannelName = req.data.result.channelName;
                         vm.modalState.showModal = true;
+                        vm.$refs.modalForm.resetFields();
                         vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
                     });
                 }
@@ -173,6 +174,7 @@
                             vm.modalState.numFreightData.push(JSON.parse(JSON.stringify(req.data.result.numFreights[0])));
                         }
                         vm.modalState.showModal = true;
+                        vm.$refs.modalForm.resetFields();                        
                         vm.modalState.title = vm.$t('Menu.Pages.LogisticChannels')+vm.$t('Public.Details');
                     });
                 }
@@ -255,23 +257,23 @@
         },
         data() {
             let _this = this;
-            // const validateChannelName = (rule, value, callback) => {
-            //     if (!value) {
-            //         callback(new Error("channelName is required"));
-            //     } else {
-            //         if(_this.modalState.actionState === "edit" && _this.modalState.oldChannelName == value){
-            //             callback();
-            //             return;
-            //         }
-            //         LogisticChannelApi.Verify({logisticId:_this.logisticId,channelName:value}).then(function(rep) {
-            //             if (rep.data.result) {
-            //                 callback();
-            //             } else {
-            //                 callback("channelName is exit");
-            //             }
-            //         });
-            //     }
-            // };
+            const validateChannelName = (rule, value, callback) => {
+                if (!value) {
+                    callback(new Error("channelName is required"));
+                } else {
+                    if(_this.modalState.actionState === "edit" && _this.modalState.oldChannelName == value){
+                        callback();
+                        return;
+                    }
+                    LogisticChannelApi.Verify({logisticId:_this.logisticId,channelName:value}).then(function(rep) {
+                        if (rep.data.result) {
+                            callback();
+                        } else {
+                            callback("channelName is exit");
+                        }
+                    });
+                }
+            };
             const validateChargeRule = (rule, value, callback) =>{
                 if(_this.modalState.model.way === 0){
                     if(_this.modalState.model.weightFreights === null || _this.modalState.model.weightFreights.length === 0)
@@ -323,6 +325,7 @@
                                 vm.modalState.showModal = true;
                                 vm.modalState.actionState = "create";
                                 vm.modalState.title = vm.$t('Public.Create') + vm.$t('Menu.Pages.LogisticChannels');
+                                vm.$refs.modalForm.resetFields();
                             });
                         }
                     },
@@ -371,7 +374,7 @@
                     weightFreightData:[],
                     numFreightData:[],
                     rule: {
-                        channelName: [{ required: true, trigger: 'ignore'}],
+                        channelName: [{ required: true, trigger: 'ignore', validator: validateChannelName}],
                         numFreightData: [{validator: validateChargeRule, trigger: 'ignore' }],
                         weightFreightData: [{validator: validateChargeRule, trigger: 'ignore' }]
                     },

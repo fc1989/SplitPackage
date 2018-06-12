@@ -38,7 +38,7 @@
                 </Form>
             </div>
             <div slot="footer">
-                <Button @click="cancel">{{$t('Public.Cancel')}}</Button>
+                <Button @click="modalState.showModal = false">{{$t('Public.Cancel')}}</Button>
                 <Button @click="save" type="primary">{{$t('Public.Save')}}</Button>
             </div>
         </Modal>
@@ -64,6 +64,7 @@ const rowActionRender = (h, params, vm, actionOption) => {
             vm.modalState.model = JSON.parse(JSON.stringify(await vm.getEditModel(params.row)));
             vm.modalState.state = "edit";
             vm.modalState.showModal = true;
+            vm.$refs.modalForm.resetFields();
             vm.modalState.title = vm.$t('Public.Edit') + vm.$t(vm.title);
             vm.$parent.$emit('set-modalState','edit');
           }
@@ -205,10 +206,6 @@ export default {
         }
       });
     },
-    async cancel(){
-      this.modalState.showModal=false;
-      this.$refs.modalForm.resetFields();
-    },
     pageChange(page) {
       this.state.currentPage = page;
       this.getpage();
@@ -242,10 +239,10 @@ export default {
     async handleClickActionsDropdown(name) {
       if (name === "Create") {
         this.modalState.model = await this.getCreateModel();
-        this.$refs.modalForm.resetFields();
         this.modalState.state = 'create';
         this.modalState.title = this.$t('Public.Create') + this.$t(this.title)
         this.modalState.showModal = true;
+        this.$refs.modalForm.resetFields();
         this.$parent.$emit('set-modalState','create');
       } else if (name === "Refresh") {
         this.getpage();
