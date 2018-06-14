@@ -37,6 +37,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Tenants
                 {
                     tenant.EditionId = defaultEdition.Id;
                 }
+                tenant.IsActive = true;
                 _context.Tenants.Add(tenant);
                 _context.SaveChanges();
                 new TenantRoleAndUserBuilder(_context,tenant.Id).Create();

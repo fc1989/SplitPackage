@@ -19,7 +19,6 @@
 
 <script>
 import Cookies from 'js-cookie';
-import config from '../../../../build/config.js';
 export default {
     name: 'themeSwitch',
     data () {
@@ -113,7 +112,7 @@ export default {
                 }]);
             }
             let stylePath = '';
-            if (config.env.indexOf('dev') > -1) {
+            if (window.OperatingEnvironment.env.indexOf('dev') > -1) {
                 stylePath = './src/views/main-components/theme-switch/theme/';
             } else {
                 stylePath = 'dist/';
@@ -128,7 +127,7 @@ export default {
     },
     created () {
         let path = '';
-        if (config.env.indexOf('dev') > -1) {
+        if (window.OperatingEnvironment.env.indexOf('dev') > -1) {
             path = './src/views/main-components/theme-switch/theme/';
         } else {
             path = 'dist/';

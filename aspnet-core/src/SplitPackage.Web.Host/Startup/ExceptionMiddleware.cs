@@ -26,8 +26,12 @@ namespace SplitPackage.Web.Host.Startup
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Headers.ContainsKey("Authorization") &&
-                !context.Request.Headers["Authorization"].ToString().StartsWith(JwtBearerDefaults.AuthenticationScheme, true, System.Globalization.CultureInfo.CurrentCulture))
+            var isWebserviceWay = false;
+            if (context.Request.Headers.ContainsKey("requestWay") || context.Request.Headers["requestWay"].ToString() != "webapi")
+            {
+                isWebserviceWay = true;
+            }
+            if (isWebserviceWay)
             {
                 try
                 {
@@ -38,7 +42,9 @@ namespace SplitPackage.Web.Host.Startup
                         context.Response.ContentType = "application/json;charset=utf-8";
                         context.Response.StatusCode = (int)result.Code;
                         result.Message = "no find";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(result,
+                            Formatting.Indented,
+                            new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }));
                     }
                     else if (context.Response.StatusCode == 415)
                     {
@@ -46,7 +52,9 @@ namespace SplitPackage.Web.Host.Startup
                         context.Response.ContentType = "application/json;charset=utf-8";
                         context.Response.StatusCode = (int)result.Code;
                         result.Message = "Unsupported media type";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(result,
+                            Formatting.Indented,
+                            new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }));
                     }
                     return;
                 }
@@ -72,7 +80,9 @@ namespace SplitPackage.Web.Host.Startup
                     }
                     context.Response.StatusCode = 200;
                     context.Response.ContentType = "application/json;charset=utf-8";
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new ResultMessage<object>(code, message, null)));
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new ResultMessage<object>(code, message, null),
+                            Formatting.Indented,
+                            new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }));
                     return;
                 }
             }

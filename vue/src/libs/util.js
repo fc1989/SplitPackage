@@ -1,5 +1,4 @@
 import axios from 'axios';
-import env from '../../build/env';
 import semver from 'semver';
 import packjson from '../../package.json';
 import AppConsts from './appconst'
@@ -13,11 +12,7 @@ util.title = function (title) {
     window.document.title = title;
 };
 
-const ajaxUrl = env.env === 'development'
-    ? AppConsts.remoteServiceBaseUrl
-    : env.env === 'production'
-        ? env.remoteServiceBaseUrl
-        : 'https://debug.url.com';
+const ajaxUrl = window.OperatingEnvironment.remoteServiceBaseUrl;
 
 util.ajax = axios.create({
     baseURL: ajaxUrl,
@@ -36,6 +31,7 @@ util.ajax.interceptors.request.use(function (config) {
         }
         window.abp.ajaxRequestCount = window.abp.ajaxRequestCount + 1;
     }
+    config.headers.common["requestWay"] = "webapi";
     return config;
 }, function (error) {
     if(window.Vue){

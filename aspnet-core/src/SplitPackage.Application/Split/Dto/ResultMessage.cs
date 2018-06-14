@@ -33,6 +33,7 @@ namespace SplitPackage.Split.Dto
     {
         Success = 200,
         BadRequest = 400,
+        Auth_Error = 401,
         NoFind = 404,
         UnsupportedMediaType = 415,
         SytemError = 500,

@@ -1,19 +1,10 @@
 ﻿using Abp.Authorization;
-using Abp.Logging;
 using Abp.Web.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Newtonsoft.Json;
 using SplitPackage.Split;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.SplitModels;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SplitPackage.Controllers
@@ -37,7 +28,7 @@ namespace SplitPackage.Controllers
             return new ResultMessage<SplitedOrder>(ResultCode.Success, "success", result);
         }
 
-        [HttpPost, Route("SplitWithExp1")]
+        [HttpPost, Route("SplitWithExp1"), AbpAuthorize]
         public async Task<ResultMessage<SplitedOrder>> SplitWithExp1([FromBody]SplitWithExpRequest1 request)
         {
             var result = await this._SplitAppService.SplitWithOrganization1(request, AbpSession.TenantId);
@@ -52,9 +43,10 @@ namespace SplitPackage.Controllers
         }
 
         [HttpPost, Route("ProductClass"), AbpAllowAnonymous]
-        public async Task<List<ProductSortSimpleDto1>> GetProductClass()
+        public async Task<ResultMessage<List<ProductSortSimpleDto1>>> GetProductClass()
         {
-            return await this._SplitAppService.GetProductClass();
+            var result = await this._SplitAppService.GetProductClass(); ;
+            return new ResultMessage<List<ProductSortSimpleDto1>>(ResultCode.Success,"success",result);
         }
     }
 }

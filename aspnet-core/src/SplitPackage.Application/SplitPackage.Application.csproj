@@ -19,6 +19,5 @@
   <ItemGroup>
     <Folder Include="Business\NumFreights\" />
     <Folder Include="Business\WeightFreights\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 </Project>

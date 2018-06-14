@@ -52,7 +52,11 @@ namespace SplitPackage.Split
         private async Task<IList<LogisticCacheDto>> GetOwnLogistics(int? tenantId)
         {
             var setting = await this._cacheManager.GetSplitPackageSettingAsync(tenantId);
-            return setting.OwnLogistics;
+            if (setting == null)
+            {
+                return new List<LogisticCacheDto>();
+            }
+            return setting?.OwnLogistics;
         }
 
         protected async Task ValidRequire<T>(T request, int? tenantId) where T : BaseRequest

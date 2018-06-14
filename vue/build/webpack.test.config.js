@@ -21,8 +21,7 @@ const package = require('../package.json');
 
 module.exports = merge(webpackBaseConfig, {
     output: {
-        path: path.resolve(__dirname, '../dist/release/dist/'),
-        pathinfo: false,
+        path: path.resolve(__dirname, '../dist/test/dist/'),
         publicPath: '/dist/',
         filename: '[name].[hash].js',
         chunkFilename: '[name].[hash].chunk.js'
@@ -62,7 +61,7 @@ module.exports = merge(webpackBaseConfig, {
         // }),
         new CopyWebpackPlugin([
             {
-                from: 'build/env.release.js',
+                from: 'build/env.test.js',
                 to: 'env.js'
             },
             {

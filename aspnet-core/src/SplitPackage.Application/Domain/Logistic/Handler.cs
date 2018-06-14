@@ -543,6 +543,7 @@ namespace SplitPackage.Domain.Logistic
                 tenantSettingCache.OwnLogistics.First(o => o.Id == channel.LogisticId).LogisticChannels.Remove(tenantChannelCache);
             }
             await _manageCache.SetSplitPackageSettingAsync(eventData.TenantId, tenantSettingCache);
+            Abp.Logging.LogHelper.Logger.Debug(string.Format("{1}导入物流渠道:{0}",tenantSettingCache.OwnLogistics.Count,eventData.TenantId));
         }
         #endregion
 

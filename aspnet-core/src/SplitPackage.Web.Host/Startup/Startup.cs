@@ -167,7 +167,7 @@ namespace SplitPackage.Web.Host.Startup
                              context.User = result.Principal;
                          }
                      }
-                     else if (result.Failure != null)
+                     else if (result.Failure != null && scheme!= JwtBearerDefaults.AuthenticationScheme)
                      {
                          // Rethrow, let the exception page handle it.
                          ExceptionDispatchInfo.Capture(result.Failure).Throw();

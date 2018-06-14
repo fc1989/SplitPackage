@@ -7,12 +7,12 @@ const webpackBaseConfig = require('./webpack.base.config.js');
 const fs = require('fs');
 const package = require('../package.json');
 
-fs.open('./build/env.js', 'w', function(err, fd) {
-    const buf = "export default {\
-        env : 'development'\
-    }";
-    fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) {});
-});
+// fs.open('./build/env.js', 'w', function(err, fd) {
+//     const buf = "export default {\
+//         env : 'development'\
+//     }";
+//     fs.write(fd, buf, 0, buf.length, 0, function(err, written, buffer) {});
+// });
 
 module.exports = merge(webpackBaseConfig, {
     devtool: '#source-map',
@@ -37,11 +37,15 @@ module.exports = merge(webpackBaseConfig, {
         }),
         new CopyWebpackPlugin([
             {
+                from: 'build/env.js',
+                to: 'env.js'
+            },
+            {
                 from: 'src/views/main-components/theme-switch/theme'
             },
             {
                 from:'node_modules/abp-web-resources/abp/framework/scripts/abp.js',
-                to:'abp'
+                to: 'abp'
             },
             {
                 from:'node_modules/jquery/dist/jquery.js'
