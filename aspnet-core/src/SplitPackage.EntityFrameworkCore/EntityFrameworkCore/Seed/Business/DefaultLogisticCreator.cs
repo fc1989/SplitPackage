@@ -33,6 +33,7 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
                     CorporationName = item.OrganizationName,
                     LogisticCode = item.OrganizationName,
                     CorporationUrl = item.URL,
+                    LogoURL = item.LogoURL,
                     IsDeleted = false
                 };
                 List<LogisticChannel> lcSet = new List<LogisticChannel>();

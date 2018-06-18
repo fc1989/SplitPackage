@@ -12,7 +12,7 @@
     <RootNamespace>SplitPackage</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Localization\SourceFiles\SplitPackage-zh-CN.xml" />
+    <EmbeddedResource Include="Localization\SourceFiles\SplitPackage-zh-Hans.xml" />
     <EmbeddedResource Include="Localization\SourceFiles\SplitPackage-en-US.xml" />
   </ItemGroup>
   <ItemGroup>
