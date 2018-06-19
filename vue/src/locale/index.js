@@ -15,7 +15,7 @@ const dateTimeFormats = {
       weekday: 'short', hour: 'numeric', minute: 'numeric'
     }
   },
-  'zh-CN':{
+  'zh-Hans':{
     short: {
       year: 'numeric', month: 'short', day: 'numeric'
     },
@@ -25,9 +25,13 @@ const dateTimeFormats = {
     }
   }
 }
+const messages = {
+  "zh-Hans": $.extend({},zhLocale,Locales["zh-Hans"]),
+  "en-US": $.extend({},enLocale,Locales["en-US"]),
+}
 export default new VueI18n({
     dateTimeFormats:dateTimeFormats,
-    locale: 'zh-CN',
+    locale: 'zh-Hans',
     fallbackLocale: 'en-US',
-    messages:Locales
+    messages: messages
   });

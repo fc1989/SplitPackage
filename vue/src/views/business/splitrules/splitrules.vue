@@ -40,7 +40,7 @@
 <script>
 import simplePage from "../../../components/simplepagev1.vue";
 import ruleItems from './ruleitems'
-import SplitRuleApi from "@/api/splitRule";
+import SplitRuleApi from "@/api/splitrule";
 import LogisticChannelApi from "@/api/logisticchannel";
 
 export default {

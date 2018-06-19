@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  splitpackage.api:
+    image: splitpackage-api
+    build:
+     context: ../aspnet-core/
+      dockerfile: ./src/SplitPackage.Web.Host/Dockerfile
+
+  splitpackage.web:
+    image: splitpackage-web
+    build:
+      context: ../vue/
+      dockerfile: ./Dockerfile

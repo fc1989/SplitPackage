@@ -1,6 +1,8 @@
 import Cookies from 'js-cookie';
-import Util from '@/libs/util'
-import appconst from '@/libs/appconst'
+import Util from '@/libs/util';
+import appconst from '@/libs/appconst';
+import Vue from 'vue';
+
 const user = {
     namespaced:true,
     mutations: {
@@ -29,7 +31,7 @@ const user = {
                 payload.data.languageName,
                 new Date(new Date().getTime() + 5 * 365 * 86400000),
                 abp.appPath
-            );  
+            );
             window.location.reload();
         }
     }

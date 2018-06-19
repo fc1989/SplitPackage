@@ -1,0 +1,1 @@
+cd /project/migrator/ && dotnet SplitPackage.Migrator.dll -q && cd /project/api/ && dotnet SplitPackage.Web.Host.dll

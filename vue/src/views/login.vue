@@ -92,14 +92,13 @@ export default {
         };
     },
     methods: {
-        changeLanguage(languageName){
-            abp.utils.setCookieValue(
-                "Abp.Localization.CultureName",
-                languageName,
-                new Date(new Date().getTime() + 5 * 365 * 86400000), //5 year
-                abp.appPath
-            );
-            location.reload();
+        async changeLanguage(languageName){
+            await this.$store.dispatch({
+                type: 'user/changeLanguage',
+                data: {
+                    languageName:languageName
+                }
+            });
         },
         showChangeModal(){
             this.modalShow=true;
@@ -172,7 +171,7 @@ export default {
             return !val.isDisabled;
         });
         this.currentLanguage=abp.localization.currentLanguage;
-        Vue.config.lang = abp.localization.currentLanguage.name;
+        this.$i18n.locale = abp.localization.currentLanguage.name;
         this.isMultiTenancyEnabled=abp.multiTenancy.isEnabled;
     },
     computed:{

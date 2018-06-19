@@ -191,7 +191,7 @@ export default {
       'Url': 'Url'
     }
   },
-  'zh-CN': {
+  'zh-Hans': {
     'Public': {
       'Welcome': '欢迎登陆拆单系统',
       'Actions': '操作',
