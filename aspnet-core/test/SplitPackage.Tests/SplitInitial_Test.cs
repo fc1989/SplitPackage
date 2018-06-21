@@ -87,7 +87,7 @@ namespace SplitPackage.Tests
         {
             await UsingDbContextAsync(async context =>
             {
-                List<ApplicationLanguage> als = context.Languages.IgnoreQueryFilters().Where(e => e.TenantId == null && (e.Name == "en-US" || e.Name == "zh-CN")).ToList();
+                List<ApplicationLanguage> als = context.Languages.IgnoreQueryFilters().Where(e => e.TenantId == null && (e.Name == "en-US" || e.Name == "zh-Hans")).ToList();
                 Assert.Equal(2, als.Count);
                 var zh = als.FirstOrDefault(o => o.DisplayName == "简体中文");
                 await EntityValid(zh);
@@ -142,7 +142,7 @@ namespace SplitPackage.Tests
                 Assert.Equal("mydomain.com mailer", dfd.Value);
                 var ls = await context.Settings.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Name == LocalizationSettingNames.DefaultLanguage && s.TenantId == null && s.UserId == null);
                 await EntityValid(ls);
-                Assert.Equal("zh-CN", ls.Value);
+                Assert.Equal("zh-Hans", ls.Value);
             });
         }
 

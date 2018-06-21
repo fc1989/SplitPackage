@@ -9,12 +9,6 @@ const user = {
         logout(){
             abp.auth.clearToken();
             location.reload();
-        },
-        setPageSize(state,size){
-            state.pageSize=size;
-        },
-        setCurrentPage(state,page){
-            state.currentPage=page;
         }
     },
     actions:{

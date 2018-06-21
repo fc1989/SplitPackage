@@ -5,9 +5,15 @@ services:
     image: splitpackage-api
     build:
      context: ../aspnet-core/
-     dockerfile: ./src/SplitPackage.Web.Host/Dockerfile
+     dockerfile: ./src/SplitPackage.Web.Host/BuildApiImage
+     args:
+       DBHOST: splitpackage-db
+       DBPORT: 3306
+       ASPNETCORE_ENVIRONMENT:
   splitpackage.web:
     image: splitpackage-web
     build:
       context: ../vue/
-      dockerfile: ./Dockerfile
+      dockerfile: ./BuildWebImage
+      args:
+        BUILDWAY: buildlocal

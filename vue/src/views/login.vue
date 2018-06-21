@@ -166,12 +166,12 @@ export default {
             });
         }
     },
-    created(){
+    async created(){
         this.languages=abp.localization.languages.filter(val=>{
             return !val.isDisabled;
         });
-        this.currentLanguage=abp.localization.currentLanguage;
-        this.$i18n.locale = abp.localization.currentLanguage.name;
+        // this.currentLanguage=abp.localization.currentLanguage;
+        // this.$i18n.locale = abp.localization.currentLanguage.name;
         this.isMultiTenancyEnabled=abp.multiTenancy.isEnabled;
     },
     computed:{

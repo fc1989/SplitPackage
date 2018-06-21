@@ -7,6 +7,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>SplitPackage.Web.Host</PackageId>
     <UserSecretsId>AbpCompanyName-SplitPackage-56C2EF2F-ABD6-4EFC-AAF2-2E81C34E8FB1</UserSecretsId>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants>FEATURE_SIGNALR_ASPNETCORE</DefineConstants>
@@ -21,7 +22,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Update="Dockerfile">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
