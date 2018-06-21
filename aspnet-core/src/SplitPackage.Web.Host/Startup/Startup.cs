@@ -182,7 +182,10 @@ namespace SplitPackage.Web.Host.Startup
                  await next();
              });
 
-            app.UseAbpRequestLocalization();
+            app.UseAbpRequestLocalization(options => {
+                options.RequestCultureProviders.RemoveAt(4);
+                options.RequestCultureProviders.Insert(4, new DefaultRequestCultureProvider());
+            });
 
 #if FEATURE_SIGNALR
             // Integrate with OWIN
