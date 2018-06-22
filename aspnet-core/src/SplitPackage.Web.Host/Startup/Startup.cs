@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
@@ -14,31 +15,15 @@ using Abp.Extensions;
 using SplitPackage.Authentication.JwtBearer;
 using SplitPackage.Configuration;
 using SplitPackage.Identity;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Runtime.ExceptionServices;
-using SplitPackage.Authentication.BasicAuth;
+
+using Abp.AspNetCore.SignalR.Hubs;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc;
-using Abp.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SplitPackage.Authentication.BasicAuth;
+using System.Runtime.ExceptionServices;
+using Microsoft.AspNetCore.Authentication;
 using SplitPackage.Authentication.ApplicationAuth;
-using System.IO;
-using Newtonsoft.Json;
-using SplitPackage.Split.Dto;
-using Microsoft.AspNetCore.Mvc.Controllers;
-
-#if FEATURE_SIGNALR
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin.Cors;
-using Owin;
-using Abp.Owin;
-using SplitPackage.Owin;
-#elif FEATURE_SIGNALR_ASPNETCORE
-using Abp.AspNetCore.SignalR.Hubs;
-#endif
 
 namespace SplitPackage.Web.Host.Startup
 {
@@ -63,9 +48,7 @@ namespace SplitPackage.Web.Host.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-#if FEATURE_SIGNALR_ASPNETCORE
             services.AddSignalR();
-#endif
 
             // Configure CORS for angular2 UI
             services.AddCors(
@@ -81,6 +64,7 @@ namespace SplitPackage.Web.Host.Startup
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
+                        .AllowCredentials()
                 )
             );
 
@@ -182,20 +166,12 @@ namespace SplitPackage.Web.Host.Startup
                  await next();
              });
 
-            app.UseAbpRequestLocalization(options => {
-                options.RequestCultureProviders.RemoveAt(4);
-                options.RequestCultureProviders.Insert(4, new DefaultRequestCultureProvider());
-            });
+            app.UseAbpRequestLocalization();
 
-#if FEATURE_SIGNALR
-            // Integrate with OWIN
-            app.UseAppBuilder(ConfigureOwinServices);
-#elif FEATURE_SIGNALR_ASPNETCORE
             app.UseSignalR(routes =>
             {
                 routes.MapHub<AbpCommonHub>("/signalr");
             });
-#endif
 
             app.UseMvc(routes =>
             {
@@ -215,30 +191,9 @@ namespace SplitPackage.Web.Host.Startup
             {
                 //定制化swagger ui
                 //options.IndexStream = () => GetType().GetTypeInfo().Assembly.GetManifestResourceStream("SplitPackage.Web.Host.SwaggerIndex.html");
-                //options.InjectOnCompleteJavaScript("/swagger/ui/abp.js");
-                //options.InjectOnCompleteJavaScript("/swagger/ui/on-complete.js");
                 options.SwaggerEndpoint("/swagger/open/swagger.json", "SplitPackage Open API V1");
                 options.SwaggerEndpoint("/swagger/private/swagger.json", "SplitPackage API V1");
-            }); // URL: /swagger
-        }
-
-#if FEATURE_SIGNALR
-        private static void ConfigureOwinServices(IAppBuilder app)
-        {
-            app.Properties["host.AppName"] = "SplitPackage";
-
-            app.UseAbp();
-            
-            app.Map("/signalr", map =>
-            {
-                map.UseCors(CorsOptions.AllowAll);
-                var hubConfiguration = new HubConfiguration
-                {
-                    EnableJSONP = true
-                };
-                map.RunSignalR(hubConfiguration);
             });
         }
-#endif
     }
 }
