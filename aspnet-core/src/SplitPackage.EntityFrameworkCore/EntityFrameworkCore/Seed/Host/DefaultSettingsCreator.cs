@@ -21,6 +21,11 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Host
             AddSettingIfNotExists(EmailSettingNames.DefaultFromAddress, "admin@mydomain.com");
             AddSettingIfNotExists(EmailSettingNames.DefaultFromDisplayName, "mydomain.com mailer");
 
+            var entity = _context.Settings.IgnoreQueryFilters().FirstOrDefault(l => l.TenantId == null && l.UserId == null && l.Name == LocalizationSettingNames.DefaultLanguage&&l.Value=="zh-CN");
+            if (entity != null)
+            {
+                _context.Settings.Remove(entity);
+            }
             // Languages
             AddSettingIfNotExists(LocalizationSettingNames.DefaultLanguage, "zh-Hans");
         }
