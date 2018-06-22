@@ -32,6 +32,12 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Host
 
         private void CreateLanguages()
         {
+            //don't support
+            var entity = _context.Languages.IgnoreQueryFilters().FirstOrDefault(l => l.TenantId == null && l.Name == "zh-CN");
+            if (entity != null)
+            {
+                _context.Languages.Remove(entity);
+            }
             foreach (var language in InitialLanguages)
             {
                 AddLanguageIfNotExists(language);

@@ -13,12 +13,16 @@
     <Compile Remove="Migrations\20180409113142_init.cs" />
     <Compile Remove="Migrations\20180411093916_init.cs" />
     <Compile Remove="Migrations\20180421043001_abc.cs" />
+    <Compile Remove="Migrations\20180622064047_AddProductReviews.cs" />
+    <Compile Remove="Migrations\20180622064512_edit.cs" />
+    <Compile Remove="Migrations\20180622064752_editLanguage.cs" />
     <None Include="xml\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.0-rc2-20180608060413" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.0-rc2-20180621144030" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>

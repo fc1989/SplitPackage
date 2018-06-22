@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace SplitPackage.Migrations
 {
@@ -15,20 +14,20 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    BrowserInfo = table.Column<string>(nullable: true),
-                    ClientIpAddress = table.Column<string>(nullable: true),
-                    ClientName = table.Column<string>(nullable: true),
-                    CustomData = table.Column<string>(nullable: true),
-                    Exception = table.Column<string>(nullable: true),
-                    ExecutionDuration = table.Column<int>(nullable: false),
-                    ExecutionTime = table.Column<DateTime>(nullable: false),
-                    ImpersonatorTenantId = table.Column<int>(nullable: true),
-                    ImpersonatorUserId = table.Column<long>(nullable: true),
-                    MethodName = table.Column<string>(nullable: true),
-                    Parameters = table.Column<string>(nullable: true),
-                    ServiceName = table.Column<string>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: true)
+                    UserId = table.Column<long>(nullable: true),
+                    ServiceName = table.Column<string>(maxLength: 256, nullable: true),
+                    MethodName = table.Column<string>(maxLength: 256, nullable: true),
+                    Parameters = table.Column<string>(maxLength: 1024, nullable: true),
+                    ExecutionTime = table.Column<DateTime>(nullable: false),
+                    ExecutionDuration = table.Column<int>(nullable: false),
+                    ClientIpAddress = table.Column<string>(maxLength: 64, nullable: true),
+                    ClientName = table.Column<string>(maxLength: 128, nullable: true),
+                    BrowserInfo = table.Column<string>(maxLength: 512, nullable: true),
+                    Exception = table.Column<string>(maxLength: 2000, nullable: true),
+                    ImpersonatorUserId = table.Column<long>(nullable: true),
+                    ImpersonatorTenantId = table.Column<int>(nullable: true),
+                    CustomData = table.Column<string>(maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,13 +42,13 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    IsAbandoned = table.Column<bool>(nullable: false),
-                    JobArgs = table.Column<string>(maxLength: 1048576, nullable: false),
                     JobType = table.Column<string>(maxLength: 512, nullable: false),
-                    LastTryTime = table.Column<DateTime>(nullable: true),
+                    JobArgs = table.Column<string>(maxLength: 1048576, nullable: false),
+                    TryCount = table.Column<short>(nullable: false),
                     NextTryTime = table.Column<DateTime>(nullable: false),
-                    Priority = table.Column<byte>(nullable: false),
-                    TryCount = table.Column<short>(nullable: false)
+                    LastTryTime = table.Column<DateTime>(nullable: true),
+                    IsAbandoned = table.Column<bool>(nullable: false),
+                    Priority = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,13 +63,13 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    DisplayName = table.Column<string>(maxLength: 64, nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
-                    Name = table.Column<string>(maxLength: 32, nullable: false)
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(maxLength: 32, nullable: false),
+                    DisplayName = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,7 +82,7 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    BrowserInfo = table.Column<string>(maxLength: 256, nullable: true),
+                    BrowserInfo = table.Column<string>(maxLength: 512, nullable: true),
                     ClientIpAddress = table.Column<string>(maxLength: 64, nullable: true),
                     ClientName = table.Column<string>(maxLength: 128, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
@@ -107,42 +106,81 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    DisplayName = table.Column<string>(maxLength: 64, nullable: false),
-                    Icon = table.Column<string>(maxLength: 128, nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    IsDisabled = table.Column<bool>(nullable: false),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<int>(nullable: true),
                     Name = table.Column<string>(maxLength: 10, nullable: false),
-                    TenantId = table.Column<int>(nullable: true)
+                    DisplayName = table.Column<string>(maxLength: 64, nullable: false),
+                    Icon = table.Column<string>(maxLength: 128, nullable: true),
+                    IsDisabled = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Languages", x => x.Id);
                 });
 
-            //migrationBuilder.CreateTable(
-            //    name: "LanguageTexts",
-            //    columns: table => new
-            //    {
-            //        Id = table.Column<long>(nullable: false)
-            //            .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-            //        CreationTime = table.Column<DateTime>(nullable: false),
-            //        CreatorUserId = table.Column<long>(nullable: true),
-            //        Key = table.Column<string>(maxLength: 256, nullable: false),
-            //        LanguageName = table.Column<string>(maxLength: 10, nullable: false),
-            //        LastModificationTime = table.Column<DateTime>(nullable: true),
-            //        LastModifierUserId = table.Column<long>(nullable: true),
-            //        Source = table.Column<string>(maxLength: 128, nullable: false),
-            //        TenantId = table.Column<int>(nullable: true),
-            //        Value = table.Column<string>(maxLength: 67108864, nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_LanguageTexts", x => x.Id);
-            //    });
+            migrationBuilder.CreateTable(
+                name: "LanguageTexts",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
+                    LanguageName = table.Column<string>(maxLength: 10, nullable: false),
+                    Source = table.Column<string>(maxLength: 128, nullable: false),
+                    Key = table.Column<string>(maxLength: 256, nullable: false),
+                    Value = table.Column<string>(maxLength: 67108864, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LanguageTexts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LogisticRelateds",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RelatedName = table.Column<string>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogisticRelateds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Logistics",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    CorporationName = table.Column<string>(nullable: true),
+                    CorporationUrl = table.Column<string>(nullable: true),
+                    LogoURL = table.Column<string>(nullable: true),
+                    LogisticCode = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logistics", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Notifications",
@@ -151,16 +189,16 @@ namespace SplitPackage.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
+                    NotificationName = table.Column<string>(maxLength: 96, nullable: false),
                     Data = table.Column<string>(maxLength: 1048576, nullable: true),
                     DataTypeName = table.Column<string>(maxLength: 512, nullable: true),
-                    EntityId = table.Column<string>(maxLength: 96, nullable: true),
-                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
                     EntityTypeName = table.Column<string>(maxLength: 250, nullable: true),
-                    ExcludedUserIds = table.Column<string>(maxLength: 131072, nullable: true),
-                    NotificationName = table.Column<string>(maxLength: 96, nullable: false),
+                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
+                    EntityId = table.Column<string>(maxLength: 96, nullable: true),
                     Severity = table.Column<byte>(nullable: false),
-                    TenantIds = table.Column<string>(maxLength: 131072, nullable: true),
-                    UserIds = table.Column<string>(maxLength: 131072, nullable: true)
+                    UserIds = table.Column<string>(maxLength: 131072, nullable: true),
+                    ExcludedUserIds = table.Column<string>(maxLength: 131072, nullable: true),
+                    TenantIds = table.Column<string>(maxLength: 131072, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -174,12 +212,12 @@ namespace SplitPackage.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    EntityId = table.Column<string>(maxLength: 96, nullable: true),
-                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
-                    EntityTypeName = table.Column<string>(maxLength: 250, nullable: true),
-                    NotificationName = table.Column<string>(maxLength: 96, nullable: true),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false),
+                    NotificationName = table.Column<string>(maxLength: 96, nullable: true),
+                    EntityTypeName = table.Column<string>(maxLength: 250, nullable: true),
+                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
+                    EntityId = table.Column<string>(maxLength: 96, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -192,17 +230,17 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(maxLength: 95, nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    DisplayName = table.Column<string>(maxLength: 128, nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
                     ParentId = table.Column<long>(nullable: true),
-                    TenantId = table.Column<int>(nullable: true)
+                    Code = table.Column<string>(maxLength: 95, nullable: false),
+                    DisplayName = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -216,20 +254,77 @@ namespace SplitPackage.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OtherSystems",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SystemName = table.Column<string>(nullable: true),
+                    Certificate = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OtherSystems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<int>(nullable: true),
+                    PTId = table.Column<string>(nullable: true),
+                    ProductName = table.Column<string>(nullable: true),
+                    Sku = table.Column<string>(nullable: true),
+                    Brand = table.Column<string>(nullable: true),
+                    Weight = table.Column<double>(nullable: false),
+                    DeclarePrice = table.Column<double>(nullable: false),
+                    DeclareTaxrate = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductSorts",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SortName = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductSorts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TenantNotifications",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
+                    NotificationName = table.Column<string>(maxLength: 96, nullable: false),
                     Data = table.Column<string>(maxLength: 1048576, nullable: true),
                     DataTypeName = table.Column<string>(maxLength: 512, nullable: true),
-                    EntityId = table.Column<string>(maxLength: 96, nullable: true),
-                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
                     EntityTypeName = table.Column<string>(maxLength: 250, nullable: true),
-                    NotificationName = table.Column<string>(maxLength: 96, nullable: false),
-                    Severity = table.Column<byte>(nullable: false),
-                    TenantId = table.Column<int>(nullable: true)
+                    EntityTypeAssemblyQualifiedName = table.Column<string>(maxLength: 512, nullable: true),
+                    EntityId = table.Column<string>(maxLength: 96, nullable: true),
+                    Severity = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,17 +339,17 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    EmailAddress = table.Column<string>(maxLength: 256, nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    LastLoginTime = table.Column<DateTime>(nullable: true),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
                     UserId = table.Column<long>(nullable: false),
                     UserLinkId = table.Column<long>(nullable: true),
-                    UserName = table.Column<string>(maxLength: 32, nullable: true)
+                    UserName = table.Column<string>(maxLength: 32, nullable: true),
+                    EmailAddress = table.Column<string>(maxLength: 256, nullable: true),
+                    LastLoginTime = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -267,15 +362,15 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    BrowserInfo = table.Column<string>(maxLength: 256, nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
+                    TenancyName = table.Column<string>(maxLength: 64, nullable: true),
+                    UserId = table.Column<long>(nullable: true),
+                    UserNameOrEmailAddress = table.Column<string>(maxLength: 255, nullable: true),
                     ClientIpAddress = table.Column<string>(maxLength: 64, nullable: true),
                     ClientName = table.Column<string>(maxLength: 128, nullable: true),
-                    CreationTime = table.Column<DateTime>(nullable: false),
+                    BrowserInfo = table.Column<string>(maxLength: 512, nullable: true),
                     Result = table.Column<byte>(nullable: false),
-                    TenancyName = table.Column<string>(maxLength: 64, nullable: true),
-                    TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: true),
-                    UserNameOrEmailAddress = table.Column<string>(maxLength: 255, nullable: true)
+                    CreationTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -287,11 +382,11 @@ namespace SplitPackage.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    CreationTime = table.Column<DateTime>(nullable: false),
-                    State = table.Column<int>(nullable: false),
                     TenantId = table.Column<int>(nullable: true),
+                    UserId = table.Column<long>(nullable: false),
                     TenantNotificationId = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<long>(nullable: false)
+                    State = table.Column<int>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -306,10 +401,10 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    OrganizationUnitId = table.Column<long>(nullable: false),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false),
+                    OrganizationUnitId = table.Column<long>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -322,54 +417,72 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    AuthenticationSource = table.Column<string>(maxLength: 64, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
-                    EmailAddress = table.Column<string>(maxLength: 256, nullable: false),
-                    EmailConfirmationCode = table.Column<string>(maxLength: 328, nullable: true),
+                    AccessFailedCount = table.Column<int>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     IsEmailConfirmed = table.Column<bool>(nullable: false),
                     IsLockoutEnabled = table.Column<bool>(nullable: false),
                     IsPhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     IsTwoFactorEnabled = table.Column<bool>(nullable: false),
                     LastLoginTime = table.Column<DateTime>(nullable: true),
-                    LastModificationTime = table.Column<DateTime>(nullable: true),
-                    LastModifierUserId = table.Column<long>(nullable: true),
                     LockoutEndDateUtc = table.Column<DateTime>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
+                    AuthenticationSource = table.Column<string>(maxLength: 64, nullable: true),
+                    UserName = table.Column<string>(maxLength: 32, nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 256, nullable: false),
                     Name = table.Column<string>(maxLength: 32, nullable: false),
-                    NormalizedEmailAddress = table.Column<string>(maxLength: 256, nullable: false),
-                    NormalizedUserName = table.Column<string>(maxLength: 32, nullable: false),
+                    Surname = table.Column<string>(maxLength: 32, nullable: false),
                     Password = table.Column<string>(maxLength: 128, nullable: false),
+                    EmailConfirmationCode = table.Column<string>(maxLength: 328, nullable: true),
                     PasswordResetCode = table.Column<string>(maxLength: 328, nullable: true),
                     PhoneNumber = table.Column<string>(maxLength: 32, nullable: true),
                     SecurityStamp = table.Column<string>(maxLength: 128, nullable: true),
-                    Surname = table.Column<string>(maxLength: 32, nullable: false),
-                    TenantId = table.Column<int>(nullable: true),
-                    UserName = table.Column<string>(maxLength: 32, nullable: false)
+                    NormalizedUserName = table.Column<string>(maxLength: 32, nullable: false),
+                    NormalizedEmailAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Users_CreatorUserId",
+                        column: x => x.CreatorUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Users_DeleterUserId",
+                        column: x => x.DeleterUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Users_LastModifierUserId",
+                        column: x => x.LastModifierUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Features",
                 columns: table => new
                 {
-                    EditionId = table.Column<int>(nullable: true),
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     TenantId = table.Column<int>(nullable: true),
-                    Value = table.Column<string>(maxLength: 2000, nullable: false)
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
+                    EditionId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -407,26 +520,108 @@ namespace SplitPackage.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogisticChannels",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ChannelName = table.Column<string>(nullable: true),
+                    AliasName = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false),
+                    Way = table.Column<int>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    LogisticId = table.Column<long>(nullable: false),
+                    TenantId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogisticChannels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LogisticChannels_Logistics_LogisticId",
+                        column: x => x.LogisticId,
+                        principalTable: "Logistics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LogisticRelatedItems",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    LogisticRelatedId = table.Column<long>(nullable: false),
+                    LogisticId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogisticRelatedItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LogisticRelatedItems_Logistics_LogisticId",
+                        column: x => x.LogisticId,
+                        principalTable: "Logistics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogisticRelatedItems_LogisticRelateds_LogisticRelatedId",
+                        column: x => x.LogisticRelatedId,
+                        principalTable: "LogisticRelateds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductClasses",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClassName = table.Column<string>(nullable: true),
+                    PTId = table.Column<string>(nullable: true),
+                    PostTaxRate = table.Column<double>(nullable: false),
+                    BCTaxRate = table.Column<double>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    ProductSortId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductClasses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductClasses_ProductSorts_ProductSortId",
+                        column: x => x.ProductSortId,
+                        principalTable: "ProductSorts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    Description = table.Column<string>(maxLength: 5000, nullable: true),
-                    DisplayName = table.Column<string>(maxLength: 64, nullable: false),
-                    IsDefault = table.Column<bool>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    IsStatic = table.Column<bool>(nullable: false),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<int>(nullable: true),
                     Name = table.Column<string>(maxLength: 32, nullable: false),
+                    DisplayName = table.Column<string>(maxLength: 64, nullable: false),
+                    IsStatic = table.Column<bool>(nullable: false),
+                    IsDefault = table.Column<bool>(nullable: false),
                     NormalizedName = table.Column<string>(maxLength: 32, nullable: false),
-                    TenantId = table.Column<int>(nullable: true)
+                    ConcurrencyStamp = table.Column<string>(maxLength: 128, nullable: true),
+                    Description = table.Column<string>(maxLength: 5000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -461,9 +656,9 @@ namespace SplitPackage.Migrations
                     CreatorUserId = table.Column<long>(nullable: true),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
-                    Name = table.Column<string>(maxLength: 256, nullable: false),
                     TenantId = table.Column<int>(nullable: true),
                     UserId = table.Column<long>(nullable: true),
+                    Name = table.Column<string>(maxLength: 256, nullable: false),
                     Value = table.Column<string>(maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
@@ -483,20 +678,21 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ConnectionString = table.Column<string>(maxLength: 1024, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    DeleterUserId = table.Column<long>(nullable: true),
-                    DeletionTime = table.Column<DateTime>(nullable: true),
-                    EditionId = table.Column<int>(nullable: true),
-                    IsActive = table.Column<bool>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     LastModificationTime = table.Column<DateTime>(nullable: true),
                     LastModifierUserId = table.Column<long>(nullable: true),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
                     TenancyName = table.Column<string>(maxLength: 64, nullable: false),
-                    ApiKey = table.Column<string>(maxLength: 50, nullable: true),
-                    ApiSecret = table.Column<string>(maxLength: 100, nullable: true)
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    ConnectionString = table.Column<string>(maxLength: 1024, nullable: true),
+                    EditionId = table.Column<int>(nullable: true),
+                    ApiKey = table.Column<string>(nullable: true),
+                    ApiSecret = table.Column<string>(nullable: true),
+                    OtherSystemId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -525,6 +721,12 @@ namespace SplitPackage.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tenants_OtherSystems_OtherSystemId",
+                        column: x => x.OtherSystemId,
+                        principalTable: "OtherSystems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -533,12 +735,12 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ClaimType = table.Column<string>(maxLength: 256, nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false),
+                    ClaimType = table.Column<string>(maxLength: 256, nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -557,10 +759,10 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 256, nullable: false),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -581,9 +783,9 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    RoleId = table.Column<int>(nullable: false),
                     TenantId = table.Column<int>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false),
+                    RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -602,10 +804,10 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    LoginProvider = table.Column<string>(maxLength: 64, nullable: true),
-                    Name = table.Column<string>(maxLength: 128, nullable: true),
                     TenantId = table.Column<int>(nullable: true),
                     UserId = table.Column<long>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 64, nullable: true),
+                    Name = table.Column<string>(maxLength: 128, nullable: true),
                     Value = table.Column<string>(maxLength: 512, nullable: true)
                 },
                 constraints: table =>
@@ -644,6 +846,99 @@ namespace SplitPackage.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NumFreights",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    LogisticChannelId = table.Column<long>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    Currency = table.Column<string>(nullable: true),
+                    Unit = table.Column<string>(nullable: true),
+                    SplitNum = table.Column<int>(nullable: false),
+                    FirstPrice = table.Column<double>(nullable: false),
+                    CarryOnPrice = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NumFreights", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NumFreights_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SplitRules",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    LogisticChannelId = table.Column<long>(nullable: false),
+                    RuleName = table.Column<string>(nullable: true),
+                    MaxPackage = table.Column<int>(nullable: false),
+                    MaxWeight = table.Column<double>(nullable: false),
+                    MaxTax = table.Column<double>(nullable: false),
+                    MaxPrice = table.Column<double>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SplitRules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SplitRules_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeightFreights",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    LogisticChannelId = table.Column<long>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    Currency = table.Column<string>(nullable: true),
+                    Unit = table.Column<string>(nullable: true),
+                    StartingWeight = table.Column<double>(nullable: false),
+                    EndWeight = table.Column<double>(nullable: false),
+                    StartingPrice = table.Column<double>(nullable: false),
+                    StepWeight = table.Column<double>(nullable: false),
+                    CostPrice = table.Column<double>(nullable: false),
+                    Price = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeightFreights", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WeightFreights_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permissions",
                 columns: table => new
                 {
@@ -651,10 +946,10 @@ namespace SplitPackage.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
-                    IsGranted = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     TenantId = table.Column<int>(nullable: true),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    IsGranted = table.Column<bool>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
                     RoleId = table.Column<int>(nullable: true),
                     UserId = table.Column<long>(nullable: true)
                 },
@@ -681,12 +976,12 @@ namespace SplitPackage.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ClaimType = table.Column<string>(maxLength: 256, nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     CreatorUserId = table.Column<long>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
                     RoleId = table.Column<int>(nullable: false),
-                    TenantId = table.Column<int>(nullable: true)
+                    ClaimType = table.Column<string>(maxLength: 256, nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -699,10 +994,101 @@ namespace SplitPackage.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Tenant_LogisticChannel",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TenantId = table.Column<int>(nullable: false),
+                    LogisticChannelId = table.Column<long>(nullable: false),
+                    AliasName = table.Column<string>(nullable: true),
+                    Way = table.Column<int>(nullable: true),
+                    LogisticChannelChange = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenant_LogisticChannel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tenant_LogisticChannel_LogisticChannels_LogisticChannelId",
+                        column: x => x.LogisticChannelId,
+                        principalTable: "LogisticChannels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tenant_LogisticChannel_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SplitRule_ProductClass",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    PTId = table.Column<string>(nullable: true),
+                    SplitRuleId = table.Column<long>(nullable: false),
+                    MinNum = table.Column<int>(nullable: false),
+                    MaxNum = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SplitRule_ProductClass", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SplitRule_ProductClass_SplitRules_SplitRuleId",
+                        column: x => x.SplitRuleId,
+                        principalTable: "SplitRules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditLogs_TenantId_ExecutionDuration",
+                table: "AuditLogs",
+                columns: new[] { "TenantId", "ExecutionDuration" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditLogs_TenantId_ExecutionTime",
+                table: "AuditLogs",
+                columns: new[] { "TenantId", "ExecutionTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditLogs_TenantId_UserId",
+                table: "AuditLogs",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BackgroundJobs_IsAbandoned_NextTryTime",
+                table: "BackgroundJobs",
+                columns: new[] { "IsAbandoned", "NextTryTime" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_EntityChanges_EntityChangeSetId",
                 table: "EntityChanges",
                 column: "EntityChangeSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityChanges_EntityTypeFullName_EntityId",
+                table: "EntityChanges",
+                columns: new[] { "EntityTypeFullName", "EntityId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityChangeSets_TenantId_CreationTime",
+                table: "EntityChangeSets",
+                columns: new[] { "TenantId", "CreationTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityChangeSets_TenantId_Reason",
+                table: "EntityChangeSets",
+                columns: new[] { "TenantId", "Reason" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityChangeSets_TenantId_UserId",
+                table: "EntityChangeSets",
+                columns: new[] { "TenantId", "UserId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntityPropertyChanges_EntityChangeId",
@@ -710,14 +1096,69 @@ namespace SplitPackage.Migrations
                 column: "EntityChangeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Features_EditionId",
+                name: "IX_Features_EditionId_Name",
                 table: "Features",
-                column: "EditionId");
+                columns: new[] { "EditionId", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Features_TenantId_Name",
+                table: "Features",
+                columns: new[] { "TenantId", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Languages_TenantId_Name",
+                table: "Languages",
+                columns: new[] { "TenantId", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LanguageTexts_TenantId_Source_LanguageName_Key",
+                table: "LanguageTexts",
+                columns: new[] { "TenantId", "Source", "LanguageName", "Key" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogisticChannels_LogisticId",
+                table: "LogisticChannels",
+                column: "LogisticId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogisticRelatedItems_LogisticId",
+                table: "LogisticRelatedItems",
+                column: "LogisticId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogisticRelatedItems_LogisticRelatedId",
+                table: "LogisticRelatedItems",
+                column: "LogisticRelatedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationSubscriptions_NotificationName_EntityTypeName_En~",
+                table: "NotificationSubscriptions",
+                columns: new[] { "NotificationName", "EntityTypeName", "EntityId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationSubscriptions_TenantId_NotificationName_EntityTy~",
+                table: "NotificationSubscriptions",
+                columns: new[] { "TenantId", "NotificationName", "EntityTypeName", "EntityId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NumFreights_LogisticChannelId",
+                table: "NumFreights",
+                column: "LogisticChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrganizationUnits_ParentId",
                 table: "OrganizationUnits",
                 column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationUnits_TenantId_Code",
+                table: "OrganizationUnits",
+                columns: new[] { "TenantId", "Code" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permissions_TenantId_Name",
+                table: "Permissions",
+                columns: new[] { "TenantId", "Name" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Permissions_RoleId",
@@ -730,9 +1171,19 @@ namespace SplitPackage.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductClasses_ProductSortId",
+                table: "ProductClasses",
+                column: "ProductSortId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
                 table: "RoleClaims",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoleClaims_TenantId_ClaimType",
+                table: "RoleClaims",
+                columns: new[] { "TenantId", "ClaimType" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_CreatorUserId",
@@ -750,9 +1201,44 @@ namespace SplitPackage.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Roles_TenantId_NormalizedName",
+                table: "Roles",
+                columns: new[] { "TenantId", "NormalizedName" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Settings_UserId",
                 table: "Settings",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settings_TenantId_Name",
+                table: "Settings",
+                columns: new[] { "TenantId", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SplitRule_ProductClass_SplitRuleId",
+                table: "SplitRule_ProductClass",
+                column: "SplitRuleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SplitRules_LogisticChannelId",
+                table: "SplitRules",
+                column: "LogisticChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenant_LogisticChannel_LogisticChannelId",
+                table: "Tenant_LogisticChannel",
+                column: "LogisticChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenant_LogisticChannel_TenantId",
+                table: "Tenant_LogisticChannel",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TenantNotifications_TenantId",
+                table: "TenantNotifications",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_CreatorUserId",
@@ -775,9 +1261,59 @@ namespace SplitPackage.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tenants_OtherSystemId",
+                table: "Tenants",
+                column: "OtherSystemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_TenancyName",
+                table: "Tenants",
+                column: "TenancyName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_EmailAddress",
+                table: "UserAccounts",
+                column: "EmailAddress");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_UserName",
+                table: "UserAccounts",
+                column: "UserName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_TenantId_EmailAddress",
+                table: "UserAccounts",
+                columns: new[] { "TenantId", "EmailAddress" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_TenantId_UserId",
+                table: "UserAccounts",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_TenantId_UserName",
+                table: "UserAccounts",
+                columns: new[] { "TenantId", "UserName" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
                 table: "UserClaims",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClaims_TenantId_ClaimType",
+                table: "UserClaims",
+                columns: new[] { "TenantId", "ClaimType" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLoginAttempts_UserId_TenantId",
+                table: "UserLoginAttempts",
+                columns: new[] { "UserId", "TenantId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLoginAttempts_TenancyName_UserNameOrEmailAddress_Result",
+                table: "UserLoginAttempts",
+                columns: new[] { "TenancyName", "UserNameOrEmailAddress", "Result" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_UserId",
@@ -785,14 +1321,84 @@ namespace SplitPackage.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_TenantId_UserId",
+                table: "UserLogins",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_TenantId_LoginProvider_ProviderKey",
+                table: "UserLogins",
+                columns: new[] { "TenantId", "LoginProvider", "ProviderKey" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_UserId_State_CreationTime",
+                table: "UserNotifications",
+                columns: new[] { "UserId", "State", "CreationTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserOrganizationUnits_TenantId_OrganizationUnitId",
+                table: "UserOrganizationUnits",
+                columns: new[] { "TenantId", "OrganizationUnitId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserOrganizationUnits_TenantId_UserId",
+                table: "UserOrganizationUnits",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UserId",
                 table: "UserRoles",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_TenantId_RoleId",
+                table: "UserRoles",
+                columns: new[] { "TenantId", "RoleId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_TenantId_UserId",
+                table: "UserRoles",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_CreatorUserId",
+                table: "Users",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_DeleterUserId",
+                table: "Users",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_LastModifierUserId",
+                table: "Users",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId_NormalizedEmailAddress",
+                table: "Users",
+                columns: new[] { "TenantId", "NormalizedEmailAddress" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId_NormalizedUserName",
+                table: "Users",
+                columns: new[] { "TenantId", "NormalizedUserName" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserTokens_UserId",
                 table: "UserTokens",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTokens_TenantId_UserId",
+                table: "UserTokens",
+                columns: new[] { "TenantId", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeightFreights_LogisticChannelId",
+                table: "WeightFreights",
+                column: "LogisticChannelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -812,8 +1418,11 @@ namespace SplitPackage.Migrations
             migrationBuilder.DropTable(
                 name: "Languages");
 
-            //migrationBuilder.DropTable(
-            //    name: "LanguageTexts");
+            migrationBuilder.DropTable(
+                name: "LanguageTexts");
+
+            migrationBuilder.DropTable(
+                name: "LogisticRelatedItems");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
@@ -822,10 +1431,19 @@ namespace SplitPackage.Migrations
                 name: "NotificationSubscriptions");
 
             migrationBuilder.DropTable(
+                name: "NumFreights");
+
+            migrationBuilder.DropTable(
                 name: "OrganizationUnits");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "ProductClasses");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
@@ -834,10 +1452,13 @@ namespace SplitPackage.Migrations
                 name: "Settings");
 
             migrationBuilder.DropTable(
-                name: "TenantNotifications");
+                name: "SplitRule_ProductClass");
 
             migrationBuilder.DropTable(
-                name: "Tenants");
+                name: "Tenant_LogisticChannel");
+
+            migrationBuilder.DropTable(
+                name: "TenantNotifications");
 
             migrationBuilder.DropTable(
                 name: "UserAccounts");
@@ -864,19 +1485,43 @@ namespace SplitPackage.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
+                name: "WeightFreights");
+
+            migrationBuilder.DropTable(
                 name: "EntityChanges");
+
+            migrationBuilder.DropTable(
+                name: "LogisticRelateds");
+
+            migrationBuilder.DropTable(
+                name: "ProductSorts");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "Editions");
+                name: "SplitRules");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
 
             migrationBuilder.DropTable(
                 name: "EntityChangeSets");
 
             migrationBuilder.DropTable(
+                name: "LogisticChannels");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Editions");
+
+            migrationBuilder.DropTable(
+                name: "OtherSystems");
+
+            migrationBuilder.DropTable(
+                name: "Logistics");
         }
     }
 }
