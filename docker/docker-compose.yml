@@ -2,16 +2,18 @@ version: '3.4'
 
 services:
   splitpackage.api:
-    image: splitpackage-api
+    image: splitpackage-api-dev
     build:
      context: ../aspnet-core/
      dockerfile: ./src/SplitPackage.Web.Host/BuildApiImage
      args:
        DBHOST: splitpackage-db
        DBPORT: 3306
+       DBACCOUNT: root
+       DBPASSWD: root
        ASPNETCORE_ENVIRONMENT:
   splitpackage.web:
-    image: splitpackage-web
+    image: splitpackage-web-dev
     build:
       context: ../vue/
       dockerfile: ./BuildWebImage

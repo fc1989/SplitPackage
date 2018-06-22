@@ -1,0 +1,14 @@
+version: '2'
+services:
+    db:
+        volumes:
+          - '/var/lib/mysql:/var/lib/mysql'
+    web:
+        image: registry.ap-southeast-2.aliyuncs.com/gvt861/registry/splitpackage-web-test:latest
+    api:
+        image: registry.ap-southeast-2.aliyuncs.com/gvt861/registry/splitpackage-api-test:latest
+        deploy:
+          resources:
+            limits:
+              cpus: '2'
+              memory: 500M

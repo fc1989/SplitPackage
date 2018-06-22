@@ -1,4 +1,4 @@
-version: '3.6'
+version: '2'
 
 services:
     db:
@@ -7,13 +7,13 @@ services:
             - MYSQL_ROOT_PASSWORD=root
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     web:
-        image: splitpackage-web:latest
+        image: splitpackage-web-dev:latest
         ports:
             - "8069:80"
         depends_on:
             - api
     api:
-        image: splitpackage-api:latest
+        image: splitpackage-api-dev:latest
         ports:
             - "8070:80"
         links:

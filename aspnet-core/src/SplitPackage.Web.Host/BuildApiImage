@@ -8,27 +8,24 @@ EXPOSE 80
 COPY wait-for-it.sh /project/
 COPY command.sh /project/
 
-FROM microsoft/dotnet:2.1-sdk AS buildApi
+FROM microsoft/dotnet:2.1-sdk AS build
 ARG DBHOST
 ARG DBPORT
+ARG DBACCOUNT
+ARG DBPASSWD
 WORKDIR /src
 COPY . .
 COPY NuGet.release.Config ./SplitPackage.Web.Host/NuGet.Config
 WORKDIR /src/src/SplitPackage.Web.Host
-RUN sed -i 's@\"Default\":\s*\"[^\"]*\"@\"Default\":\"Server='"$DBHOST"';port='"$DBPORT"';Database=SplitPackageDb;uid=root;pwd=root;Convert Zero Datetime=True\"@g' appsettings.json
+RUN sed -i 's@\"Default\":\s*\"[^\"]*\"@\"Default\":\"Server='"$DBHOST"';port='"$DBPORT"';Database=SplitPackageDb;uid='"$DBACCOUNT"';pwd='"$DBPASSWD"';Convert Zero Datetime=True\"@g' appsettings.json
 RUN dotnet publish SplitPackage.Web.Host.csproj -c Release -o /api
-
-FROM microsoft/dotnet:2.1-sdk AS buildMigrator
-ARG DBHOST
-ARG DBPORT
-WORKDIR /src
-COPY . .
 COPY NuGet.release.Config ./SplitPackage.Migrator/NuGet.Config
 WORKDIR /src/src/SplitPackage.Migrator
-RUN sed -i 's@\"Default\":\s*\"[^\"]*\"@\"Default\":\"Server='"$DBHOST"';port='"$DBPORT"';Database=SplitPackageDb;uid=root;pwd=root;Convert Zero Datetime=True\"@g' appsettings.json
+RUN sed -i 's@\"Default\":\s*\"[^\"]*\"@\"Default\":\"Server='"$DBHOST"';port='"$DBPORT"';Database=SplitPackageDb;uid='"$DBACCOUNT"';pwd='"$DBPASSWD"';Convert Zero Datetime=True\"@g' appsettings.json
 RUN dotnet publish SplitPackage.Migrator.csproj -c Release -o /migrator
 
+
 FROM base AS final
-COPY --from=buildMigrator /migrator ./migrator
-COPY --from=buildApi /api ./api
+COPY --from=build /migrator ./migrator
+COPY --from=build /api ./api
 ENTRYPOINT ["/project/wait-for-it.sh","--","/project/command.sh"]
