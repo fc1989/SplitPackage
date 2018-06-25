@@ -43,7 +43,7 @@ namespace SplitPackage.Split
             if (peTuple.Item2.Count > 0)
             {
                 // 超过额度的不拆了，卖不了
-                var invalidSubOrder = new SubOrder("-1", null, null, null, null, peTuple.Item2.SelectMany(pe => pe.OrderInfo).ToList())
+                var invalidSubOrder = new SubOrder("-1", null, null, null, null, null, peTuple.Item2.SelectMany(pe => pe.OrderInfo).ToList())
                 {
                     LogisticsUnitPrice = int.MaxValue,
                     LogisticsCost = int.MaxValue,
@@ -160,7 +160,7 @@ namespace SplitPackage.Split
 
         private SubOrder CreateSubOrder()
         {
-            var result = new SubOrder("", this.BcConfig.LogisticsName, this.BcConfig.URL, this.BcConfig.GradeName, this.BcConfig.SubBusinessName);
+            var result = new SubOrder("", this.BcConfig.LogisticsName, this.BcConfig.LogisticsName, this.BcConfig.URL, this.BcConfig.GradeName, this.BcConfig.SubBusinessName);
             result.LogisticsUnitPrice = (decimal)this.BcConfig.Price;
             return result;
         }

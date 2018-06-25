@@ -191,7 +191,7 @@ namespace SplitPackage.Split
 
         private SubOrder CreateSubOrder()
         {
-            var result = new SubOrder("", this.Rule.LogisticsName, this.Rule.Organization.URL, this.Rule.SubOrganizationName, this.Rule.RuleName);
+            var result = new SubOrder("",this.Rule.LogisticsId, this.Rule.LogisticsName, this.Rule.Organization.URL, this.Rule.SubOrganizationName, this.Rule.RuleName);
             result.LogisticsUnitPrice = (decimal)this.Rule.Rule.Price;
             return result;
         }

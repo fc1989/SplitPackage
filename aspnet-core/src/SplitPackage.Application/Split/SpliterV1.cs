@@ -186,7 +186,7 @@ namespace SplitPackage.Split
 
             if (badProductList != null && badProductList.Any())
             {
-                var subOrder = new SubOrder("-2", null, null, null, null, badProductList)
+                var subOrder = new SubOrder("-2", null, null, null, null, null, badProductList)
                 {
                     LogisticsUnitPrice = int.MaxValue,
                     LogisticsCost = int.MaxValue,

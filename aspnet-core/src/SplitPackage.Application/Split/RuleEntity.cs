@@ -54,6 +54,7 @@ namespace SplitPackage.Split
         public RuleEntity(ChannelCacheDto channel, LogisticCacheDto logistic)
         {
             this.LogisticsName = logistic.CorporationName;
+            this.LogisticsId = logistic.LogisticCode;
             this.RuleName = channel.ChannelName;
             this.Rule = new PackageRule()
             {
@@ -90,6 +91,7 @@ namespace SplitPackage.Split
 
         public RuleEntity(SplitPackage.Business.LogisticChannel logisticChannel)
         {
+            this.LogisticsId = logisticChannel.LogisticBy.LogisticCode;
             this.LogisticsName = logisticChannel.LogisticBy.CorporationName;
             this.RuleName = logisticChannel.ChannelName;
             this.Rule = new PackageRule()

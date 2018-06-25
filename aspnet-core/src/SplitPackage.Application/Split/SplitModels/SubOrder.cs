@@ -5,10 +5,11 @@ namespace SplitPackage.Split.SplitModels
 {
     public class SubOrder
     {
-        public SubOrder(string id, string logisticsName, string url, string gradeName, string subBusinessName, List<Product> proList = null)
+        public SubOrder(string id,string logisticsCode, string logisticsName, string url, string gradeName, string subBusinessName, List<Product> proList = null)
         {
             this.Id = id;
             this.LogisticsName = logisticsName;
+            this.LogisticsCode = logisticsCode;
             this.URL = url;
             this.GradeName = gradeName;
             this.SubBusinessName = subBusinessName;
@@ -25,6 +26,11 @@ namespace SplitPackage.Split.SplitModels
         /// 物流公司
         /// </summary>
         public string LogisticsName { get; private set; }
+
+        /// <summary>
+        /// 物流商code
+        /// </summary>
+        public string LogisticsCode { get; private set; }
 
         /// <summary>
         /// 物流公司URL
