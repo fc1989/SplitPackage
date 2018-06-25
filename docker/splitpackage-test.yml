@@ -4,8 +4,8 @@ services:
         volumes:
           - '/var/lib/mysql:/var/lib/mysql'
     web:
-        image: 192.168.1.24:5000/splitpackage-web-test:latest
+        image: 192.168.1.24:5000/splitpackage-web:test
     api:
-        image: 192.168.1.24:5000/splitpackage-api-test:latest
+        image: 192.168.1.24:5000/splitpackage-api:test
         cpu_shares: 200
         mem_limit: "500M"
