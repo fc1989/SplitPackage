@@ -180,6 +180,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("4PX Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("4PX Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.OrderList[0].SubBusinessName);
             return true;
         }
@@ -217,6 +219,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("4PX Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("4PX Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("转运四方现代物流3罐婴儿奶粉专线", result.OrderList[0].SubBusinessName);
         }
 
@@ -264,6 +268,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("ZH Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("ZH Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中环杂货混装线", result.OrderList[0].SubBusinessName);
         }
 
@@ -311,6 +317,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮混装线", result.OrderList[0].SubBusinessName);
         }
 
@@ -338,6 +346,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
@@ -365,6 +375,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
@@ -402,7 +414,11 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("CNP Express", result.OrderList[1].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[1].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[1].SubBusinessName);
         }
 
@@ -440,7 +456,11 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("CNP Express", result.OrderList[1].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[1].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[1].SubBusinessName);
         }
 
@@ -478,6 +498,8 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.Split(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
+            Assert.Equal("THEARK EXPRESS", result.OrderList[0].LogisticsName);
+            Assert.Equal("THEARK EXPRESS", result.OrderList[0].LogisticsCode);
             Assert.Equal("方舟AlphaEX", result.OrderList[0].SubBusinessName);
         }
 
@@ -515,8 +537,12 @@ namespace SplitPackage.Tests.Split
             };
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsName);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsCode);
             Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
-            Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsName);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsCode);
+            Assert.Equal("澳通速递杂货混装线", result.OrderList[1].SubBusinessName);
         }
 
         [Fact]
@@ -554,9 +580,21 @@ namespace SplitPackage.Tests.Split
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
             Assert.Equal("EWE Express 标准线", result.OrderList[0].LogisticsName);
+            Assert.Equal("EWE Express 标准线", result.OrderList[0].LogisticsCode);
             Assert.Equal("EWE杂货标准线", result.OrderList[0].SubBusinessName);
             Assert.Equal("EWE Express 经济线", result.OrderList[1].LogisticsName);
+            Assert.Equal("EWE Express 经济线", result.OrderList[1].LogisticsCode);
             Assert.Equal("EWE杂货经济线", result.OrderList[1].SubBusinessName);
+        }
+
+        [Fact]
+        public async Task GetLogisticsList_Test()
+        {
+            var result = await this._splitService.GetLogisticsList(this._context.GetTenantId());
+            foreach (var item in result)
+            {
+                Assert.Equal(item.ID, item.Name);
+            }
         }
     }
 }

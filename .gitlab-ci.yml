@@ -1,0 +1,9 @@
+before_script:
+  - docker info
+
+build_image:
+  stage: build
+  tags:
+    - docker
+  script:
+    - powershell -Command /docker/build-test.bat

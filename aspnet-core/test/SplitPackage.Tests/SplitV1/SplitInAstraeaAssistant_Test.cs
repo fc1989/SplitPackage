@@ -66,6 +66,7 @@ namespace SplitPackage.Tests.Split
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
             Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮混装线", result.OrderList[0].SubBusinessName);
         }
 
@@ -93,6 +94,7 @@ namespace SplitPackage.Tests.Split
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Single(result.OrderList);
             Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
@@ -130,8 +132,10 @@ namespace SplitPackage.Tests.Split
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
             Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
             Assert.Equal("CNP Express", result.OrderList[0].LogisticsName);
+            Assert.Equal("CNP Express", result.OrderList[0].LogisticsCode);
             Assert.Equal("中邮杂货专线", result.OrderList[0].SubBusinessName);
         }
 
@@ -169,8 +173,10 @@ namespace SplitPackage.Tests.Split
             var result = await this._splitService.SplitWithOrganization1(request, this._context.GetTenantId());
             Assert.Equal(2, result.OrderList.Count);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsName);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsCode);
             Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsName);
+            Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsCode);
             Assert.Equal("澳通速递杂货混装线", result.OrderList[1].SubBusinessName);
         }
     }
