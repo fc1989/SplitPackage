@@ -114,7 +114,7 @@ namespace SplitPackage.Cache.Dto
         public IList<SplitRuleProductClassCacheDto> ProductClasses { get; set; }
     }
 
-    [AutoMapFrom(typeof(SplitRuleProductClass))]
+    [AutoMapFrom(typeof(SplitRuleItem))]
     public class SplitRuleProductClassCacheDto
     {
         public long Id { get; set; }

@@ -12,9 +12,12 @@ export default {
         return Util.ajax.get('/api/services/app/Product/GetAll',data);
     },
     Delete(id){
-        return Util.ajax.delete('/api/services/app/Product/Delete?Id='+id)
+        return Util.ajax.delete('/api/services/app/Product/Delete?Id=' + id)
     },
     Verify(sku){
         return Util.ajax.post('/api/services/app/Product/Verify',qs.stringify({sku:sku}));
+    },
+    GetOwnOption(sku){
+        return Util.ajax.get('/api/services/app/Product/GetOwnOption?sku=' + sku);
     }
 }

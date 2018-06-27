@@ -65,7 +65,7 @@ namespace SplitPackage.Domain.Logistic
         private readonly IRepository<LogisticChannel, long> _logisticChannelRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tenantLogisticChannelRepository;
         private readonly IRepository<SplitRule, long> _splitRuleRepository;
-        private readonly IRepository<SplitRuleProductClass, long> _splitRuleProductClassRepository;
+        private readonly IRepository<SplitRuleItem, long> _splitRuleProductClassRepository;
 
         public Handler(ManageCache manageCache,
             IUnitOfWorkManager unitOfWorkManager,
@@ -75,7 +75,7 @@ namespace SplitPackage.Domain.Logistic
             IRepository<LogisticChannel, long> logisticChannelRepository,
             IRepository<TenantLogisticChannel, long> tenantLogisticChannelRepository,
             IRepository<SplitRule, long> splitRuleRepository,
-            IRepository<SplitRuleProductClass, long> splitRuleProductClassRepository)
+            IRepository<SplitRuleItem, long> splitRuleProductClassRepository)
         {
             this._manageCache = manageCache;
             this._unitOfWorkManager = unitOfWorkManager;
@@ -870,7 +870,8 @@ namespace SplitPackage.Domain.Logistic
                         LogisticId = eventData.LogisticId,
                         LogisticChannelId = eventData.LogisticChannelId,
                         SplitRuleId = eventData.SplitRuleId,
-                        SplitRuleItemId = eventData.Id
+                        SplitRuleItemId = eventData.Id,
+                        Type = eventData.Type
                     });
                 }
             }

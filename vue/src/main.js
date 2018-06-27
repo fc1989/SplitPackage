@@ -33,6 +33,7 @@ util.ajax.get('/AbpUserConfiguration/GetAll').then(result => {
 
             //Filtering admin menu
             this.$store.commit('updateMenulist');
+            this.$store.commit('setEnumOption');
         },
         created() {
             let tagsList = [];

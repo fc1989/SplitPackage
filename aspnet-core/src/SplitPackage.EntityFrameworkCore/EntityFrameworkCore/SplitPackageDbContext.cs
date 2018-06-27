@@ -20,7 +20,7 @@ namespace SplitPackage.EntityFrameworkCore
         public DbSet<LogisticChannel> LogisticChannels { get; set; }
         public DbSet<NumFreight> NumFreights { get; set; }
         public DbSet<SplitRule> SplitRules { get; set; }
-        public DbSet<SplitRuleProductClass> SplitRuleProductClass { get; set; }
+        public DbSet<SplitRuleItem> SplitRuleProductClass { get; set; }
         public DbSet<WeightFreight> WeightFreights { get; set; }
         public DbSet<TenantLogisticChannel> TenantLogisticChannel { get; set; }
         public DbSet<LogisticRelated> LogisticRelated { get; set; }

@@ -20,9 +20,6 @@ export default {
     Get(id){
         return Util.ajax.get('/api/services/app/LogisticChannel/Get?Id=' + id);
     },
-    GetOptions(){
-        return Util.ajax.get('/api/services/app/PublicInformation/GetLogisticChannelsOptions');
-    },
     GetImportState(){
         return Util.ajax.get('/api/services/app/LogisticChannel/GetImportState');
     },
@@ -31,9 +28,6 @@ export default {
     },
     GetOptional(){
         return Util.ajax.get('/api/services/app/LogisticChannel/GetOptional');
-    },
-    GetOwn(){
-        return Util.ajax.get('/api/services/app/LogisticChannel/GetOwn');
     },
     Switch(id, IsActive){
         return Util.ajax.post('/api/services/app/LogisticChannel/Switch',qs.stringify({id:id,IsActive:IsActive}));

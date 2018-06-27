@@ -16,13 +16,13 @@ using System.Threading.Tasks;
 namespace SplitPackage.Business.SplitRules
 {
     [AbpAuthorize(PermissionNames.Pages_Tenant_SplitRules)]
-    public class SplitRuleItemAppService : AsyncCrudAppService<SplitRuleProductClass, RuleItemDto, long, SplitRuleItemFilter, CreateRuleItemDto, UpdateRuleItemDto>
+    public class SplitRuleItemAppService : AsyncCrudAppService<SplitRuleItem, RuleItemDto, long, SplitRuleItemFilter, CreateRuleItemDto, UpdateRuleItemDto>
     {
         private readonly IRepository<ProductClass, long> _productClassRepository;
         private readonly IRepository<SplitRule, long> _srRepository;
         private readonly IEventBus _eventBus;
 
-        public SplitRuleItemAppService(IRepository<SplitRuleProductClass, long> repository, 
+        public SplitRuleItemAppService(IRepository<SplitRuleItem, long> repository, 
             IRepository<ProductClass, long> productClassRepository,
             IRepository<SplitRule, long> srRepository,
             IEventBus eventBus) :base(repository)
@@ -32,9 +32,9 @@ namespace SplitPackage.Business.SplitRules
             this._eventBus = eventBus;
         }
 
-        protected override IQueryable<SplitRuleProductClass> CreateFilteredQuery(SplitRuleItemFilter input)
+        protected override IQueryable<SplitRuleItem> CreateFilteredQuery(SplitRuleItemFilter input)
         {
-            return base.CreateFilteredQuery(input).Where(o=>o.SplitRuleId == input.SplitRuleId).Include(p => p.SplitRuleBy);
+            return this.Repository.GetAll().IgnoreQueryFilters().Where(o=>o.SplitRuleId == input.SplitRuleId).Include(p => p.SplitRuleBy);
         }
 
         public override async Task<PagedResultDto<RuleItemDto>> GetAll(SplitRuleItemFilter input)
@@ -49,17 +49,20 @@ namespace SplitPackage.Business.SplitRules
             query = ApplyPaging(query, input);
 
             var entities = await AsyncQueryableExecuter.ToListAsync(query);
-
-            var result = entities.Select(MapToEntityDto).ToList();
-
-            var pcSet = _productClassRepository.GetAll().Where(o => result.Select(oi => oi.PTId).Contains(o.PTId));
-            result.ForEach(o =>{
-                var pc = pcSet.Where(oi => oi.PTId == o.PTId);
-                o.ProductClass = string.Format("{0}({1})", string.Join(",", pc.Select(oi => oi.ClassName)), o.PTId);
-            });
-            return new PagedResultDto<RuleItemDto>(
-                totalCount, result
-            );
+            var ptidSet = entities.Where(oi => oi.Type == RuleItemStintType.PTId).Select(o=>o.StintMark);
+            var pcSet = this._productClassRepository.GetAll().Where(o => ptidSet.Contains(o.PTId));
+            var result = new List<RuleItemDto>();
+            foreach (var item in entities)
+            {
+                var entity = MapToEntityDto(item);
+                if (item.Type == RuleItemStintType.PTId)
+                {
+                    var pc = pcSet.Where(oi => oi.PTId == entity.StintMark);
+                    entity.ProductClass = string.Format("{0}({1})", string.Join(",", pc.Select(oi => oi.ClassName)), entity.StintMark);
+                }
+                result.Add(entity);
+            }
+            return new PagedResultDto<RuleItemDto>(totalCount, result);
         }
 
         public async override Task Delete(EntityDto<long> input)
@@ -84,7 +87,7 @@ namespace SplitPackage.Business.SplitRules
         {
             CheckCreatePermission();
 
-            var splitRule = await this._srRepository.GetAll().Include(p => p.LogisticChannelBy)
+            var splitRule = await this._srRepository.GetAll().IgnoreQueryFilters().Include(p => p.LogisticChannelBy)
                 .FirstAsync(o => o.Id == input.SplitRuleId);
             var entity = MapToEntity(input);
 

@@ -14,13 +14,15 @@ namespace SplitPackage.Business.SplitRules.Dto
                 .ForMember(x => x.LogisticName, opt => opt.MapFrom(src => src.LogisticChannelBy.LogisticBy.CorporationName))
                 .ForMember(x => x.TenantId, opt => opt.MapFrom(src => src.LogisticChannelBy.TenantId));
 
-            CreateMap<SplitRuleProductClass, RuleItemDto>().ForMember(x => x.RuleName, opt => opt.MapFrom(src => src.SplitRuleBy.RuleName));
+            CreateMap<SplitRuleItem, RuleItemDto>().ForMember(x => x.RuleName, opt => opt.MapFrom(src => src.SplitRuleBy.RuleName));
 
             CreateMap<SplitRule, CreateSplitRuleEvent>();
 
-            CreateMap<SplitRuleProductClass, CreateSplitRuleItemEvent>();
+            CreateMap<SplitRuleItem, CreateSplitRuleItemEvent>();
 
-            CreateMap<SplitRuleProductClass, ModifySplitRuleItemEvent>();
+            CreateMap<SplitRuleItem, ModifySplitRuleItemEvent>();
+
+            CreateMap<CreateRuleItemDto, CreateSplitRuleItemEvent>();
         }
     }
 }

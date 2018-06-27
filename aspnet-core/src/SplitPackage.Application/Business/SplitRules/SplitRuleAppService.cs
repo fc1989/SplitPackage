@@ -21,12 +21,12 @@ namespace SplitPackage.Business.SplitRules
     {
         private readonly IRepository<Logistic, long> _lRepository;
         private readonly IRepository<LogisticChannel, long> _lcRepository;
-        private readonly IRepository<SplitRuleProductClass, long> _srpRepository;
+        private readonly IRepository<SplitRuleItem, long> _srpRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tlcRepository;
         private readonly IEventBus _eventBus;
 
         public SplitRuleAppService(IRepository<SplitRule, long> repository, 
-            IRepository<SplitRuleProductClass, long> srpRepository,
+            IRepository<SplitRuleItem, long> srpRepository,
             IRepository<Logistic, long> lRepository,
             IRepository<LogisticChannel, long> lcRepository,
             IRepository<TenantLogisticChannel, long> tlcRepository,
@@ -69,7 +69,7 @@ namespace SplitPackage.Business.SplitRules
                         select sr;
             if (!string.IsNullOrEmpty(input.PTId))
             {
-                query = query.Where(o=>o.ProductClasses.Any(oi=>oi.PTId.StartsWith(input.PTId)));
+                query = query.Where(o=>o.ProductClasses.Any(oi=>oi.StintMark.StartsWith(input.PTId)));
             }
             return query.Include(p => p.LogisticChannelBy).ThenInclude((LogisticChannel p) => p.LogisticBy);
         }
@@ -78,7 +78,7 @@ namespace SplitPackage.Business.SplitRules
         {
             CheckCreatePermission();
 
-            var channel = await this._lcRepository.SingleAsync(o=> o.Id == input.LogisticChannelId);
+            var channel = await this._lcRepository.GetAll().IgnoreQueryFilters().SingleAsync(o=> o.Id == input.LogisticChannelId);
 
             var entity = MapToEntity(input);
 

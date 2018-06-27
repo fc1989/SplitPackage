@@ -14,13 +14,13 @@ namespace SplitPackage.Business.SplitRules
         private readonly IRepository<LogisticChannel, long> _logisticChannelRepository;
         private readonly IRepository<TenantLogisticChannel, long> _tenantLogisticChannelRepository;
         private readonly IRepository<SplitRule, long> _splitRuleRepository;
-        private readonly IRepository<SplitRuleProductClass, long> _splitRuleProductClassRepository;
+        private readonly IRepository<SplitRuleItem, long> _splitRuleProductClassRepository;
 
         public SplitRuleLogic(IRepository<Logistic, long> logisticRepository,
             IRepository<LogisticChannel, long> logisticChannelRepository,
             IRepository<TenantLogisticChannel, long> tenantLogisticChannelRepository,
             IRepository<SplitRule, long> splitRuleRepository,
-            IRepository<SplitRuleProductClass, long> splitRuleProductClassRepository)
+            IRepository<SplitRuleItem, long> splitRuleProductClassRepository)
         {
             this._logisticRepository = logisticRepository;
             this._logisticChannelRepository = logisticChannelRepository;
@@ -37,8 +37,8 @@ namespace SplitPackage.Business.SplitRules
                          from tb in left1.DefaultIfEmpty()
                          join sr in this._splitRuleRepository.GetAll() on lc.Id equals sr.LogisticChannelId
                          join srp in this._splitRuleProductClassRepository.GetAll() on sr.Id equals srp.SplitRuleId
-                         where !l.IsDeleted && !lc.IsDeleted && (l.TenantId == tenantId || tb.TenantId == tenantId) && ptids.Contains(srp.PTId)
-                         select srp.PTId);
+                         where !l.IsDeleted && !lc.IsDeleted && (l.TenantId == tenantId || tb.TenantId == tenantId) && ptids.Contains(srp.StintMark)
+                         select srp.StintMark);
              return await query.Distinct().ToListAsync();
         }
     }

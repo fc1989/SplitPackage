@@ -75,9 +75,9 @@ namespace SplitPackage.EntityFrameworkCore.Seed.Business
                                 CreationTime = DateTime.Now,
                                 LogisticChannelBy = lc,
                             };
-                            sr.ProductClasses = o.RuleItems.Select(oi => new SplitRuleProductClass() {
+                            sr.ProductClasses = o.RuleItems.Select(oi => new SplitRuleItem() {
                                 SplitRuleBy = sr,
-                                PTId = oi.PTId.ToString(),
+                                StintMark = oi.PTId.ToString(),
                                 MaxNum = oi.MaxQuantity,
                                 MinNum = oi.MinQuantity
                             }).ToList();

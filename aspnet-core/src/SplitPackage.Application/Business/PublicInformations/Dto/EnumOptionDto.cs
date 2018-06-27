@@ -5,10 +5,12 @@ using System.Text;
 
 namespace SplitPackage.Business.PublicInformations.Dto
 {
-    public class LogisticChannelOptionDto
+    public class EnumOptionDto
     {
         public IEnumerable<OptionDto<int>> ChannelType { get; set; }
 
         public IEnumerable<OptionDto<int>> ChargeWay { get; set; }
+
+        public IEnumerable<OptionDto<int>> RuleItemStintType { get; set; }
     }
 }

@@ -16,13 +16,15 @@ namespace SplitPackage.Cache.Dto
         {
             CreateMap<Logistic, LogisticCacheDto>().ForMember(dest => dest.LogisticChannels, opt => opt.MapFrom(o => o.LogisticChannels));
 
-            CreateMap<SplitRuleProductClass, SplitRuleProductClassCacheDto>();
+            CreateMap<SplitRuleItem, SplitRuleProductClassCacheDto>();
 
             CreateMap<CreateLogisticEvent, LogisticCacheDto>();
 
             CreateMap<CreateChannelEvent, ChannelCacheDto>();
 
             CreateMap<CreateSplitRuleEvent, SplitRuleCacheDto>();
+
+            CreateMap<CreateSplitRuleItemEvent, SplitRuleProductClassCacheDto>();
 
             CreateMap<LogisticRelated, LogisticRelatedCacheDto>().ConvertUsing(o => new LogisticRelatedCacheDto() {
                 RelatedId = o.Id,

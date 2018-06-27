@@ -13,11 +13,12 @@ using AutoMapper;
 using Abp.Authorization;
 using SplitPackage.Authorization;
 using System.Linq.Expressions;
+using SplitPackage.Dto;
 
 namespace SplitPackage.Business.Products
 {
     [AbpAuthorize(PermissionNames.Pages_Tenant_Products)]
-    public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, ProductSearchFilter, CreateProductDto, UpdateProductDto>, IProductAppService
+    public class ProductAppService : AsyncCrudAppService<Product, ProductDto, long, ProductSearchFilter, CreateProductDto, UpdateProductDto>
     {
         public ProductAppService(IRepository<Product, long> repository) : base(repository)
         {
@@ -37,6 +38,15 @@ namespace SplitPackage.Business.Products
                 return false;
             else
                 return true;
+        }
+
+        public async Task<List<OptionDto<string>>> GetOwnOption(string sku)
+        {
+            var result = await this.Repository.GetAll().Where(o => o.Sku.Contains(sku) && o.IsActive).Select(o=> new OptionDto<string>() {
+                Value = o.Sku,
+                Label = o.ProductName
+            }).ToListAsync();
+            return result;
         }
     }
 }

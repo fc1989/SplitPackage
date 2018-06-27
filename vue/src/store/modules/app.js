@@ -1,6 +1,7 @@
 import {otherRouter, appRouter} from '@/router/router';
 import Util from '@/libs/util';
 import Vue from 'vue';
+import api from '@/api/publicinformation';
 
 const app = {
     state: {
@@ -159,15 +160,17 @@ const app = {
         setMessageCount (state, count) {
             state.messageCount = count;
         },
-        setLogisticChannel(state,information){
-            state.enumInformation.channelType = {};
-            for(var item in information.channelType){
-                state.enumInformation.channelType[information.channelType[item].value] = information.channelType[item].label;
-            }
-            state.enumInformation.chargeWay = {};          
-            for(var item in information.chargeWay){
-                state.enumInformation.chargeWay[information.chargeWay[item].value] = information.chargeWay[item].label;
-            }
+        setEnumOption(state){
+            api.GetEnumOptions().then(req=>{
+                if(req.data.success){
+                    for(var item in req.data.result){
+                        state.enumInformation[item] = {};
+                        for(var ii in req.data.result[item]){
+                            state.enumInformation[item][req.data.result[item][ii].value] = req.data.result[item][ii].label;
+                        }
+                    }
+                }
+            });
         },
         increateTag (state, tagObj) {
             if (!Util.oneOf(tagObj.name, state.dontCache)) {

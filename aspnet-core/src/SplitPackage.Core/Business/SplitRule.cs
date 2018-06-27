@@ -8,7 +8,7 @@ using System.Text;
 namespace SplitPackage.Business
 {
     [Table("SplitRules")]
-    public class SplitRule : Entity<long>, IPassivable, IHasCreationTime
+    public class SplitRule : Entity<long>, IPassivable, IHasCreationTime, IMayHaveTenant
     {
         public const int MaxRuleNameLength = 50;
 
@@ -46,9 +46,11 @@ namespace SplitPackage.Business
 
         public bool IsActive { get; set; }
 
-        public virtual ICollection<SplitRuleProductClass> ProductClasses { get; set; }
+        public virtual ICollection<SplitRuleItem> ProductClasses { get; set; }
 
         public DateTime CreationTime { get; set; }
+
+        public int? TenantId { get; set; }
 
         public SplitRule()
         {

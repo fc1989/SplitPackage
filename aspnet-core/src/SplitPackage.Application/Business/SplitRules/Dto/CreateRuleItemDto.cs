@@ -7,16 +7,18 @@ using System.Text;
 
 namespace SplitPackage.Business.SplitRules.Dto
 {
-    [AutoMapTo(typeof(SplitRuleProductClass))]
+    [AutoMapTo(typeof(SplitRuleItem))]
     public class CreateRuleItemDto
     {
         public long SplitRuleId { get; set; }
 
         [JsonProperty("ptid")]
-        public string PTId { get; set; }
+        public string StintMark { get; set; }
 
         public int MaxNum { get; set; }
 
         public int MinNum { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 }

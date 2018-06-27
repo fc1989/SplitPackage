@@ -245,12 +245,6 @@ export default {
       });
   },
   created:function(){
-      if(!this.$store.state.app.enumInformation.channelType){
-          var _this = this;
-          LogisticChannelApi.GetOptions().then(req=>{
-            _this.$store.commit('setLogisticChannel', req.data.result);
-          });
-      }
   }
 };
 </script>

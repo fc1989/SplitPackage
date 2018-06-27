@@ -60,6 +60,7 @@ export default {
         'ProductSorts': 'ProductSorts',
         'Products': 'Products',
         'SplitRules': 'SplitRules',
+        'RuleItems': 'RuleItems',
         'WeightFreights': 'WeightFreights',
         'LogisticRelateds': 'LogisticRelateds',
         'ProductClasses': 'ProductClasses',
@@ -152,7 +153,8 @@ export default {
       'MaxPrice': 'MaxPrice',
       'DeleteTip': 'DeleteTip',
       'MaxNum': 'MaxNum',
-      'MinNum': 'MinNum'
+      'MinNum': 'MinNum',
+      'Type': 'Type'
     },
     'WeightFreights': {
       'StartingWeight': 'StartingWeight',
@@ -252,6 +254,7 @@ export default {
         'ProductSorts': '商品分类',
         'Products': '商品',
         'SplitRules': '拆单规则',
+        'RuleItems': '规则明细',
         'WeightFreights': '重量运费',
         'LogisticRelateds': '关联物流商',
         'ProductClasses': '商品类别',
@@ -344,7 +347,8 @@ export default {
       'MaxPrice': '最大价值',
       'DeleteTip': '您确定要删除这条数据吗?',
       'MaxNum': '最大数量',
-      'MinNum': '最小数量'
+      'MinNum': '最小数量',
+      'Type': '规则类型'
     },
     'WeightFreights': {
       'StartingWeight': '起始重量',

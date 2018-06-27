@@ -129,7 +129,7 @@ export default {
                       props: {
                           splitRuleId: params.row.id,
                           splitRuleName: params.row.ruleName,
-                          canModify: params.row.tenantId === this.$store.state.session.tenantId
+                          tenantId: params.row.tenantId
                       }
                   })
               }
@@ -215,7 +215,7 @@ export default {
   },
   async created(){
     var _this = this;
-    LogisticChannelApi.GetOwn().then(req => {
+    LogisticChannelApi.GetOptional().then(req => {
         _this.cascaderData = req.data.result.map(function(vl, index, arr){
         return {
           value: vl.value,

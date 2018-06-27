@@ -301,11 +301,13 @@ namespace SplitPackage.Domain.Logistic
 
         public long SplitRuleId { get; set; }
 
-        public string PTId { get; set; }
+        public string StintMark { get; set; }
 
         public int MinNum { get; set; }
 
         public int MaxNum { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 
     public class TenantCreateImportSplitRuleItemEvent : EventData
@@ -319,6 +321,8 @@ namespace SplitPackage.Domain.Logistic
         public long SplitRuleId { get; set; }
 
         public long SplitRuleItemId { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 
     public class ModifySplitRuleItemEvent : EventData
@@ -338,6 +342,8 @@ namespace SplitPackage.Domain.Logistic
         public int MinNum { get; set; }
 
         public int MaxNum { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 
     public class TenanModifyImportSplitRuleItemEvent : EventData
@@ -351,6 +357,8 @@ namespace SplitPackage.Domain.Logistic
         public long SplitRuleId { get; set; }
 
         public long SplitRuleItemId { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 
     public class BanishSplitRuleItemEvent : EventData

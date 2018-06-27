@@ -422,25 +422,6 @@ namespace SplitPackage.Business.LogisticChannels
             }).ToList());
         }
 
-        public async Task<List<Option>> GetOwn()
-        {
-            var tenantId = AbpSession.TenantId;
-            var query = from lc in this._lcRepository.GetAll().IgnoreQueryFilters()
-                        where lc.TenantId == tenantId
-                        select lc;
-            query.Include(p => p.LogisticBy);
-            return await Task.FromResult(query.GroupBy(o => o.LogisticBy).Select(o => new Option()
-            {
-                Value = o.Key.Id.ToString(),
-                label = o.Key.CorporationName,
-                Children = o.Select(oi => new Option()
-                {
-                    Value = oi.Id.ToString(),
-                    label = oi.ChannelName,
-                }).ToList()
-            }).ToList());
-        }
-
         public async Task Switch(long id, bool IsActive)
         {
             CheckPermission(UpdatePermissionName);
