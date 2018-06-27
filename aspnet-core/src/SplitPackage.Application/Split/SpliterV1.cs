@@ -40,7 +40,7 @@ namespace SplitPackage.Split
                 PostTaxRate = 0,
                 BcTaxRate = 0
             });
-            bcRuleEntity.Initialize(new BcConfig() { StepWeight = 1 }, subLevelDic);
+            bcRuleEntity.Initialize(new BcConfig() { StepWeight = 1, TotalPriceLimit = 200000 }, subLevelDic);
         }
 
         public SpliterV1(List<SplitPackage.Business.Logistic> logistics, List<SplitPackage.Business.LogisticRelated> logisticRelateds)
