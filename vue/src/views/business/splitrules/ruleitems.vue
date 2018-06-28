@@ -21,11 +21,13 @@
                     <FormItem v-else :label="'Sku'" prop="sku">
                         <Select
                             v-model="modalState.model.sku"
+                            :label="modalState.skuLabel"
+                            clearable
                             filterable
                             remote
                             :remote-method="skuRemoteMethod"
                             :loading="modalState.skuLoading">
-                            <Option v-for="option in modalState.skuOptions" :value="option.value" :key="option.value">{{option.label}}</Option>
+                            <Option v-for="option in modalState.skuOptions" :value="option.value" :key="option.value">{{option.label+'('+option.value+')'}}</Option>
                         </Select>
                     </FormItem>
                     <FormItem :label="$t('SplitRules.MaxNum')" prop="maxNum">
@@ -95,7 +97,7 @@ const rowActionRender = (h, params, vm) => {
                     var productSortId = "";
                     var ptid = params.row.ptid;
                     vm.modalState.actionState = "edit";
-                    vm.modalState.model = params.row;
+                    vm.modalState.skuLabel = params.row.productClass;
                     if(params.row.type == 0)
                     {
                         for(var item in vm.cascaderData){
@@ -107,7 +109,10 @@ const rowActionRender = (h, params, vm) => {
                                 break;
                             }
                         }
-                        vm.modalState.model = $.extend({},vm.modalState.model,{cascaderValue:[productSortId,ptid]});
+                        vm.modalState.model = $.extend({}, params.row, {cascaderValue:[productSortId,ptid]});
+                    }
+                    else{
+                        vm.modalState.model = $.extend({}, params.row, {sku:params.row.ptid});
                     }
                     vm.modalState.showModal = true;
                     vm.modalState.title = vm.$t('Public.Edit') + vm.$t('Menu.Pages.LogisticChannels');
@@ -157,7 +162,8 @@ export default {
                                 maxNum: 0,
                                 minNum: 0,
                                 type: 0,
-                                cascaderValue:[]
+                                cascaderValue: [],
+                                sku: null
                             };
                             vm.modalState.showModal = true;
                             vm.modalState.actionState = "create";
@@ -169,12 +175,21 @@ export default {
                     }
                 },
                 {
-                    renderHeader: (h, params) => {
+                    renderHeader: (h) => {
                         var array = [h("span",_this.$t("Menu.Pages.ProductClasses")),h("b","/"),h("span","sku")];
                         return h('span',array);
                     },
                     align: "center",
                     key: "productClass",
+                    render: (h,params)=>{
+                        var array = [h("b",{
+                            style: {
+                                color: "red",
+                                "font-size": "14px"
+                            },
+                        },params.row.type == 0? "ptid:":"sku:"),h("span",params.row[params.column.key])];
+                        return h('span',array);
+                    }
                 },
                 {
                     title: _this.$t("SplitRules.MaxNum"),
@@ -191,7 +206,7 @@ export default {
                     align: "center",
                     width: 190,
                     key: "action",
-                    render: (h, param) => { return rowActionRender(h, param, _this);}
+                    render: (h, params) => { return rowActionRender(h, params, _this);}
                 }
             ],
             state: {
@@ -203,7 +218,7 @@ export default {
             modalState: {
                 model: {},
                 rule: {
-                    cascaderValue: [{required: true, trigger: 'ignore'}],
+                    cascaderValue: [{required: true, trigger: 'ignore', type: 'array'}],
                     sku:[{required: true, trigger: 'ignore'}],
                     maxNum: [{required: true, type:'number', trigger: 'ignore'}],
                     minNum: [{required: true, type:'number', trigger: 'ignore'}],
@@ -213,7 +228,8 @@ export default {
                 actionState: null,
                 stintType: this.$store.state.app.enumInformation.ruleItemStintType,
                 skuOptions: [],
-                skuLoading: false
+                skuLoading: false,
+                skuLabel: null
             },
             cascaderData: []
         };
