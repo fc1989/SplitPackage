@@ -5,16 +5,20 @@ using Xunit;
 using Abp.Application.Services.Dto;
 using SplitPackage.Users;
 using SplitPackage.Users.Dto;
+using SplitPackage.Tests.Contexts;
 
 namespace SplitPackage.Tests.Users
 {
-    public class UserAppService_Tests : SplitPackageTestBase
+    [Collection("Assistant collection")]
+    public class UserAppService_Tests
     {
         private readonly IUserAppService _userAppService;
+        private readonly AssistantCase _context;
 
-        public UserAppService_Tests(Xunit.Abstractions.ITestOutputHelper output)
+        public UserAppService_Tests(Xunit.Abstractions.ITestOutputHelper output, AssistantCase context)
         {
-            _userAppService = Resolve<IUserAppService>();
+            this._context = context;
+            this._userAppService = this._context.ResolveService<IUserAppService>();
         }
 
         [Fact]
@@ -42,7 +46,7 @@ namespace SplitPackage.Tests.Users
                     UserName = "john.nash"
                 });
 
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var johnNashUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "john.nash");
                 johnNashUser.ShouldNotBeNull();

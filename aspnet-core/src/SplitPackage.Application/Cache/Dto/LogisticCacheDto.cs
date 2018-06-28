@@ -119,10 +119,12 @@ namespace SplitPackage.Cache.Dto
     {
         public long Id { get; set; }
 
-        public string PTId { get; set; }
+        public string StintMark { get; set; }
 
         public int MinNum { get; set; }
 
         public int MaxNum { get; set; }
+
+        public RuleItemStintType Type { get; set; }
     }
 }

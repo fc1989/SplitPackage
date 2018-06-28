@@ -12,6 +12,7 @@ using Shouldly;
 using SplitPackage.Authorization;
 using SplitPackage.Authorization.Roles;
 using SplitPackage.Editions;
+using SplitPackage.Tests.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +22,14 @@ using Xunit;
 
 namespace SplitPackage.Tests
 {
-    /// <summary>
-    /// 测试初始化数据是否设置正确
-    /// </summary>
-    public class SplitInitial_Test : SplitPackageTestBase
+    [Collection("ReadStateless collection")]
+    public class SplitInitial_Test
     {
-        public SplitInitial_Test(Xunit.Abstractions.ITestOutputHelper output)
-        {
+        private readonly ReadStatelessCase _context;
 
+        public SplitInitial_Test(Xunit.Abstractions.ITestOutputHelper output, ReadStatelessCase context)
+        {
+            this._context = context;
         }
 
         protected async Task EntityValid(object obj, int? tenantId = null)
@@ -73,7 +74,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task EditionsInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 Edition edition = await context.Editions.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.Name == EditionManager.DefaultEditionName);
                 edition.ShouldNotBeNull();
@@ -85,7 +86,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task LanguageInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 List<ApplicationLanguage> als = context.Languages.IgnoreQueryFilters().Where(e => e.TenantId == null && (e.Name == "en-US" || e.Name == "zh-Hans")).ToList();
                 Assert.Equal(2, als.Count);
@@ -100,7 +101,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task HostRoleAndUsersInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var adminRoleForHost = context.Roles.IgnoreQueryFilters().FirstOrDefault(r => r.TenantId == null && r.Name == StaticRoleNames.Host.Admin);
                 await EntityValid(adminRoleForHost);
@@ -132,7 +133,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task SettingInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var dfa = await context.Settings.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Name == EmailSettingNames.DefaultFromAddress && s.TenantId == null && s.UserId == null);
                 await EntityValid(dfa);
@@ -149,7 +150,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task TenantInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var tenant = context.Tenants.IgnoreQueryFilters().FirstOrDefault(t => t.TenancyName == AbpTenantBase.DefaultTenantName);
                 await EntityValid(tenant);
@@ -160,7 +161,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task InitialBusiness_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var logistic = await context.Logistics.FirstOrDefaultAsync(s => s.LogisticCode == "AOLAU EXPRESS" && s.TenantId == null);
                 await EntityValid(logistic);
@@ -196,7 +197,7 @@ namespace SplitPackage.Tests
         [Fact]
         public async Task TenantRoleAndUserInitial_test()
         {
-            await UsingDbContextAsync(async context =>
+            await this._context.UsingDbContextAsync(async context =>
             {
                 var role = context.Roles.IgnoreQueryFilters().FirstOrDefault(r => r.TenantId == 1 && r.Name == StaticRoleNames.Tenants.Admin);
                 await EntityValid(role, 1);

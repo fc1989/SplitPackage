@@ -337,7 +337,7 @@ namespace SplitPackage.Domain.Logistic
 
         public long SplitRuleId { get; set; }
 
-        public string PTId { get; set; }
+        public string StintMark { get; set; }
 
         public int MinNum { get; set; }
 

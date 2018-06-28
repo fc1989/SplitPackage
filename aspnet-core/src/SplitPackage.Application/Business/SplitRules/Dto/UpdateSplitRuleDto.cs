@@ -9,7 +9,7 @@ using System.Text;
 namespace SplitPackage.Business.SplitRules.Dto
 {
     [AutoMap(typeof(SplitRule))]
-    public class UpdateSplitRuleDto : EntityDto<long>, IPassivable
+    public class UpdateSplitRuleDto : EntityDto<long>
     {
         [Required]
         public long LogisticChannelId { get; set; }
@@ -23,7 +23,5 @@ namespace SplitPackage.Business.SplitRules.Dto
         public double MaxTax { get; set; }
 
         public double MaxPrice { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

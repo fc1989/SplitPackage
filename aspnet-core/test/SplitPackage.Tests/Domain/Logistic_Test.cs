@@ -1,5 +1,6 @@
 ﻿using Abp.Events.Bus;
 using SplitPackage.Domain.Logistic;
+using SplitPackage.Tests.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,13 +9,13 @@ using Xunit.Abstractions;
 
 namespace SplitPackage.Tests.Domain
 {
-    [Collection("AstraeaAssistant collection")]
+    [Collection("Assistant collection")]
     public class Logistic_Test
     {
-        private readonly SplitPackageSettingBase _context;
+        private readonly AssistantCase _context;
         private readonly IEventBus _eventBus;
 
-        public Logistic_Test(ITestOutputHelper output, AstraeaAssistantSetting context)
+        public Logistic_Test(ITestOutputHelper output, AssistantCase context)
         {
             this._context = context;
             this._eventBus = context.ResolveService<IEventBus>();

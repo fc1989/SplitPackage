@@ -944,7 +944,7 @@ namespace SplitPackage.Domain.Logistic
             {
                 return;
             }
-            splitRuleItemCache.PTId = eventData.PTId;
+            splitRuleItemCache.StintMark = eventData.StintMark;
             splitRuleItemCache.MinNum = eventData.MinNum;
             splitRuleItemCache.MaxNum = eventData.MaxNum;
             await this._manageCache.SetSplitPackageSettingAsync(eventData.TenantId, settingCache);

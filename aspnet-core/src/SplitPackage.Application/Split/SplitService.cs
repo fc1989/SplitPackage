@@ -22,7 +22,7 @@ using Abp.UI;
 
 namespace SplitPackage.Split
 {
-    public class SplitService : ISplitService,ITransientDependency
+    public class SplitService : ISplitService, ITransientDependency
     {
         private readonly ManageCache _cacheManager;
 
@@ -40,7 +40,7 @@ namespace SplitPackage.Split
         {
             var setting = await this._cacheManager.GetSplitPackageSettingAsync(tenantId);
             var productClass = await this._cacheManager.GetProductClassAsync();
-            var rulePTIds = setting.OwnLogistics.SelectMany(o => o.LogisticChannels.SelectMany(oi => oi.SplitRules.SelectMany(oii => oii.ProductClasses.Select(oiii => oiii.PTId))))
+            var rulePTIds = setting.OwnLogistics.SelectMany(o => o.LogisticChannels.SelectMany(oi => oi.SplitRules.SelectMany(oii => oii.ProductClasses.Select(oiii => oiii.StintMark))))
                 .Distinct().ToList();
             var result = (from rule in rulePTIds
              join pc in productClass on rule equals pc.PTId

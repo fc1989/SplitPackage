@@ -11,11 +11,11 @@ using Xunit;
 
 namespace SplitPackage.Tests.Split
 {
-    public class SplitService_CommonTest
+    public class SplitService_Common_Test
     {
         private readonly SplitServiceOld _splitAppService;
 
-        public SplitService_CommonTest()
+        public SplitService_Common_Test()
         {
             _splitAppService = new SplitServiceOld();
             _splitAppService.Initialize(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SplitRuleXml/AstraeaAssistant"));

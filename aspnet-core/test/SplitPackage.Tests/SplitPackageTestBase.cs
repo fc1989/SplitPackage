@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SplitPackage.Authorization.Users;
 using SplitPackage.Cache;
+using SplitPackage.Cache.Dto;
 using SplitPackage.EntityFrameworkCore;
 using SplitPackage.EntityFrameworkCore.Seed.Business;
 using SplitPackage.EntityFrameworkCore.Seed.Host;
@@ -59,39 +60,39 @@ namespace SplitPackage.Tests
             var init = IocManager.Resolve<ManageCache>();
             init.InitCache();
 
-            LoginAsDefaultTenantAdmin();
+            LoginAsHostAdmin();
         }
 
         #region UsingDbContext
 
-        protected IDisposable UsingTenantId(int? tenantId)
+        public IDisposable UsingTenantId(int? tenantId)
         {
             var previousTenantId = AbpSession.TenantId;
             AbpSession.TenantId = tenantId;
             return new DisposeAction(() => AbpSession.TenantId = previousTenantId);
         }
 
-        protected void UsingDbContext(Action<SplitPackageDbContext> action)
+        public void UsingDbContext(Action<SplitPackageDbContext> action)
         {
             UsingDbContext(AbpSession.TenantId, action);
         }
 
-        protected Task UsingDbContextAsync(Func<SplitPackageDbContext, Task> action)
+        public Task UsingDbContextAsync(Func<SplitPackageDbContext, Task> action)
         {
             return UsingDbContextAsync(AbpSession.TenantId, action);
         }
 
-        protected T UsingDbContext<T>(Func<SplitPackageDbContext, T> func)
+        public T UsingDbContext<T>(Func<SplitPackageDbContext, T> func)
         {
             return UsingDbContext(AbpSession.TenantId, func);
         }
 
-        protected Task<T> UsingDbContextAsync<T>(Func<SplitPackageDbContext, Task<T>> func)
+        public Task<T> UsingDbContextAsync<T>(Func<SplitPackageDbContext, Task<T>> func)
         {
             return UsingDbContextAsync(AbpSession.TenantId, func);
         }
 
-        protected void UsingDbContext(int? tenantId, Action<SplitPackageDbContext> action)
+        public void UsingDbContext(int? tenantId, Action<SplitPackageDbContext> action)
         {
             using (UsingTenantId(tenantId))
             {
@@ -103,7 +104,7 @@ namespace SplitPackage.Tests
             }
         }
 
-        protected async Task UsingDbContextAsync(int? tenantId, Func<SplitPackageDbContext, Task> action)
+        public async Task UsingDbContextAsync(int? tenantId, Func<SplitPackageDbContext, Task> action)
         {
             using (UsingTenantId(tenantId))
             {
@@ -115,7 +116,7 @@ namespace SplitPackage.Tests
             }
         }
 
-        protected T UsingDbContext<T>(int? tenantId, Func<SplitPackageDbContext, T> func)
+        public T UsingDbContext<T>(int? tenantId, Func<SplitPackageDbContext, T> func)
         {
             T result;
 
@@ -131,7 +132,7 @@ namespace SplitPackage.Tests
             return result;
         }
 
-        protected async Task<T> UsingDbContextAsync<T>(int? tenantId, Func<SplitPackageDbContext, Task<T>> func)
+        public async Task<T> UsingDbContextAsync<T>(int? tenantId, Func<SplitPackageDbContext, Task<T>> func)
         {
             T result;
 
@@ -154,11 +155,6 @@ namespace SplitPackage.Tests
         protected void LoginAsHostAdmin()
         {
             LoginAsHost(AbpUserBase.AdminUserName);
-        }
-
-        protected void LoginAsDefaultTenantAdmin()
-        {
-            LoginAsTenant(AbpTenantBase.DefaultTenantName, AbpUserBase.AdminUserName);
         }
 
         protected void LoginAsHost(string userName)
@@ -204,7 +200,7 @@ namespace SplitPackage.Tests
         /// Gets current user if <see cref="IAbpSession.UserId"/> is not null.
         /// Throws exception if it's null.
         /// </summary>
-        protected async Task<User> GetCurrentUserAsync()
+        public async Task<User> GetCurrentUserAsync()
         {
             var userId = AbpSession.GetUserId();
             return await UsingDbContext(context => context.Users.SingleAsync(u => u.Id == userId));
@@ -214,7 +210,7 @@ namespace SplitPackage.Tests
         /// Gets current tenant if <see cref="IAbpSession.TenantId"/> is not null.
         /// Throws exception if there is no current tenant.
         /// </summary>
-        protected async Task<Tenant> GetCurrentTenantAsync()
+        public async Task<Tenant> GetCurrentTenantAsync()
         {
             var tenantId = AbpSession.GetTenantId();
             return await UsingDbContext(context => context.Tenants.SingleAsync(t => t.Id == tenantId));

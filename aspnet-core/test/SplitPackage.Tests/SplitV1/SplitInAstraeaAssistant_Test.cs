@@ -2,6 +2,7 @@
 using SplitPackage.Split;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.SplitModels;
+using SplitPackage.Tests.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,13 +11,13 @@ using Xunit;
 
 namespace SplitPackage.Tests.Split
 {
-    [Collection("AstraeaAssistant collection")]
+    [Collection("Assistant collection")]
     public class SplitInAstraeaAssistant_Test
     {
         private readonly ISplitService _splitService;
-        private readonly SplitPackageSettingBase _context;
+        private readonly AssistantCase _context;
 
-        public SplitInAstraeaAssistant_Test(Xunit.Abstractions.ITestOutputHelper output, AstraeaAssistantSetting context)
+        public SplitInAstraeaAssistant_Test(Xunit.Abstractions.ITestOutputHelper output, AssistantCase context)
         {
             this._context = context;
             this._splitService = this._context.ResolveService<ISplitService>();

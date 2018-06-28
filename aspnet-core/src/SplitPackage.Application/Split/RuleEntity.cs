@@ -73,7 +73,7 @@ namespace SplitPackage.Split
                     LimitedMaxPrice = o.MaxPrice,
                     RuleItems = o.ProductClasses.Select(oi => new RuleItem()
                     {
-                        PTId = oi.PTId,
+                        PTId = oi.StintMark,
                         MinQuantity = oi.MinNum,
                         MaxQuantity = oi.MaxNum
                     }).ToList()

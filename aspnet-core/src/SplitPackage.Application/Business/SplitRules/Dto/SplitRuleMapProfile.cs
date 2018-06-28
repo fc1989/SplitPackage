@@ -12,7 +12,7 @@ namespace SplitPackage.Business.SplitRules.Dto
         {
             CreateMap<SplitRule, SplitRuleDto>().ForMember(x => x.LogisticChannelName, opt => opt.MapFrom(src => src.LogisticChannelBy.ChannelName))
                 .ForMember(x => x.LogisticName, opt => opt.MapFrom(src => src.LogisticChannelBy.LogisticBy.CorporationName))
-                .ForMember(x => x.TenantId, opt => opt.MapFrom(src => src.LogisticChannelBy.TenantId));
+                .ForMember(x => x.TenantId, opt => opt.MapFrom(src => src.TenantId));
 
             CreateMap<SplitRuleItem, RuleItemDto>().ForMember(x => x.RuleName, opt => opt.MapFrom(src => src.SplitRuleBy.RuleName));
 
@@ -21,8 +21,6 @@ namespace SplitPackage.Business.SplitRules.Dto
             CreateMap<SplitRuleItem, CreateSplitRuleItemEvent>();
 
             CreateMap<SplitRuleItem, ModifySplitRuleItemEvent>();
-
-            CreateMap<CreateRuleItemDto, CreateSplitRuleItemEvent>();
         }
     }
 }

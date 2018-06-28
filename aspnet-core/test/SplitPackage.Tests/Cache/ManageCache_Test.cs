@@ -8,16 +8,20 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using SplitPackage.Tests.Contexts;
 
 namespace SplitPackage.Tests.Cache
 {
-    public class ManageCache_Test : SplitPackageTestBase
+    [Collection("ReadStateless collection")]
+    public class ManageCache_Test
     {
         private readonly ICacheManager _cacheManager;
+        private readonly ReadStatelessCase _context;
 
-        public ManageCache_Test(Xunit.Abstractions.ITestOutputHelper output)
+        public ManageCache_Test(Xunit.Abstractions.ITestOutputHelper output, ReadStatelessCase context)
         {
-            this._cacheManager = Resolve<ICacheManager>();
+            this._context = context;
+            this._cacheManager = this._context.ResolveService<ICacheManager>();
         }
 
         [Fact]
@@ -29,7 +33,7 @@ namespace SplitPackage.Tests.Cache
             var ssCache = this._cacheManager.GetCache<string, SplitPackageSettingCache>("SplitSetting");
             Assert.Equal(18, ssCache.GetOrDefault("host").OwnLogistics.Count);
             Assert.Equal(1, ssCache.GetOrDefault("host").Relateds.Count);
-            IRepository<Tenant> tenantRepository = Resolve<IRepository<Tenant>>();
+            IRepository<Tenant> tenantRepository = this._context.ResolveService<IRepository<Tenant>>();
             var tenants = tenantRepository.GetAllList();
             foreach (var item in tenants)
             {

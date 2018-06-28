@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -62,14 +63,14 @@ namespace SplitPackage.Business.SplitRules
             }
             var query = from l in lQuery
                         join lc in lcQuery on l.Id equals lc.LogisticId
-                        join tlc in this._tlcRepository.GetAll() on lc.Id equals tlc.LogisticChannelId into tlc1
-                        from tlcleft in tlc1.DefaultIfEmpty()
                         join sr in this.Repository.GetAll() on lc.Id equals sr.LogisticChannelId
-                        where lc.TenantId == tenantId || tlcleft.TenantId == tenantId
+                        join tlc in this._tlcRepository.GetAll().Where(o => o.TenantId == tenantId) on lc.Id equals tlc.LogisticChannelId into tlc1
+                        from tlcleft in tlc1.DefaultIfEmpty()
+                        where sr.TenantId == tenantId || tlcleft != null
                         select sr;
             if (!string.IsNullOrEmpty(input.PTId))
             {
-                query = query.Where(o=>o.ProductClasses.Any(oi=>oi.StintMark.StartsWith(input.PTId)));
+                query = query.Where(o=>o.ProductClasses.Any(oi=>oi.StintMark.StartsWith(input.PTId) && (oi.TenantId == tenantId || oi.TenantId == null)));
             }
             return query.Include(p => p.LogisticChannelBy).ThenInclude((LogisticChannel p) => p.LogisticBy);
         }
@@ -78,7 +79,7 @@ namespace SplitPackage.Business.SplitRules
         {
             CheckCreatePermission();
 
-            var channel = await this._lcRepository.GetAll().IgnoreQueryFilters().SingleAsync(o=> o.Id == input.LogisticChannelId);
+            var channel = await this._lcRepository.GetAll().Include(o=>o.LogisticBy).IgnoreQueryFilters().SingleAsync(o=> o.Id == input.LogisticChannelId);
 
             var entity = MapToEntity(input);
 
@@ -88,6 +89,7 @@ namespace SplitPackage.Business.SplitRules
             @event.LogisticId = channel.LogisticId;
             @event.TenantId = AbpSession.TenantId;
             await this._eventBus.TriggerAsync(@event);
+            entity.LogisticChannelBy = channel;
             return MapToEntityDto(entity);
         }
 
@@ -101,15 +103,15 @@ namespace SplitPackage.Business.SplitRules
 
         protected async override Task<SplitRule> GetEntityByIdAsync(long id)
         {
-            return await Repository.GetAll().Include(p=>p.LogisticChannelBy).SingleAsync(o=>o.Id == id);
+            return await Repository.GetAll().IgnoreQueryFilters().Include(p=>p.LogisticChannelBy).ThenInclude(p=>p.LogisticBy).SingleAsync(o=>o.Id == id);
         }
 
         public async override Task<SplitRuleDto> Update(UpdateSplitRuleDto input)
         {
             CheckUpdatePermission();
 
-            var entity = await this.Repository.GetAll().Include(p => p.LogisticChannelBy)
-                .SingleAsync(o => o.Id == input.Id);
+            var entity = await this.Repository.GetAll().IgnoreQueryFilters().Include(p => p.LogisticChannelBy).ThenInclude(p=>p.LogisticBy)
+                .SingleAsync(o => o.Id == input.Id && o.TenantId == AbpSession.TenantId);
 
             MapToEntity(input, entity);
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -133,8 +135,8 @@ namespace SplitPackage.Business.SplitRules
         {
             CheckDeletePermission();
 
-            var entity = await this.Repository.GetAll().Include(p => p.LogisticChannelBy)
-                .SingleAsync(o=>o.Id == input.Id);
+            var entity = await this.Repository.GetAll().IgnoreQueryFilters().Include(p => p.LogisticChannelBy)
+                .SingleAsync(o=>o.Id == input.Id && o.TenantId == AbpSession.TenantId);
 
             await Repository.DeleteAsync(entity);
             await this._eventBus.TriggerAsync(new BanishSplitRuleEvent()
@@ -146,12 +148,13 @@ namespace SplitPackage.Business.SplitRules
             });
         }
 
-        public async Task Switch(long id, bool IsActive)
+        [UnitOfWork]
+        public virtual async Task Switch(long id, bool IsActive)
         {
             CheckPermission(UpdatePermissionName);
 
-            var entity = await this.Repository.GetAll().Include(p=>p.LogisticChannelBy)
-                .SingleAsync(o => o.Id == id);
+            var entity = await this.Repository.GetAll().IgnoreQueryFilters().Include(p=>p.LogisticChannelBy)
+                .SingleAsync(o => o.Id == id && o.TenantId == AbpSession.TenantId);
             if (entity.IsActive == IsActive)
             {
                 return;
