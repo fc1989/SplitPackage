@@ -1,3 +1,6 @@
+before_script:
+  - powershell -Command ls -h
+
 build_image:
   stage: build
   tags:
