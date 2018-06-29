@@ -6,4 +6,4 @@ build_image:
   tags:
     - docker
   script:
-    - powershell -Command /docker/build-test.bat
+    - powershell -Command docker/build-test.bat
