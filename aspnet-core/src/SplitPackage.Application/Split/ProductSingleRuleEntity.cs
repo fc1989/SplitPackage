@@ -171,10 +171,8 @@ namespace SplitPackage.Split
         /// <returns></returns>
         public void CalculateTax(SubOrder subOrder)
         {
-            subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold)
-                ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * (decimal)Spliter.TheSubLevelDic[p.PTId].PostTaxRate)
-                : 0;
-            //price <= this.TaxThreshold ? 0 : price * this.TaxRate / 100;
+            var postTaxRate = 0;
+            subOrder.TaxCost = (subOrder.CalculateTotalPrice() > this.TaxThreshold) ? subOrder.ProList.Sum(p => p.CalculateTotalPrice() * postTaxRate): 0;
         }
 
         private Tuple<Product, Product> SplitProduct(Product product, int quantityLimit, int weightLimit, decimal priceLimit)

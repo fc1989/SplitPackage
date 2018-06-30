@@ -61,7 +61,12 @@ namespace SplitPackage.Split.SplitModels
         public SplitedOrder GenerateSubOrderId()
         {
             int index = 0;
-            this.OrderList.Where(o => string.IsNullOrEmpty(o.Id)).ToList().ForEach(o => o.Id = string.Format("{0}{1:00}", this.OrderId, ++index));
+            this.OrderList.Where(o => string.IsNullOrEmpty(o.Id)).ToList().ForEach(o =>
+            {
+                if (!o.Id.Equals("-1")) {
+                    o.Id = string.Format("{0}{1:00}", this.OrderId, ++index);
+                }
+            });
             return this;
         }
 

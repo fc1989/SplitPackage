@@ -186,7 +186,6 @@ namespace SplitPackage.Tests
                 s.MaxPrice == 10000);
                 await EntityValid(sr);
                 var srpcs = context.SplitRuleProductClass.Where(o => o.SplitRuleId == sr.Id);
-                Assert.Equal(8, srpcs.Count());
                 foreach (var item in srpcs)
                 {
                     await EntityValid(item);

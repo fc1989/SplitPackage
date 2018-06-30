@@ -5,6 +5,11 @@ namespace SplitPackage.Split.SplitModels
 {
     public class SubOrder
     {
+        public SubOrder()
+        {
+
+        }
+
         public SubOrder(string id,string logisticsCode, string logisticsName, string url, string gradeName, string subBusinessName, List<Product> proList = null)
         {
             this.Id = id;
@@ -25,25 +30,25 @@ namespace SplitPackage.Split.SplitModels
         /// <summary>
         /// 物流公司
         /// </summary>
-        public string LogisticsName { get; private set; }
+        public string LogisticsName { get; set; }
 
         /// <summary>
         /// 物流商code
         /// </summary>
-        public string LogisticsCode { get; private set; }
+        public string LogisticsCode { get; set; }
 
         /// <summary>
         /// 物流公司URL
         /// </summary>
-        public string URL { get; private set; }
+        public string URL { get; set; }
         /// <summary>
         /// 物流级别
         /// </summary>
-        public string GradeName { get; private set; }
+        public string GradeName { get; set; }
         /// <summary>
         /// 物流公司业务线名称
         /// </summary>
-        public string SubBusinessName { get; private set; }
+        public string SubBusinessName { get; set; }
         /// <summary>
         /// 物流单价
         /// </summary>
@@ -51,7 +56,7 @@ namespace SplitPackage.Split.SplitModels
         /// <summary>
         /// 订单总重量(g)
         /// </summary>
-        public int TotalWeight { get; private set; }
+        public int TotalWeight { get; set; }
         /// <summary>
         /// 此单预估物流总价
         /// </summary>
@@ -67,7 +72,7 @@ namespace SplitPackage.Split.SplitModels
         /// <summary>
         /// 商品列表
         /// </summary>
-        public List<Product> ProList { get; private set; }
+        public List<Product> ProList { get; set; }
 
         public int CalculateTotalQuantity()
         {

@@ -1,5 +1,5 @@
 ﻿using Abp.Authorization.Users;
-using SplitPackage.Split;
+using SplitPackage.SplitV1;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.SplitModels;
 using SplitPackage.Tests.Contexts;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SplitPackage.Tests.Split
+namespace SplitPackage.Tests.SplitV1
 {
     [Collection("Assistant collection")]
     public class SplitInAstraeaAssistant_Test
@@ -175,7 +175,7 @@ namespace SplitPackage.Tests.Split
             Assert.Equal(2, result.OrderList.Count);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsCode);
-            Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("澳通速递单独装", result.OrderList[0].SubBusinessName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsCode);
             Assert.Equal("澳通速递杂货混装线", result.OrderList[1].SubBusinessName);

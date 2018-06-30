@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SplitPackage.Split
+namespace SplitPackage.SplitV1
 {
     public interface ISplitService
     {

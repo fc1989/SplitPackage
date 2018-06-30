@@ -29,7 +29,7 @@ namespace SplitPackage.Tests.Cache
         {
             var pcCache = this._cacheManager.GetCache("ProductClass");
             var productClassSet = pcCache.GetOrDefault<string, List<ProductClassCacheDto>>("host");
-            Assert.Equal(141, productClassSet.Count);
+            Assert.True(productClassSet.Count >= 141);
             var ssCache = this._cacheManager.GetCache<string, SplitPackageSettingCache>("SplitSetting");
             Assert.Equal(18, ssCache.GetOrDefault("host").OwnLogistics.Count);
             Assert.Equal(1, ssCache.GetOrDefault("host").Relateds.Count);

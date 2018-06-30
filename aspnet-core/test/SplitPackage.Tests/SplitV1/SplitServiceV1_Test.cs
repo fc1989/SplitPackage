@@ -2,7 +2,7 @@
 using Abp.Domain.Uow;
 using Abp.MultiTenancy;
 using Abp.UI;
-using SplitPackage.Split;
+using SplitPackage.SplitV1;
 using SplitPackage.Split.Common;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.RuleModels;
@@ -14,7 +14,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SplitPackage.Tests.Split
+namespace SplitPackage.Tests.SplitV1
 {
     /// <summary>
     /// 海购助手
@@ -423,7 +423,7 @@ namespace SplitPackage.Tests.Split
             Assert.Equal(2, result.OrderList.Count);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[0].LogisticsCode);
-            Assert.Equal("澳通速递杂货混装线", result.OrderList[0].SubBusinessName);
+            Assert.Equal("澳通速递单独装", result.OrderList[0].SubBusinessName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsName);
             Assert.Equal("AOLAU EXPRESS", result.OrderList[1].LogisticsCode);
             Assert.Equal("澳通速递杂货混装线", result.OrderList[1].SubBusinessName);
@@ -468,7 +468,7 @@ namespace SplitPackage.Tests.Split
             Assert.Equal("EWE杂货标准线", result.OrderList[0].SubBusinessName);
             Assert.Equal("EWE Express 经济线", result.OrderList[1].LogisticsName);
             Assert.Equal("EWE Express 经济线", result.OrderList[1].LogisticsCode);
-            Assert.Equal("EWE杂货经济线", result.OrderList[1].SubBusinessName);
+            Assert.Equal("EWE经济线1-3罐奶粉", result.OrderList[1].SubBusinessName);
         }
 
         [Fact]

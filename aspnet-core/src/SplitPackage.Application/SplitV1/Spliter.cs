@@ -1,30 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Linq;
-using SplitPackage.Split.RuleModels;
-using SplitPackage.Split.SplitModels;
-using SplitPackage.Split.Common;
 using System.Diagnostics;
 using Abp.Logging;
-using SplitPackage.RuleModels;
 using SplitPackage.Cache.Dto;
+using SplitPackage.SplitV1.RuleModels;
+using SplitPackage.Split.SplitModels;
 
-namespace SplitPackage.Split
+namespace SplitPackage.SplitV1
 {
-    public class SpliterV1
+    public class Spliter
     {
         private readonly SplitConfig splitConfig;
-
-        private readonly BcRuleEntity bcRuleEntity;
 
         private readonly List<RelatedItem> logisticsRelated;
 
         private readonly List<Logistic> logistics;
 
-        public SpliterV1(IList<LogisticCacheDto> ownLogistics, IList<IList<LogisticRelatedOptionCacheDto>> relateds)
+        public Spliter(IList<LogisticCacheDto> ownLogistics, IList<IList<LogisticRelatedOptionCacheDto>> relateds)
         {
             this.logistics = ownLogistics.Select(o => new Logistic(o)).ToList();
             this.logisticsRelated = relateds.Select(o => new RelatedItem()
@@ -33,34 +26,6 @@ namespace SplitPackage.Split
             }).ToList();
             this.splitConfig = new SplitConfig();
             splitConfig.Initialize(this.logistics.SelectMany(o => o.RuleSequenceDic.Select(oi => oi.Value)).ToList());
-            this.bcRuleEntity = new BcRuleEntity();
-            var subLevelDic = this.logistics.SelectMany(o => o.RuleSequenceDic.SelectMany(oi => oi.Value.Rule.MixRule.SelectMany(oii => oii.RuleItems.Select(oiii => oiii.PTId)))).Distinct().ToDictionary(o => o, o => new SubLevel()
-            {
-                PTId = o,
-                PostTaxRate = 0,
-                BcTaxRate = 0
-            });
-            bcRuleEntity.Initialize(new BcConfig() { StepWeight = 1, TotalPriceLimit = 200000 }, subLevelDic);
-        }
-
-        public SpliterV1(List<SplitPackage.Business.Logistic> logistics, List<SplitPackage.Business.LogisticRelated> logisticRelateds)
-        {
-            this.logistics = logistics.Select(o=> new Logistic(o)).ToList();
-            this.logisticsRelated = logisticRelateds.Select(o => new RelatedItem()
-            {
-                ID = o.RelatedName,
-                Logistics = o.Items.Select(oi=>oi.LogisticBy.LogisticCode).ToList()
-            }).ToList();
-            this.splitConfig = new SplitConfig();
-            splitConfig.Initialize(this.logistics.SelectMany(o=>o.RuleSequenceDic.Select(oi=>oi.Value)).ToList());
-            this.bcRuleEntity = new BcRuleEntity();
-            var subLevelDic = this.logistics.SelectMany(o => o.RuleSequenceDic.SelectMany(oi => oi.Value.Rule.MixRule.SelectMany(oii => oii.RuleItems.Select(oiii=>oiii.PTId)))).Distinct().ToDictionary(o => o, o => new SubLevel()
-            {
-                PTId = o,
-                PostTaxRate = 0,
-                BcTaxRate = 0
-            });
-            bcRuleEntity.Initialize(new BcConfig() { StepWeight = 1}, subLevelDic);
         }
 
         /// <summary>
@@ -124,7 +89,6 @@ namespace SplitPackage.Split
                     }
                 }
                 result.Item1.GenerateSubOrderId();
-                LogHelper.Logger.Info(string.Format("Spliter.SplitWithOrganization return:\n    {0}", result.Item1));
                 return result.Item1;
             }
             catch (Exception ex)
@@ -143,20 +107,15 @@ namespace SplitPackage.Split
             {
                 case SplitPrinciple.SpeedFirst:
                     break;
-
                 case SplitPrinciple.QuanlityFirst:
                 case SplitPrinciple.PriceFirst:
                 default:
                     ruleOptions = splitConfig.GetRuleEntities(splitPrinciple, productList);
                     break;
             }
-
             if (ruleOptions != null && ruleOptions.Count > 0)
             {
-                var splitResults = ruleOptions.Select(rules => SplitOnce(SplitPackage.Split.Common.Common.CloneProductEntityList(productList), rules, splitPrinciple)).ToList();
-                var msgs = Enumerable.Repeat(string.Format("Spliter.SplitOrder({0}, {1}, {2}, {3}) alternative:", "orderId=" + orderId, "productList.Count=" + productList.Count, "totalQuantity=" + totalQuantity, "splitPrinciple=" + splitPrinciple), 1)
-                    .Concat(splitResults.Select(ret => string.Format("    ({0}, {1}, {2})", ret.Item1, ret.Item2, "[" + string.Join(", ", ret.Item3) + "]")));
-                LogHelper.Logger.Info(string.Join(Environment.NewLine, msgs));
+                var splitResults = ruleOptions.Select(rules => SplitOnce(SplitPackage.SplitV1.Common.Common.CloneProductEntityList(productList), rules, splitPrinciple)).ToList();
                 Tuple<SplitedOrder, bool, List<ProductEntity>> optimal = null;
                 switch (splitPrinciple)
                 {
@@ -181,9 +140,8 @@ namespace SplitPackage.Split
             else
             {
                 // BC方式，计算跨境综合税
-                result = bcRuleEntity.Split(productList);
+                result = this.ReturnRemainPackage(productList);
             }
-
             if (badProductList != null && badProductList.Any())
             {
                 var subOrder = new SubOrder("-2", null, null, null, null, null, badProductList)
@@ -194,7 +152,6 @@ namespace SplitPackage.Split
                 };
                 result.AddSubOrder(subOrder);
             }
-
             result.OrderId = orderId;
             return result;
         }
@@ -202,7 +159,6 @@ namespace SplitPackage.Split
         private Tuple<SplitedOrder, bool, List<ProductEntity>> SplitOnce(List<ProductEntity> productList, List<RuleEntity> rules, SplitPrinciple splitPrinciple)
         {
             var splitedOrder = new SplitedOrder();
-
             var restProductList = productList;
             for (int i = 0; i < rules.Count && restProductList.Count > 0; i++)
             {
@@ -210,12 +166,11 @@ namespace SplitPackage.Split
                 splitedOrder.AddSubOrderRange(tuple.Item1);
                 restProductList = tuple.Item2;
             }
-
             bool isTax = false;
             if (splitPrinciple != SplitPrinciple.LogisticsFirst && restProductList.Count > 0)
             {
                 isTax = true;
-                splitedOrder.AddSubOrderRange(bcRuleEntity.Split(restProductList));
+                splitedOrder.AddSubOrderRange(this.ReturnRemainPackage(restProductList));
                 restProductList.Clear();
             }
             return Tuple.Create(splitedOrder, isTax, restProductList);
@@ -226,9 +181,7 @@ namespace SplitPackage.Split
             // 指定物流时，此处传入的RuleEntity清单仅为该物流规则
             Debug.Assert(ruleList != null);
             var ruleOptions = SplitConfig.GetRuleEntities(ruleList, productList);
-            var splitResults = ruleOptions.Select(rules => SplitOnce(SplitPackage.Split.Common.Common.CloneProductEntityList(productList), rules, SplitPrinciple.LogisticsFirst)).ToList();
-            LogHelper.Logger.Info(string.Format("SplitOrderWithOrganization({0}, {1}, {2}, {3}) alternative:", "orderId=" + orderId, "productList.Count=" + productList.Count, "totalQuantity=" + totalQuantity, "ruleList=" + (ruleList != null ? ruleList.Count.ToString() : "<null>")));
-            splitResults.ForEach(ret => LogHelper.Logger.Info(string.Format("    {0}", ret)));
+            var splitResults = ruleOptions.Select(rules => SplitOnce(SplitPackage.SplitV1.Common.Common.CloneProductEntityList(productList), rules, SplitPrinciple.LogisticsFirst)).ToList();
             var optimal = splitResults.OrderBy(t => t.Item2 ? 0 : 1).ThenBy(t => t.Item1.CalculateLogisticsAndTaxCost()).FirstOrDefault();
             var result = optimal != null ? optimal.Item1 : new SplitedOrder();
             var restProductList = optimal != null ? optimal.Item3 : productList;
@@ -243,14 +196,14 @@ namespace SplitPackage.Split
             List<Product> restProductList = new List<Product>();
             foreach (var p in productList)
             {
-                ProductEntity pe = new ProductEntity(new ProductConfigItem()
+                ProductEntity pe = new ProductEntity()
                 {
                     No = p.ProNo,
                     SKUNo = p.SkuNo,
+                    Name = p.ProName,
                     PTId = p.PTId,
-                    Weight = p.Weight,
-                    Name = p.ProName
-                });
+                    OrderInfo = new List<Product>()
+                };
                 string ptId = p.PTId.ToString();
                 if (!ped.ContainsKey(ptId))
                 {
@@ -261,6 +214,21 @@ namespace SplitPackage.Split
                 ped[ptId].AddProdcut(p);
             }
             return Tuple.Create(ped.Values.ToList(), restProductList);
+        }
+
+        private SplitedOrder ReturnRemainPackage(List<ProductEntity> remainProducts)
+        {
+            var result = new SplitedOrder();
+            var productList = remainProducts.SelectMany(o => o.OrderInfo).ToList();
+            var invalidSubOrder = new SubOrder()
+            {
+                Id = "-1",
+                TotalWeight = productList.Sum(o=>o.Weight * o.Quantity),
+                TotalPrice = productList.Sum(o=>o.ProPrice * o.Quantity),
+                ProList = productList
+            };
+            result.AddSubOrder(invalidSubOrder);
+            return result;
         }
     }
 }

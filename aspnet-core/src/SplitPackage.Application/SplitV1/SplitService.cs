@@ -20,7 +20,7 @@ using SplitPackage.Cache.Dto;
 using SplitPackage.Cache;
 using Abp.UI;
 
-namespace SplitPackage.Split
+namespace SplitPackage.SplitV1
 {
     public class SplitService : ISplitService, ITransientDependency
     {
@@ -30,10 +30,10 @@ namespace SplitPackage.Split
             this._cacheManager = cacheManager;
         }
 
-        private async Task<SpliterV1> GetSpliter(int? tenantId)
+        private async Task<Spliter> GetSpliter(int? tenantId)
         {
             var setting = await this._cacheManager.GetSplitPackageSettingAsync(tenantId);
-            return new SpliterV1(setting.OwnLogistics, setting.Relateds.Select(o=>o.Logistics).ToList());
+            return new Spliter(setting.OwnLogistics, setting.Relateds.Select(o=>o.Logistics).ToList());
         }
 
         private async Task<List<string>> GetRulePTIds(int? tenantId)

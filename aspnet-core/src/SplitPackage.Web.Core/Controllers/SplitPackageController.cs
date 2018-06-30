@@ -1,7 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using SplitPackage.Split;
+using SplitPackage.SplitV1;
 using SplitPackage.Split.Dto;
 using SplitPackage.Split.SplitModels;
 using System.Collections.Generic;
